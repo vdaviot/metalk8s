@@ -31,6 +31,12 @@
   [v2.41.1](https://github.com/dexidp/dex/releases/tag/v2.41.1)
   (PR[#4367](https://github.com/scality/metalk8s/pull/4367))
 
+- Bump fluent-bit chart version to
+  [0.47.10](https://github.com/fluent/helm-charts/releases/tag/fluent-bit-0.47.10)
+  The fluent-bit image has been bumped accordingly to
+  [3.1.9](https://github.com/fluent/fluent-bit/releases/tag/v3.1.9)
+  (PR[#4447](https://github.com/scality/metalk8s/pull/4447))
+
 ## Release 128.0.1 (in development)
 
 ## Release 128.0.0

@@ -64,6 +64,12 @@
   - Bump prometheus-operator and prometheus-config-reloader containers version to
     [0.77.2](https://github.com/prometheus-operator/prometheus-operator/releases/tag/v0.77.2)
 
+- Bump Prometheus Adapter chart version to
+  [4.11.0](https://github.com/prometheus-community/helm-charts/releases/tag/prometheus-adapter-4.11.0)
+  The prometheus-adapter image has been bumped accordingly to
+  [v0.12.0](https://github.com/kubernetes-sigs/prometheus-adapter/releases/tag/v0.12.0)
+  (PR[#4453](https://github.com/scality/metalk8s/pull/4453))
+
 ## Release 128.0.1 (in development)
 
 ## Release 128.0.0

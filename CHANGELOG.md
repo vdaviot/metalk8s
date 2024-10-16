@@ -79,6 +79,12 @@
 - Move salt-master image to Rocky 8 minimal
   (PR[#4474](https://github.com/scality/metalk8s/pull/4474))
 
+- Bump ingress-nginx chart version to
+  [4.11.3](https://github.com/kubernetes/ingress-nginx/releases/tag/helm-chart-4.11.3)
+  The controller image has been bumped accordingly to
+  [v1.11.3](https://github.com/kubernetes/ingress-nginx/releases/tag/controller-v1.11.3)
+  (PR[#4452](https://github.com/scality/metalk8s/pull/4452))
+
 ## Release 128.0.1 (in development)
 
 ## Release 128.0.0

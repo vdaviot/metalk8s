@@ -70,6 +70,9 @@
   [v0.12.0](https://github.com/kubernetes-sigs/prometheus-adapter/releases/tag/v0.12.0)
   (PR[#4453](https://github.com/scality/metalk8s/pull/4453))
 
+- Bump nginx image to [1.27.2-alpine](https://github.com/nginx/nginx/releases/tag/release-1.27.2)
+  (PR[#4455](https://github.com/scality/metalk8s/pull/4455))
+
 - Move metalk8s-utils image to Rocky 9 minimal
   (PR[#4472](https://github.com/scality/metalk8s/pull/4472))
 

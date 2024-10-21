@@ -67,15 +67,15 @@ RUN git clone https://github.com/pyenv/pyenv.git ~/.pyenv && \
 # Install pythons
 RUN ~/.pyenv/bin/pyenv install 3.10.12 3.6.15 && \
     ~/.pyenv/bin/pyenv global 3.10.12 3.6.15
-    
+
 # Install python libs
 RUN ~/.pyenv/bin/pyenv exec pip install "tox~=4.4.12" "pre-commit~=3.3.3" "virtualenv<20.22.0" "esbonio>=0.12.0"
 
-# Install crane
-ARG CRANE_VERSION=0.20.0
+# Install crane and gcrane
+ARG CRANE_VERSION=0.20.2
 
 RUN curl --fail -L -o /tmp/crane.tar.gz https://github.com/google/go-containerregistry/releases/download/v${CRANE_VERSION}/go-containerregistry_Linux_x86_64.tar.gz && \
-    sudo tar -xzf /tmp/crane.tar.gz -C /usr/local/bin/ crane && \
+    sudo tar -xzf /tmp/crane.tar.gz -C /usr/local/bin/ crane gcrane && \
     rm -rf /tmp/crane.tar.gz
 
 # Install Skopeo from sources

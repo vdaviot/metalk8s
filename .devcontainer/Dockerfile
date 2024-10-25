@@ -44,7 +44,7 @@ RUN curl --fail -L -o /tmp/helm.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}
     rm -rf /tmp/helm.tar.gz
 
 # Install go
-ARG GO_VERSION=1.20.14
+ARG GO_VERSION=1.21.13
 
 RUN curl --fail -L -o /tmp/go.tar.gz https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
     sudo tar -C /usr/local -xzf /tmp/go.tar.gz && \

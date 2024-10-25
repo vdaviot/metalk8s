@@ -96,6 +96,12 @@
   The pause image has been bump to 3.10
   (PR[#4460](https://github.com/scality/metalk8s/pull/4460))
 
+- Bump Operator-SDK used by `metalk8s-operator` and `storage-operator` to
+  [1.37.0](https://github.com/operator-framework/operator-sdk/releases/tag/v1.37.0)
+  The Go version has been bumped accordingly to
+  [1.21](https://golang.org/doc/devel/release.html#go1.21.minor)
+  (PR[#4462](https://github.com/scality/metalk8s/pull/4462))
+
 ## Release 128.0.1 (in development)
 
 ## Release 128.0.0

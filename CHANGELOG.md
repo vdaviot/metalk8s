@@ -115,6 +115,10 @@
 - Do no longer use `latest` for `storage-operator` image
   (PR[#4299](https://github.com/scality/metalk8s/pull/4299))
 
+- Loki Grafana dashboard and datasources are enabled only
+  if Loki is enabled.
+  (PR[#4464](https://github.com/scality/metalk8s/pull/4464))
+
 ## Release 127.0.7 (in development)
 
 ## Release 127.0.6

@@ -26,13 +26,15 @@
     "Kubernetes / Proxy": "632e265de029684c40b21cb76bca4f94",
     "Kubernetes / Scheduler": "2e6b6a3b4bddf1427b3a55aa1311c656",
     "Kubernetes / Networking / Workload": "728bf77cc1166d2f3133bf25846876cc",
-    "Loki": "g6fe30815b172c9da7e813c15ddfe607",
-    "Logs": "a7e130cb82be229d6f3edbfd0a438001",
     "NGINX Ingress Controller": "nginx",
     "NGINX Ingress Request Handling Performance": "4GFbkOsZk",
     "Grafana Overview": "6be0s85Mk"
   },
   "fluent-bit": {
     "fluent-bit": "b50980eb83fa85bca0ce83ceadaf322e09e8a4cd"
+  },
+  "loki": {
+    "Loki": "g6fe30815b172c9da7e813c15ddfe607",
+    "Logs": "a7e130cb82be229d6f3edbfd0a438001"
   }
 }

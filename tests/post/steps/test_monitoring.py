@@ -549,6 +549,8 @@ def check_grafana_dashboards(host, grafana_api):
     expected_dashboards = expected_dashboards_json["all"]
     if utils.get_pillar(host, "addons:fluent-bit:enabled"):
         expected_dashboards.update(expected_dashboards_json["fluent-bit"])
+    if utils.get_pillar(host, "addons:loki:enabled"):
+        expected_dashboards.update(expected_dashboards_json["loki"])
 
     uid_mismatches = []
     extra_dashboards = []

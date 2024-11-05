@@ -19,9 +19,9 @@ RUN sed -i s/@K8S_SHORT_VERSION@/$K8S_SHORT_VERSION/ /etc/yum.repos.d/kubernetes
 
 ENV GOROOT /usr/local/go
 
-RUN yum install -y --setopt=skip_missing_names_on_install=False \
+RUN yum install -y --setopt=skip_missing_names_on_install=False epel-release && \
+    yum install -y --setopt=skip_missing_names_on_install=False \
         createrepo \
-        epel-release \
         python36-rpm \
         rpm-build \
         rpmdevtools \

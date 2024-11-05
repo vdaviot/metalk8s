@@ -9,12 +9,10 @@ ARG SALT_VERSION
 
 # Install Saltstack and other dependencies
 RUN printf "[saltstack-repo]\n\
-name=SaltStack repo for RHEL/CentOS \$releasever\n\
-baseurl=https://repo.saltproject.io/py3/redhat/\$releasever/\$basearch/archive/%s\n\
+name=Scality SaltStack repo for RHEL/CentOS \$releasever\n\
+baseurl=https://downloads.scality.com/repository/redhat/\$releasever/saltstack/%s\n\
 enabled=1\n\
-gpgcheck=1\n\
-gpgkey=https://repo.saltproject.io/py3/redhat/\$releasever/\$basearch/archive/%s/SALTSTACK-GPG-KEY.pub\n" ${SALT_VERSION} ${SALT_VERSION} >/etc/yum.repos.d/saltstack.repo \
- && rpm --import https://repo.saltproject.io/py3/redhat/8/x86_64/archive/${SALT_VERSION}/SALTSTACK-GPG-KEY.pub \
+gpgcheck=0\n" ${SALT_VERSION} ${SALT_VERSION} >/etc/yum.repos.d/saltstack.repo \
  && dnf clean expire-cache \
  && dnf update -y \
  && dnf install -y glibc-all-langpacks langpacks-en \

@@ -16,9 +16,8 @@ EOF
 
 cat > /etc/yum.repos.d/saltstack.repo << EOF
 [saltstack]
-name=SaltStack repo for RHEL/CentOS \$releasever
-baseurl=https://repo.saltproject.io/py3/redhat/\$releasever/\$basearch/archive/$SALT_VERSION
+name=Scality SaltStack repo for RHEL/CentOS \$releasever
+baseurl=https://downloads.scality.com/repository/redhat/\$releasever/saltstack/$SALT_VERSION
 enabled=1
-gpgcheck=1
-gpgkey=https://repo.saltproject.io/py3/redhat/\$releasever/\$basearch/archive/$SALT_VERSION/SALTSTACK-GPG-KEY.pub
+gpgcheck=0
 EOF

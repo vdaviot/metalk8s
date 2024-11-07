@@ -76,6 +76,9 @@
 - Move metalk8s-utils image to Rocky 9 minimal
   (PR[#4472](https://github.com/scality/metalk8s/pull/4472))
 
+- Move salt-master image to Rocky 8 minimal
+  (PR[#4474](https://github.com/scality/metalk8s/pull/4474))
+
 ## Release 128.0.1 (in development)
 
 ## Release 128.0.0

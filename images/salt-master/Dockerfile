@@ -1,6 +1,6 @@
 # SHA256 digest of the base image
 ARG BASE_IMAGE_SHA256
-ARG BASE_IMAGE=docker.io/rockylinux
+ARG BASE_IMAGE
 
 FROM ${BASE_IMAGE}@sha256:${BASE_IMAGE_SHA256}
 
@@ -12,19 +12,16 @@ RUN printf "[saltstack-repo]\n\
 name=Scality SaltStack repo for RHEL/CentOS \$releasever\n\
 baseurl=https://downloads.scality.com/repository/redhat/\$releasever/saltstack/%s\n\
 enabled=1\n\
-gpgcheck=0\n" ${SALT_VERSION} ${SALT_VERSION} >/etc/yum.repos.d/saltstack.repo \
- && dnf clean expire-cache \
- && dnf update -y \
- && dnf install -y glibc-all-langpacks langpacks-en \
- && dnf install -y epel-release \
- && dnf install -y python3-pip \
- && pip3 install "pip == 20.1" \
- && pip3 install "protobuf ~= 3.19.4" "etcd3 != 0.11.0" \
- && dnf install -y git \
- && pip3 install "git+https://github.com/kubernetes-client/python.git@cef5e9bd10a6d5ca4d9c83da46ccfe2114cdaaf8#egg=kubernetes" \
- && dnf remove -y git \
- && dnf install -y salt-master salt-api salt-ssh openssh-clients procps-ng \
- && dnf clean all
+gpgcheck=1\n\
+gpgkey=https://downloads.scality.com/repository/redhat/\$releasever/saltstack/%s/SALTSTACK-GPG-KEY.pub\n" ${SALT_VERSION} ${SALT_VERSION} >/etc/yum.repos.d/saltstack.repo \
+ && microdnf clean all \
+ && microdnf update -y \
+ && microdnf install -y glibc-all-langpacks langpacks-en python3-pip epel-release \
+ && pip3 install "pip == 21.3.1" \
+ && pip3 install "protobuf ~= 3.19.4" "etcd3 != 0.11.0" "kubernetes ~= 12.0.1" \
+ && microdnf install -y salt-master salt-api salt-ssh openssh-clients procps-ng \
+ && microdnf remove -y epel-release \
+ && microdnf clean all
 
 # Set up locale
 ENV LC_ALL=en_US.UTF-8

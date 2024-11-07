@@ -7,13 +7,8 @@ FROM $BASE_IMAGE@sha256:$BASE_IMAGE_SHA256
 # Kubernetes version
 ARG K8S_SHORT_VERSION
 ARG K8S_VERSION
-# Salt version
-ARG SALT_VERSION
 # Etcd version
 ARG ETCD_VERSION
-
-COPY configure-repos.sh /
-RUN /configure-repos.sh "$K8S_SHORT_VERSION" "$SALT_VERSION" && rm /configure-repos.sh
 
 # Timestamp of the build, formatted as RFC3339
 ARG BUILD_DATE
@@ -54,10 +49,17 @@ LABEL maintainer="squad-metalk8s@scality.com" \
       com.scality.metalk8s.version="$METALK8S_VERSION"
 
 # Final layers, installing tooling
-RUN dnf clean expire-cache && \
-    dnf update -y && \
-    dnf install -y epel-release && \
-    dnf install -y \
+RUN printf "[kubernetes]\n\
+name=Kubernetes\n\
+baseurl=https://pkgs.k8s.io/core:/stable:/v%s/rpm/\n\
+enabled=1\n\
+gpgcheck=1\n\
+gpgkey=https://pkgs.k8s.io/core:/stable:/v%s/rpm/repodata/repomd.xml.key\n" \
+    ${K8S_SHORT_VERSION} ${K8S_SHORT_VERSION} >/etc/yum.repos.d/kubernetes.repo && \
+    microdnf clean all && \
+    microdnf update -y && \
+    microdnf install -y epel-release && \
+    microdnf install -y --enablerepo=crb \
         bash-completion \
         bind-utils \
         bzip2 \
@@ -95,28 +97,26 @@ RUN dnf clean expire-cache && \
         openssh-server \
         openssl \
         parted \
-        perf \
         qperf \
         rsync \
-        salt-master \
-        salt-minion \
         screen \
         socat \
         strace \
         sysstat \
+        tar \
         tcpdump \
         telnet \
         tmux \
         traceroute \
         util-linux \
-        vim \
+        vim-minimal \
         wget \
-        wireshark \
+        wireshark-cli \
         xfsprogs \
         && \
-    dnf clean all
+    microdnf clean all
 
-# etcd is not packaged in RHEL/Rocky/CentOS 8 Extras repository, so we download/install
+# etcd is not packaged in RHEL/Rocky/CentOS 9 Extras repository, so we download/install
 # it manually
 RUN mkdir /tmp/etcd-download && \
     curl -L https://github.com/etcd-io/etcd/releases/download/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz \

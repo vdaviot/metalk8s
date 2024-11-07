@@ -70,6 +70,9 @@
   [v0.12.0](https://github.com/kubernetes-sigs/prometheus-adapter/releases/tag/v0.12.0)
   (PR[#4453](https://github.com/scality/metalk8s/pull/4453))
 
+- Move metalk8s-utils image to Rocky 9 minimal
+  (PR[#4472](https://github.com/scality/metalk8s/pull/4472))
+
 ## Release 128.0.1 (in development)
 
 ## Release 128.0.0

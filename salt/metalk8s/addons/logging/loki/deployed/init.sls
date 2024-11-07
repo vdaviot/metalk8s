@@ -7,6 +7,7 @@ include:
   - .chart
   - .service
   - .datasource
+  - .dashboards
   - .workaround-job-dep
 
 {#- Due to a bug in Loki that prevent deletion of the old chunks,
@@ -45,6 +46,7 @@ Ensure Loki objects does not exist:
           force_absent: True
     - mods:
       - metalk8s.addons.logging.loki.deployed.chart
+      - metalk8s.addons.logging.loki.deployed.dashboards
 
 Ensure Loki config does not exist:
   metalk8s_kubernetes.object_absent:

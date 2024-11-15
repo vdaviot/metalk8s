@@ -146,3 +146,7 @@ This guide is applied for both `metalk8s-operator` and `storage-operator`.
 - Update manifest in `salt/metalk8s/kubernetes/cni/calico/deployed.sls`:
   - copy the file from [here](https://github.com/projectcalico/calico/blob/$version/manifests/calico.yaml).
   - apply metalk8s patches as they will show up in the diffs. All Metalk8s necessary changes have appended comments.
+
+## Containerd
+
+Instructions to bump Containerd version are in its [spec file](./packages/redhat/common/containerd.spec)

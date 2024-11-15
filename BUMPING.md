@@ -139,3 +139,10 @@ This guide is applied for both `metalk8s-operator` and `storage-operator`.
  - run `make metalk8s`
  - check a diff between the two latest versions of this [test project](https://github.com/operator-framework/operator-sdk/tree/master/testdata/go/v4/memcached-operator)
  - the diff in this repo and the test project should be more or less the same
+
+## Calico
+
+- Update images in `buildchain/buildchain/versions.py`.
+- Update manifest in `salt/metalk8s/kubernetes/cni/calico/deployed.sls`:
+  - copy the file from [here](https://github.com/projectcalico/calico/blob/$version/manifests/calico.yaml).
+  - apply metalk8s patches as they will show up in the diffs. All Metalk8s necessary changes have appended comments.

@@ -136,6 +136,7 @@ This guide is applied for both `metalk8s-operator` and `storage-operator`.
  - if necessary, bump go version in pre_merge github action.
  - if necessary, bump go version in Dockerfile.
  - if necessary, bump go dependencies versions.
+ - in the root of each operator, run `go mod tidy`.
  - run `make metalk8s`
  - check a diff between the two latest versions of this [test project](https://github.com/operator-framework/operator-sdk/tree/master/testdata/go/v4/memcached-operator)
  - the diff in this repo and the test project should be more or less the same

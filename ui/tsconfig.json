@@ -79,5 +79,6 @@
       "@testing-library/jest-dom",
       "@scality/core-ui/types/styled.d.ts"
     ]
-  }
+  },
+  "exclude": ["cypress.config.ts", "cypress", "node_modules"]
 }

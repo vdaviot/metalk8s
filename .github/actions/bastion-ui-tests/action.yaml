@@ -5,7 +5,7 @@ inputs:
   TEST_FILTERS:
     description: "The test filter to use"
     required: false
-    default: "e2e"
+    default: "integration"
   TARGET_URL:
     description: "The URL to reach the UI"
     required: false
@@ -18,6 +18,16 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Install Chromium on Bastion
+      uses: ./.github/actions/run-command-ssh
+      with:
+        NODE: bastion
+        COMMAND: |
+          sudo yum clean all
+          sudo yum install -y epel-release
+          sudo yum -y update
+          sudo yum install -y chromium
+
     - name: Run UI tests from Bastion
       uses: ./.github/actions/run-command-ssh
       with:
@@ -26,9 +36,11 @@ runs:
           cd metalk8s/ui
           rm -rf babel.config.js
           CYPRESS_BASE_URL=\"${{ inputs.TARGET_URL }}\" npm run \"test:${{ inputs.TEST_FILTERS }}\"
+
     - name: Create dest directory
       shell: bash
       run: mkdir -p "${{ inputs.DEST_DIR }}"
+
     - name: Collect cypress screenshots from Bastion
       shell: bash
       env:

@@ -1,49 +1,49 @@
-import React, { Fragment, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
-import { Formik, FieldArray, useFormikContext, useField, Field } from 'formik';
-import * as yup from 'yup';
-import styled from 'styled-components';
 import {
   Banner,
   Checkbox,
-  Loader,
   Form,
-  FormSection,
   FormGroup,
-  Stack,
-  Toggle,
-  Text,
+  FormSection,
   Icon,
+  Loader,
+  Stack,
+  Text,
+  Toggle,
 } from '@scality/core-ui';
+import { convertRemToPixels } from '@scality/core-ui/dist/components/tablev2/TableUtils';
 import { Button, Input as InputV2, Select } from '@scality/core-ui/dist/next';
-import isEmpty from 'lodash.isempty';
 import {
-  fetchStorageClassAction,
-  createVolumesAction,
-} from '../ducks/app/volumes';
-import { fetchNodesAction } from '../ducks/app/nodes';
-import {
-  padding,
   fontSize,
   fontWeight,
+  padding,
 } from '@scality/core-ui/dist/style/theme';
+import { Field, FieldArray, Formik, useField, useFormikContext } from 'formik';
+import isEmpty from 'lodash.isempty';
+import React, { useEffect } from 'react';
+import { useIntl } from 'react-intl';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import styled from 'styled-components';
+import * as yup from 'yup';
 import {
-  SPARSE_LOOP_DEVICE,
-  RAW_BLOCK_DEVICE,
   LVM_LOGICAL_VOLUME,
+  RAW_BLOCK_DEVICE,
+  SPARSE_LOOP_DEVICE,
 } from '../constants';
+import { fetchNodesAction } from '../ducks/app/nodes';
 import {
+  createVolumesAction,
+  fetchStorageClassAction,
+} from '../ducks/app/volumes';
+import {
+  formatBatchName,
+  formatVolumeCreationData,
+} from '../services/NodeVolumesUtils';
+import {
+  linuxDrivesNamingIncrement,
   sizeUnits,
   useURLQuery,
-  linuxDrivesNamingIncrement,
 } from '../services/utils';
-import {
-  formatVolumeCreationData,
-  formatBatchName,
-} from '../services/NodeVolumesUtils';
-import { useIntl } from 'react-intl';
-import { convertRemToPixels } from '@scality/core-ui/dist/components/tablev2/TableUtils';
 const MAX_VOLUME_BATCH_CREATION = 70;
 const LabelsList = styled.div`
   margin: ${padding.small} 0;
@@ -84,7 +84,7 @@ const MultiCreationFormContainer = styled.div`
 
 const CreateVolume = (props) => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const intl = useIntl();
 
   const createVolumes = (newVolumes) =>
@@ -659,7 +659,7 @@ const CreateVolume = (props) => {
                   })}
                   type="button"
                   variant="outline"
-                  onClick={() => history.goBack()}
+                  onClick={() => navigate(-1)}
                 />
                 <Button
                   label={intl.formatMessage({

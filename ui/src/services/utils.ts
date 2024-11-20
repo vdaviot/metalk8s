@@ -1,21 +1,21 @@
-import { useEffect, useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
-import { useLocation, useHistory } from 'react-router-dom';
-import { createSelector } from 'reselect';
+import { NAN_STRING } from '@scality/core-ui/dist/components/constants';
 import sortByArray from 'lodash.sortby';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useLocation } from 'react-router';
+import { createSelector } from 'reselect';
 import {
+  STATUS_CRITICAL,
   STATUS_FAILED,
+  STATUS_HEALTH,
+  STATUS_NONE,
   STATUS_READY,
   STATUS_UNKNOWN,
-  VOLUME_CONDITION_EXCLAMATION,
-  VOLUME_CONDITION_UNLINK,
-  VOLUME_CONDITION_LINK,
-  STATUS_CRITICAL,
   STATUS_WARNING,
-  STATUS_NONE,
-  STATUS_HEALTH,
+  VOLUME_CONDITION_EXCLAMATION,
+  VOLUME_CONDITION_LINK,
+  VOLUME_CONDITION_UNLINK,
 } from '../constants';
-import { NAN_STRING } from '@scality/core-ui/dist/components/constants';
 export function prettifyBytes(bytes, decimals) {
   var units = ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
   var unit = 'B';
@@ -469,49 +469,6 @@ export const formatSizeForDisplay = (value) => {
   if (value && value.match(/^(\d+)(\D+)$/))
     return value.replace(/^(\d+)(\D+)$/, '$1 $2') + 'B';
   else return value || null;
-};
-
-/**
- * Custom hook that stores table sorting choice in the URL queries
- *
- * @param {string} sorted
- * @param {boolean} desc
- * @param {array} data
- * @param {string} defaultSortKey default sorting key
- */
-export const useTableSortURLSync = (sorted, desc, data, defaultSortKey) => {
-  const history = useHistory();
-  const location = useLocation();
-  useEffect(() => {
-    const query = new URLSearchParams(location.search);
-    const querySort = query.get('sort');
-    const queryDesc = query.get('desc');
-
-    if (data.length && (sorted !== querySort || desc !== queryDesc)) {
-      if (sorted) {
-        sorted ? query.set('sort', sorted) : query.delete('sort');
-        desc ? query.set('desc', desc) : query.delete('desc');
-
-        // if the current sorting is the default sorting, remove the query parameter
-        if (sorted === defaultSortKey && desc === false) {
-          query.delete('sort');
-          query.delete('desc');
-        }
-      } else if (!sorted && querySort) {
-        query.delete('sort');
-        query.delete('desc');
-      }
-
-      // We replace the current url only if expected current query params are different
-      // than the expected one. This avoid triggering redirection loop if one of consumer
-      // of this hooks get frequently renderred.
-      if (
-        query.toString() !== new URLSearchParams(location.search).toString()
-      ) {
-        history.replace(`?${query.toString()}`);
-      }
-    }
-  }, [sorted, desc, data.length, history, location, defaultSortKey]);
 };
 
 /*

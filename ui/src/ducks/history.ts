@@ -2,26 +2,25 @@ const SET_HISTORY = 'SET_HISTORY';
 const defaultState = {
   history: null,
 };
-export type HistoryState = {
-  history: History | null | undefined;
+export type HistoryState<T> = {
+  history: T | null | undefined;
 };
-type SetHistoryAction = {
+type SetHistoryAction<T> = {
   type: 'SET_HISTORY';
-  history: History | null | undefined;
+  history: T | null | undefined;
 };
-export const setHistory = (
-  history: History | null | undefined,
-): SetHistoryAction => {
+export const setHistory = <T>(
+  history: T | null | undefined,
+): SetHistoryAction<T> => {
   return {
     type: SET_HISTORY,
     history,
   };
 };
-type Actions = SetHistoryAction;
-export function historyReducer(
-  state: HistoryState = defaultState,
-  // @ts-expect-error - FIXME when you are working on it
-  action: Actions = {},
+type Actions<T> = SetHistoryAction<T>;
+export function historyReducer<T>(
+  state: HistoryState<T> = defaultState,
+  action: Actions<T>,
 ) {
   switch (action.type) {
     case SET_HISTORY:

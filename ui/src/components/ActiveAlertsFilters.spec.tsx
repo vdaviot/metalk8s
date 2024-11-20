@@ -2,9 +2,10 @@ import { CoreUiThemeProvider } from '@scality/core-ui/dist/next';
 import { coreUIAvailableThemes } from '@scality/core-ui/dist/style/theme';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient } from 'react-query';
 import { MemoryRouter, useLocation } from 'react-router';
 import ActiveAlertsFilter from './ActiveAlertsFilters';
+import { QueryClientProvider } from '../QueryClientProvider';
 
 describe('ActiveAlertsFilter', () => {
   it('should redirect on click', async () => {

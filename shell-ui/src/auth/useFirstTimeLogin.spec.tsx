@@ -3,6 +3,7 @@ import { useFirstTimeLogin } from './FirstTimeLoginProvider';
 import { wrapper } from '../navbar/index.spec';
 import { configurationHandlers } from '../FederatedApp.spec';
 import { setupServer } from 'msw/node';
+import { waitFor } from '@testing-library/react';
 
 const server = setupServer(...configurationHandlers);
 
@@ -28,28 +29,21 @@ describe('useFirstTimeLogin hook', () => {
 
   it('should return firstTimeLogin as true if the user is logging in for the first time', async () => {
     //S
-    const { result, waitForNextUpdate } = renderHook(
-      () => useFirstTimeLogin(),
-      { wrapper },
-    );
-    //E
-    await waitForNextUpdate();
+    const { result } = renderHook(() => useFirstTimeLogin(), { wrapper });
     //V
-    expect(result.current.firstTimeLogin).toEqual(true);
+    await waitFor(() => {
+      expect(result.current.firstTimeLogin).toEqual(true);
+    });
   });
 
   it('should return firstTimeLogin as false if the user is NOT logging in for the first time', async () => {
     //E
-    const { waitForNextUpdate: waitForNextUpdateFirstRender } = renderHook(
-      () => useFirstTimeLogin(),
-      { wrapper },
-    );
-    await waitForNextUpdateFirstRender();
-    const { result, waitForNextUpdate } = renderHook(
-      () => useFirstTimeLogin(),
-      { wrapper },
-    );
-    await waitForNextUpdate();
+    renderHook(() => useFirstTimeLogin(), { wrapper });
+    const { result } = renderHook(() => useFirstTimeLogin(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.firstTimeLogin).toBeDefined();
+    });
     //V
     expect(result.current.firstTimeLogin).toEqual(false);
   });

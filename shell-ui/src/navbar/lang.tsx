@@ -9,15 +9,7 @@ import translations_en from './translations/en.json';
 import translations_fr from './translations/fr.json';
 import { LANGUAGE_CHANGED_EVENT } from './events';
 
-if (!window.shellContexts) {
-  // @ts-expect-error - FIXME when you are working on it
-  window.shellContexts = {};
-}
-// @ts-expect-error - FIXME when you are working on it
-if (!window.shellContexts.LanguageContext) {
-  // @ts-expect-error - FIXME when you are working on it
-  window.shellContexts.LanguageContext = createContext(null);
-}
+const LanguageContext = createContext(null);
 
 type Language = 'en' | 'fr';
 export const languages: Language[] = ['en', 'fr'];
@@ -30,8 +22,7 @@ export function useLanguage(): {
   setLanguage: (language: Language) => void;
   unSelectedLanguages: Language[];
 } {
-  // @ts-expect-error - FIXME when you are working on it
-  const languageContext = useContext(window.shellContexts.LanguageContext);
+  const languageContext = useContext(LanguageContext);
 
   if (languageContext === null) {
     throw new Error(
@@ -40,12 +31,9 @@ export function useLanguage(): {
   }
 
   return {
-    // @ts-expect-error - FIXME when you are working on it
     language: languageContext.language,
-    // @ts-expect-error - FIXME when you are working on it
     setLanguage: languageContext.setLanguage,
     unSelectedLanguages: languages.filter(
-      // @ts-expect-error - FIXME when you are working on it
       (lang) => lang !== languageContext.language,
     ),
   };
@@ -81,8 +69,7 @@ export function LanguageProvider({
   };
 
   return (
-    // @ts-expect-error - FIXME when you are working on it
-    <window.shellContexts.LanguageContext.Provider
+    <LanguageContext.Provider
       value={{
         language,
         setLanguage,
@@ -94,7 +81,6 @@ export function LanguageProvider({
       >
         {children}
       </IntlProvider>
-      {/* @ts-expect-error - FIXME when you are working on it */}
-    </window.shellContexts.LanguageContext.Provider>
+    </LanguageContext.Provider>
   );
 }

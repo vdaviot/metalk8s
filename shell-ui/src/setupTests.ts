@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import 'regenerator-runtime/runtime';
 import '@testing-library/jest-dom/extend-expect';
 import 'jest-localstorage-mock';
+import { TextEncoder, TextDecoder } from 'util';
 
 const nodeCrypto = require('crypto');
 
@@ -11,19 +12,20 @@ window.crypto = {
     return nodeCrypto.randomFillSync(buffer);
   },
 };
+Object.defineProperty(window, 'location', {
+  value: {
+    reload: jest.fn(),
+    origin: 'http://localhost',
+    href: 'http://localhost',
+    hash: '',
+    assign: jest.fn(),
+    replace: jest.fn(),
+  },
+});
 
 window.fetch = (url, ...rest) =>
   // @ts-expect-error - FIXME when you are working on it
   fetch(/^https?:/.test(url) ? url : new URL(url, 'http://localhost'), ...rest);
-
-delete window.location;
-//@ts-expect-error
-window.location = {
-  assign: jest.fn(),
-  reload: jest.fn(),
-  replace: jest.fn(),
-  hash: '',
-};
 
 const DOMRect = jest.fn(() => ({
   x: 1796.453125,
@@ -89,3 +91,6 @@ jest.mock('@scality/module-federation', () => {
     FederatedComponent: () => '',
   };
 });
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;

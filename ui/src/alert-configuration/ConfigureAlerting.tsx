@@ -18,7 +18,6 @@ import { Box, Button, Input, Select } from '@scality/core-ui/dist/next';
 import { useEffect, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router';
 import { useTheme } from 'styled-components';
 
 import { useAuth } from '../containers/PrivateRoute';
@@ -33,6 +32,7 @@ import {
   useTestAlertConfiguration,
 } from './domain/AlertConfigurationDomain';
 import { Metalk8sCSCAlertConfigurationStore } from './infrastructure/Metalk8sCSCAlertConfigurationStore';
+import { useBasenameRelativeNavigate } from '@scality/module-federation';
 
 const LogsBanner = ({ logs }: { logs: PromiseResult<AlertStoreLogLine[]> }) => {
   const firstLog =
@@ -116,7 +116,7 @@ const schema = Joi.object({
 
 export default function ConfigureAlerting() {
   const theme = useTheme();
-  const history = useHistory();
+  const navigate = useBasenameRelativeNavigate();
   const dispatch = useDispatch();
   const {
     register,
@@ -165,7 +165,7 @@ export default function ConfigureAlerting() {
           message: 'The email notification configuration has been saved',
         }),
       );
-      history.push('/alerts');
+      navigate('/alerts');
     }
   }, [editAlertMutation.status]);
 
@@ -215,7 +215,7 @@ export default function ConfigureAlerting() {
               <Stack gap="r16">
                 <Button
                   onClick={() => {
-                    history.push('/alerts');
+                    navigate('/alerts');
                   }}
                   variant="outline"
                   label="Cancel"

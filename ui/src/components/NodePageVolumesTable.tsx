@@ -11,8 +11,7 @@ import { Button, Table } from '@scality/core-ui/dist/next';
 import isEqual from 'lodash.isequal';
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { useHistory } from 'react-router';
-import styled, { useTheme } from 'styled-components';
+import { useTheme } from 'styled-components';
 import {
   VOLUME_CONDITION_EXCLAMATION,
   VOLUME_CONDITION_LINK,
@@ -22,19 +21,16 @@ import { formatSizeForDisplay } from '../services/utils';
 import CircleStatus from './CircleStatus';
 import { Latency } from './Latency';
 import { TooltipContent, UnknownIcon } from './TableRow';
-const VolumeListContainer = styled.div`
-  color: ${(props) => props.theme.textPrimary};
-  height: 100%;
-`;
+import { useBasenameRelativeNavigate } from '@scality/module-federation';
 const VolumeListTable = React.memo((props) => {
   // @ts-expect-error - FIXME when you are working on it
   const { nodeName, volumeListData } = props;
-  const history = useHistory();
+  const navigate = useBasenameRelativeNavigate();
   const theme = useTheme();
   const intl = useIntl();
   const columns = React.useMemo(() => {
     const onClickCell = (name) => {
-      history.push(`/volumes/${name}/overview`);
+      navigate(`/volumes/${name}/overview`);
     };
 
     return [
@@ -210,7 +206,7 @@ const VolumeListTable = React.memo((props) => {
         },
       },
     ]; // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [volumeListData, theme, history, nodeName]);
+  }, [volumeListData, theme, navigate, nodeName]);
   return (
     <Table
       columns={columns}
@@ -234,9 +230,9 @@ const VolumeListTable = React.memo((props) => {
           onClick={() => {
             // depends on if we add node filter
             if (nodeName) {
-              history.push(`/volumes/createVolume?node=${nodeName}`);
+              navigate(`/volumes/createVolume?node=${nodeName}`);
             } else {
-              history.push('/volumes/createVolume');
+              navigate('/volumes/createVolume');
             }
           }}
           data-cy="create_volume_button"

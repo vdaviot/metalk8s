@@ -3,7 +3,6 @@ import { Box } from '@scality/core-ui/dist/next';
 import { spacing } from '@scality/core-ui/dist/style/theme';
 import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { useAlertLibrary, useAlerts } from '../containers/AlertProvider';
 import {
@@ -11,6 +10,7 @@ import {
   useLinkOpener,
 } from '../containers/ConfigProvider';
 import { getChildrenAlerts } from '../services/alertUtils';
+import { useBasenameRelativeNavigate } from '@scality/module-federation';
 
 const AlertsContainer = styled.div`
   display: flex;
@@ -35,7 +35,7 @@ const Link = styled.div`
 
 const DashboardAlerts = () => {
   const { openLink } = useLinkOpener();
-  const history = useHistory();
+  const navigate = useBasenameRelativeNavigate();
   const discoveredViews = useDiscoveredViews();
   const alertView = discoveredViews.find((view) => {
     return view.isFederated && view.view.path === '/alerts';
@@ -103,7 +103,7 @@ const DashboardAlerts = () => {
           <Link
             onClick={() => {
               openLink(alertView);
-              history.replace('/alerts');
+              navigate('/alerts', { replace: true });
             }}
             data-testid="view-all-link"
           >

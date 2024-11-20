@@ -1,45 +1,44 @@
+import { Icon, Toggle, spacing } from '@scality/core-ui';
+import { Button } from '@scality/core-ui/dist/next';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import styled from 'styled-components';
-import { Toggle, spacing, Icon } from '@scality/core-ui';
-import { Button } from '@scality/core-ui/dist/next';
 
-import { useIntl } from 'react-intl';
-import { SyncedCursorCharts } from '@scality/core-ui/dist/next';
 import { UNIT_RANGE_BS } from '@scality/core-ui/dist/components/linetemporalchart/LineTemporalChart.component';
-import { updateNodeStatsFetchArgumentAction } from '../ducks/app/monitoring';
-import type { NodesState } from '../ducks/app/nodes';
-import {
-  NodeTab,
-  MetricsActionContainer,
-  GraphWrapper,
-} from '../components/style/CommonLayoutStyle';
-import { useURLQuery } from '../services/utils';
-import { PORT_NODE_EXPORTER, GRAFANA_DASHBOARDS } from '../constants';
-import { useTypedSelector } from '../hooks';
-import {
-  getCPUUsageQuery,
-  getCPUUsageAvgQuery,
-  getIOPSWriteQuery,
-  getIOPSReadQuery,
-  getIOPSWriteAvgQuery,
-  getIOPSReadAvgQuery,
-  getSystemLoadQuery,
-  getSystemLoadAvgQuery,
-  getMemoryQuery,
-  getMemoryAvgQuery,
-  getControlPlaneBandWidthInQuery,
-  getControlPlaneBandWidthOutQuery,
-  getControlPlaneBandWidthAvgInQuery,
-  getControlPlaneBandWidthAvgOutQuery,
-  getWorkloadPlaneBandWidthInQuery,
-  getWorkloadPlaneBandWidthOutQuery,
-  getWorkloadPlaneBandWidthAvgInQuery,
-  getWorkloadPlaneBandWidthAvgOutQuery,
-} from '../services/platformlibrary/metrics';
+import { SyncedCursorCharts } from '@scality/core-ui/dist/next';
+import { useIntl } from 'react-intl';
 import MetricChart from '../components/MetricChart';
 import MetricSymmetricalChart from '../components/MetricSymmetricalChart';
+import {
+  GraphWrapper,
+  MetricsActionContainer,
+} from '../components/style/CommonLayoutStyle';
+import { GRAFANA_DASHBOARDS, PORT_NODE_EXPORTER } from '../constants';
+import { updateNodeStatsFetchArgumentAction } from '../ducks/app/monitoring';
+import type { NodesState } from '../ducks/app/nodes';
+import { useTypedSelector } from '../hooks';
+import {
+  getCPUUsageAvgQuery,
+  getCPUUsageQuery,
+  getControlPlaneBandWidthAvgInQuery,
+  getControlPlaneBandWidthAvgOutQuery,
+  getControlPlaneBandWidthInQuery,
+  getControlPlaneBandWidthOutQuery,
+  getIOPSReadAvgQuery,
+  getIOPSReadQuery,
+  getIOPSWriteAvgQuery,
+  getIOPSWriteQuery,
+  getMemoryAvgQuery,
+  getMemoryQuery,
+  getSystemLoadAvgQuery,
+  getSystemLoadQuery,
+  getWorkloadPlaneBandWidthAvgInQuery,
+  getWorkloadPlaneBandWidthAvgOutQuery,
+  getWorkloadPlaneBandWidthInQuery,
+  getWorkloadPlaneBandWidthOutQuery,
+} from '../services/platformlibrary/metrics';
+import { useURLQuery } from '../services/utils';
 import TimespanSelector from './TimespanSelector';
 const GraphGrid = styled.div`
   display: grid;
@@ -118,7 +117,7 @@ const NodePageMetricsTab = ({
   nodesIPsInfo: NodesState['IPsInfo'];
 }) => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const query = useURLQuery();
   const intl = useIntl();
   const api = useTypedSelector((state) => state.config.api);
@@ -137,7 +136,7 @@ const NodePageMetricsTab = ({
   // write show avg value in URL
   const writeShowAvg = (showAvgValue) => {
     query.set('avg', showAvgValue);
-    history.push({
+    navigate({
       search: query.toString(),
     });
   };

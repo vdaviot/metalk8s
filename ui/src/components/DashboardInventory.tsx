@@ -2,7 +2,6 @@ import { Card, Icon, Loader, spacing, StatusWrapper } from '@scality/core-ui';
 import { fontSize, fontWeight } from '@scality/core-ui/dist/style/theme';
 import { useIntl } from 'react-intl';
 import { useQuery } from 'react-query';
-import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { PageSubtitle } from '../components/style/CommonLayoutStyle';
 import { STATUS_CRITICAL, STATUS_WARNING } from '../constants';
@@ -17,6 +16,7 @@ import {
   getNodesCountQuery,
   getVolumesCountQuery,
 } from '../services/platformlibrary/k8s';
+import { useBasenameRelativeNavigate } from '@scality/module-federation';
 
 const InventoryContainer = styled.div`
   padding: 0px ${spacing.r2};
@@ -72,7 +72,8 @@ const DashboardInventory = () => {
     // @ts-expect-error - FIXME when you are working on it
     getNodesCountQuery(config || '', getToken),
   );
-  const history = useHistory();
+  const navigate = useBasenameRelativeNavigate();
+
   return (
     <InventoryContainer>
       <PageSubtitle aria-label="inventory">
@@ -86,7 +87,7 @@ const DashboardInventory = () => {
             width="46%"
             aria-label="nodes"
             onClick={() => {
-              history.push('/nodes');
+              navigate('/nodes');
             }}
           >
             <Card.Header>
@@ -108,7 +109,7 @@ const DashboardInventory = () => {
                   </StatusWrapper>
                 </InventoryIcon>
                 <InventoryValue aria-label={`${nodesCount} nodes`}>
-                  {nodesCount}
+                  {nodesCount as number}
                 </InventoryValue>
               </Card.Body>
             </Card.BodyContainer>
@@ -121,7 +122,7 @@ const DashboardInventory = () => {
             width="46%"
             aria-label="volumes"
             onClick={() => {
-              history.push('/volumes');
+              navigate('/volumes');
             }}
           >
             <Card.Header>
@@ -143,7 +144,7 @@ const DashboardInventory = () => {
                   </StatusWrapper>
                 </InventoryIcon>
                 <InventoryValue aria-label={`${volumesCount} volumes`}>
-                  {volumesCount}
+                  {volumesCount as number}
                 </InventoryValue>
               </Card.Body>
             </Card.BodyContainer>

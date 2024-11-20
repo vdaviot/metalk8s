@@ -38,7 +38,7 @@ export type RootState = {
   config: ConfigState;
   login: LoginState;
   oidc?: UserState;
-  history: HistoryState;
+  history: HistoryState<unknown>;
   app: {
     nodes: NodesState;
     pods: PodsState;

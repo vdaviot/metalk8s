@@ -1,19 +1,19 @@
 import {
+  act,
   render,
   screen,
   waitFor,
   waitForOptions,
 } from '@testing-library/react';
-import { WaitFor } from '@testing-library/react-hooks';
 import {
   FunctionComponent,
   PropsWithChildren,
   useState,
   useEffect,
 } from 'react';
-import { act } from 'react-dom/test-utils';
 import { ErrorBoundary } from 'react-error-boundary';
 import React from 'react';
+import { WaitFor } from '@testing-library/react-hooks';
 
 export type RenderAdditionalHook = <THookResult>(
   key: string,
@@ -24,7 +24,9 @@ export type RenderAdditionalHook = <THookResult>(
 };
 
 export function prepareRenderMultipleHooks(options: {
-  wrapper: FunctionComponent<PropsWithChildren<Record<string, never>>>;
+  wrapper: FunctionComponent<
+    React.PropsWithChildren<PropsWithChildren<Record<string, never>>>
+  >;
 }): {
   renderAdditionalHook: RenderAdditionalHook;
   waitForWrapperToBeReady: () => Promise<void>;

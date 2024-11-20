@@ -7,15 +7,7 @@ import {
 import React, { createContext, useContext } from 'react';
 import { useQuery } from 'react-query';
 
-if (!window.shellContexts) {
-  // @ts-expect-error - FIXME when you are working on it
-  window.shellContexts = {};
-}
-// @ts-expect-error - FIXME when you are working on it
-if (!window.shellContexts.ShellConfigContext) {
-  // @ts-expect-error - FIXME when you are working on it
-  window.shellContexts.ShellConfigContext = createContext(null);
-}
+const ShellConfigContext = createContext(null);
 
 export type NavbarEntry = {
   groups?: string[];
@@ -78,10 +70,7 @@ export type ShellConfig = {
 };
 
 export const useShellConfig = () => {
-  const contextValue = useContext<ShellConfig>(
-    // @ts-expect-error - FIXME when you are working on it
-    window.shellContexts.ShellConfigContext,
-  );
+  const contextValue = useContext<ShellConfig>(ShellConfigContext);
 
   if (!contextValue) {
     throw new Error("useShellConfig can't be used outside ShellConfigProvider");
@@ -99,14 +88,13 @@ export const useShellConfig = () => {
 export const ShellConfigProvider = ({ shellConfigUrl, children }) => {
   const { data: config, status } = useQuery<ShellJSONFileConfig>(
     'getShellJSONConfigFile',
-    () => {
-      return fetch(shellConfigUrl).then((r) => {
-        if (r.ok) {
-          return r.json();
-        } else {
-          return Promise.reject();
-        }
-      });
+    async () => {
+      const r = await fetch(shellConfigUrl);
+      if (r.ok) {
+        return r.json();
+      } else {
+        return Promise.reject();
+      }
     },
     {
       refetchOnWindowFocus: false,
@@ -114,8 +102,7 @@ export const ShellConfigProvider = ({ shellConfigUrl, children }) => {
   );
 
   return (
-    // @ts-expect-error - FIXME when you are working on it
-    <window.shellContexts.ShellConfigContext.Provider
+    <ShellConfigContext.Provider
       value={{
         config,
         status,
@@ -126,7 +113,6 @@ export const ShellConfigProvider = ({ shellConfigUrl, children }) => {
       )}
       {status === 'error' && <ErrorPage500 data-cy="sc-error-page500" />}
       {status === 'success' && children}
-      {/* @ts-expect-error - FIXME when you are working on it */}
-    </window.shellContexts.ShellConfigContext.Provider>
+    </ShellConfigContext.Provider>
   );
 };

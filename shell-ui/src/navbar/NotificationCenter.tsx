@@ -103,14 +103,14 @@ const NotificationCenter = () => {
       if (!selectedItem) {
         return;
       }
-      history.push(selectedItem.redirectUrl);
+      navigate(selectedItem.redirectUrl);
       readAllNotifications();
     },
   });
   const isAtLeastOneNotificationUnread = notifications.some(
     (notification) => !notification.readOn,
   );
-  const history = useShellHistory();
+  const navigate = useShellHistory();
   return (
     <div
       style={{ position: 'relative' }}

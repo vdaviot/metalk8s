@@ -179,7 +179,7 @@ def retrieve_pod_logs_from_loki(k8s_client, pod_creation_ts):
     }
 
     def _check_log_line_exists():
-        response = query_loki_api(k8s_client, query, route="query_range")
+        response = query_loki_api(k8s_client, query)
         try:
             result_data = response[0]["data"]["result"][0]["values"]
         except IndexError:
@@ -203,7 +203,7 @@ def retrieve_alert_from_loki(k8s_client, alertname):
     }
 
     def _check_alert_exists():
-        response = query_loki_api(k8s_client, query, route="query_range")
+        response = query_loki_api(k8s_client, query)
         try:
             alerts = response[0]["data"]["result"][0]["values"]
         except (IndexError, KeyError):
@@ -235,7 +235,7 @@ def then_check_loki_api(k8s_client, service):
 # Helpers {{{
 
 
-def query_loki_api(k8s_client, content, route="query"):
+def query_loki_api(k8s_client, content, route="query_range"):
     # With current k8s client we cannot pass query_params so we need to
     # use `call_api` directly
     path_params = {

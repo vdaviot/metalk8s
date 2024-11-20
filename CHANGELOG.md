@@ -102,6 +102,12 @@
   [1.21](https://golang.org/doc/devel/release.html#go1.21.minor)
   (PR[#4462](https://github.com/scality/metalk8s/pull/4462))
 
+- Bump Loki chart version to
+  [6.20.0](https://github.com/grafana/loki/releases/tag/helm-loki-6.20.0)
+  The Loki image has been bumped accordingly to
+  [3.2.0](https://github.com/grafana/loki/releases/tag/v3.2.0)
+  (PR[#4450](https://github.com/scality/metalk8s/pull/4450))
+
 ## Release 128.0.1 (in development)
 
 ## Release 128.0.0

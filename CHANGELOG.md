@@ -108,6 +108,10 @@
   [3.2.0](https://github.com/grafana/loki/releases/tag/v3.2.0)
   (PR[#4450](https://github.com/scality/metalk8s/pull/4450))
 
+- Bump the rocky base image used by `metalk8s-utils`
+  image to `rockylinux:9.5-minimal`
+  (PR[#4483](https://github.com/scality/metalk8s/pull/4483))
+
 ## Release 128.0.1 (in development)
 
 ## Release 128.0.0

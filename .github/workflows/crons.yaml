@@ -17,10 +17,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # these helper comments are needed by the dev branch workflow
+          # please do not edit them unless you're changing the version as well
+          # current=129.0
           - name: "Nightly for MetalK8s 129.0"
             cron: "0 1 * * 1-5"
             branch: "development/129.0"
             workflow: "nightly.yaml"
+          # old=128.0
           - name: "Nightly for MetalK8s 128.0"
             cron: "0 2 * * 1-5"
             branch: "development/128.0"

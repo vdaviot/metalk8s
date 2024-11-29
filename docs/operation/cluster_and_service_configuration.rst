@@ -140,8 +140,28 @@ Shell UI has a different configuration for the workload plane.
 The default Shell UI workload plane configuration values are specified below:
 
 .. literalinclude:: ../../salt/metalk8s/addons/ui/config/workloadplane-shell-ui-config.yaml.j2
+   :language: yaml
    :lines: 3-
 
+Ingress Control Plane Default Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The default Control Plane Ingress Controller configuration values
+are specified below:
+
+.. literalinclude:: ../../salt/metalk8s/addons/nginx-ingress-control-plane/config/ingress-controller.yaml.j2
+   :language: yaml
+   :lines: 3-
+
+Ingress Workload Plane Default Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The default Workload Plane Ingress Controller configuration values
+are specified below:
+
+.. literalinclude:: ../../salt/metalk8s/addons/nginx-ingress/config/ingress-controller.yaml.j2
+   :language: yaml
+   :lines: 3-
 
 Service Configurations Customization
 ------------------------------------
@@ -169,6 +189,28 @@ configuration, see the official `Nginx Ingress Controller documentation`_.
 
 .. _Nginx Ingress Controller documentation: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/
 
+Control plane Ingress Controller Configuration Customization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Same as the Workload plane Ingress Controller, Control Plane can be overridden
+by editing its Cluster and Service ConfigMap
+``metalk8s-ingress-control-plane-controller-config``
+in namespace ``metalk8s-ingress``
+under the key ``data.config\.yaml``:
+
+  .. code-block:: shell
+
+     root@bootstrap $ kubectl --kubeconfig /etc/kubernetes/admin.conf \
+                        edit configmap -n metalk8s-ingress \
+                        metalk8s-ingress-control-plane-controller-config
+
+
+The following documentation is not exhaustive and is just here to give
+some hints on basic usage, for more details or advanced
+configuration, see the official `Nginx Ingress Controller documentation`_.
+
+.. _Nginx Ingress Controller documentation: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/
+
 Disable HTTP2
 """""""""""""
 
@@ -186,6 +228,29 @@ HTTP2 can be disabled by setting ``use-http2`` to ``false``:
           config:
             use-http2: "false"
 
+Modify authorized Ciphers
+"""""""""""""""""""""""""
+
+Strong cipher configurations may not allow legacy user agents or user agents
+with weak configurations to connect to your site. If your server must also
+pass to a legacy upstream server, this may prevent it from being able to
+negotiate a cipher upstream.
+
+If you use an old client that does not support modern ciphers, you can use the
+ones provided by the CIS Nginx Benchmark for example:
+
+  .. code-block:: yaml
+
+    apiVersion: v1
+    kind: ConfigMap
+    data:
+      config.yaml: |-
+        apiVersion: addons.metalk8s.scality.com/v1alpha2
+        kind: IngressControllerConfig
+        spec:
+          config:
+            ssl-ciphers: "ALL:!EXP:!NULL:!ADH:!LOW:!SSLv2:!SSLv3:!MD5:!RC4"
+
 Applying configuration
 """"""""""""""""""""""
 
@@ -195,9 +260,10 @@ then be applied with Salt.
 .. parsed-literal::
 
    root\@bootstrap $ kubectl exec --kubeconfig /etc/kubernetes/admin.conf \\
-                      -n kube-system -c salt-master salt-master-bootstrap -- \\
-                      salt-run state.sls \\
-                      metalk8s.addons.nginx-ingress.deployed \\
+                      $(kubectl --kubeconfig /etc/kubernetes/admin.conf \\
+                      get pod -n kube-system -l app=salt-master -o name) \\
+                      -n kube-system -c salt-master -- \\
+                      salt-run state.sls metalk8s.addons.nginx-ingress.deployed,metalk8s.addons.nginx-ingress-control-plane.deploye \\
                       saltenv=metalk8s-|version|
 
 

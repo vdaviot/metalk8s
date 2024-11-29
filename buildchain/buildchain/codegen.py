@@ -128,6 +128,7 @@ def codegen_chart_fluent_bit() -> types.TaskDict:
 def codegen_chart_ingress_nginx() -> types.TaskDict:
     """Generate the SLS file for NGINX Ingress using the chart render script."""
     chart_dir = constants.CHART_ROOT / "ingress-nginx"
+    ingress_nginx_namespace = "metalk8s-ingress"
     actions = []
     file_dep = list(utils.git_ls(chart_dir))
     file_dep.append(constants.CHART_RENDER_SCRIPT)
@@ -136,12 +137,13 @@ def codegen_chart_ingress_nginx() -> types.TaskDict:
     target_sls = (
         constants.ROOT / "salt/metalk8s/addons/nginx-ingress/deployed/chart.sls"
     )
-    value_file = constants.CHART_ROOT / "ingress-nginx.yaml"
+    chart_name = "ingress-nginx"
+    value_file = constants.CHART_ROOT / f"{chart_name}.yaml"
     actions.append(
         doit.action.CmdAction(
-            f"{constants.CHART_RENDER_CMD} ingress-nginx {value_file} {chart_dir} "
-            f"--namespace metalk8s-ingress --remove-manifest ConfigMap "
-            f"ingress-nginx-controller "
+            f"{constants.CHART_RENDER_CMD} {chart_name} {value_file} {chart_dir} "
+            f"--namespace {ingress_nginx_namespace} --remove-manifest ConfigMap "
+            f"{chart_name}-controller "
             f"--output {target_sls}",
             cwd=constants.ROOT,
         )
@@ -154,11 +156,14 @@ def codegen_chart_ingress_nginx() -> types.TaskDict:
         / "salt/metalk8s/addons/nginx-ingress-control-plane"
         / "deployed/chart.sls"
     )
-    value_file = constants.CHART_ROOT / "ingress-nginx-control-plane.yaml"
+    chart_name = "ingress-nginx-control-plane"
+    value_file = constants.CHART_ROOT / f"{chart_name}.yaml"
     actions.append(
         doit.action.CmdAction(
-            f"{constants.CHART_RENDER_CMD} ingress-nginx-control-plane {value_file} "
-            f"{chart_dir} --namespace metalk8s-ingress --output {target_sls}",
+            f"{constants.CHART_RENDER_CMD} {chart_name} {value_file} {chart_dir} "
+            f"--namespace {ingress_nginx_namespace} --remove-manifest ConfigMap "
+            f"{chart_name}-controller "
+            f"--output {target_sls}",
             cwd=constants.ROOT,
         )
     )

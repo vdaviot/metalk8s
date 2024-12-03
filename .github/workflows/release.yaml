@@ -161,7 +161,7 @@ jobs:
           git push origin ${{ env.RELEASE_TAG }}
       - name: Prepare branch to merge ${{ env.RELEASE_TAG }} tag
         run: |
-          git checkout -b release/merge-${{ env.RELEASE_TAG }}-tag origin/development/${{ env.SHORT_VERSION }}
+          git checkout -b feature/merge-${{ env.RELEASE_TAG }}-tag origin/development/${{ env.SHORT_VERSION }}
           git merge ${{ env.RELEASE_TAG }} --no-ff
 
           VERSION_PATCH=${{ env.PATCH_VERSION }}
@@ -177,7 +177,7 @@ jobs:
 
           git add VERSION
           git commit --amend --no-edit
-          git push --set-upstream origin release/merge-${{ env.RELEASE_TAG }}-tag
+          git push --set-upstream origin feature/merge-${{ env.RELEASE_TAG }}-tag
       - name: Create pull request
         uses: actions/github-script@v7
         with:
@@ -185,7 +185,7 @@ jobs:
             const pr = await github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              head: "release/merge-${{ env.RELEASE_TAG }}-tag",
+              head: "feature/merge-${{ env.RELEASE_TAG }}-tag",
               base: "development/${{ env.SHORT_VERSION }}",
               title: "Merge release tag for ${{ env.RELEASE_TAG }}"
             });

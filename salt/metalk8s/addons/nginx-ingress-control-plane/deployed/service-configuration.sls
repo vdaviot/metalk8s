@@ -1,8 +1,8 @@
 include:
-  - .namespace
+  - metalk8s.addons.nginx-ingress.deployed.namespace
 
 {%- set namespace = 'metalk8s-ingress' %}
-{%- set name = 'metalk8s-ingress-controller-config' %}
+{%- set name = 'metalk8s-ingress-control-plane-controller-config' %}
 
 {%- set ingress_service_config = salt.metalk8s_kubernetes.get_object(
         kind='ConfigMap',
@@ -14,7 +14,7 @@ include:
 
 {%- if ingress_service_config is none %}
 
-Create Ingress ServiceConfiguration (metalk8s-ingress/metalk8s-ingress-controller-config):
+Create Ingress ServiceConfiguration ({{ namespace }}/{{ name }}):
   metalk8s_kubernetes.object_present:
     - manifest:
         apiVersion: v1
@@ -31,7 +31,7 @@ Create Ingress ServiceConfiguration (metalk8s-ingress/metalk8s-ingress-controlle
 
 {%- else %}
 
-Ingress Workload Plane ServiceConfiguration already exists:
+Ingress Control Plane ServiceConfiguration already exists:
   test.succeed_without_changes: []
 
 {%- endif %}

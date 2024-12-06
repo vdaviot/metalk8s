@@ -114,6 +114,11 @@
 
 ## Release 128.0.1 (in development)
 
+### Enhancements
+
+- Only use modern Ciphers in Ingress configuration
+  (PR[#4488](https://github.com/scality/metalk8s/pull/4488)) 
+
 ## Release 128.0.0
 
 ### Enhancements

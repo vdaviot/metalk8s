@@ -2,6 +2,10 @@
 
 ## Release 130.0.0 (in development)
 
+- Bump Kubernetes version to
+  [1.30.7](https://github.com/kubernetes/kubernetes/releases/tag/v1.30.7)
+  (PR[#4497](https://github.com/scality/metalk8s/pull/4497))
+
 ## Release 129.0.0 (in development)
 
 ### Removals

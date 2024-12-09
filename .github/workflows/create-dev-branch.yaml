@@ -86,7 +86,7 @@ jobs:
           {
             echo 'COMMENT<<EOF'
             echo "# Mentions of ${{ env.NEW_SHORT_VERSION }} in ${{ env.NEW_BRANCH_NAME }}"
-            git grep -rHFn "${{ env.NEW_SHORT_VERSION }}" | sed -E "s;(.*):([0-9]+):.*;$link\1#L\2;"
+            git grep -rHFn "${{ env.NEW_SHORT_VERSION }}" -- ':!*.svg' | sed -E "s;(.*):([0-9]+):.*;$link\1#L\2;"
             echo EOF
           } >> "$GITHUB_ENV"
       # bump version

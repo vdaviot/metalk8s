@@ -84,6 +84,8 @@ Create kubelet config file:
           options:
             json:
               infoBufferSize: "0"
+            text:
+              infoBufferSize: "0"
           verbosity: 0
         memorySwap: {}
         nodeStatusReportFrequency: 0s

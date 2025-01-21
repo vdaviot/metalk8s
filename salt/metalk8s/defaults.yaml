@@ -307,7 +307,7 @@ certificates:
             - metalk8s.addons.nginx-ingress-control-plane.certs
           post:
             orch:
-              - metalk8s.addons.nginx-ingress-control-plane.deployed.tls-secret
+              - metalk8s.addons.nginx-ingress-control-plane.deployed
         watched: False
       dex:
         path: /etc/metalk8s/pki/dex/server.crt
@@ -343,5 +343,5 @@ certificates:
             - metalk8s.addons.nginx-ingress.certs
           post:
             orch:
-              - metalk8s.addons.nginx-ingress.deployed.tls-secret
+              - metalk8s.addons.nginx-ingress.deployed
         watched: False

@@ -273,7 +273,7 @@ certificates:
         path: /etc/salt/master-kubeconfig.conf
         renew:
           sls:
-            - metalk8s.salt.master.kubeconfig
+            - metalk8s.salt.master
         watched: False
       scheduler:
         path: /etc/kubernetes/scheduler.conf

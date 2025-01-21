@@ -261,7 +261,7 @@ certificates:
         path: /etc/kubernetes/controller-manager.conf
         renew:
           sls:
-            - metalk8s.kubernetes.controller-manager.kubeconfig
+            - metalk8s.kubernetes.controller-manager.installed
         watched: False
       kubelet:
         path: /etc/kubernetes/kubelet.conf
@@ -279,7 +279,7 @@ certificates:
         path: /etc/kubernetes/scheduler.conf
         renew:
           sls:
-            - metalk8s.kubernetes.scheduler.kubeconfig
+            - metalk8s.kubernetes.scheduler.installed
         watched: False
   server:
     days_remaining: 90

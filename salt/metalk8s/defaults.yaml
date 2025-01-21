@@ -296,6 +296,9 @@ certificates:
         renew:
           sls:
             - metalk8s.backup.certs.server
+          post:
+            orch:
+              - metalk8s.backup.deployed
         watched: False
       control-plane-ingress:
         path: /etc/metalk8s/pki/nginx-ingress/control-plane-server.crt

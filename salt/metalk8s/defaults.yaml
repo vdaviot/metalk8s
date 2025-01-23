@@ -316,7 +316,7 @@ certificates:
             - metalk8s.addons.dex.certs
           post:
             orch:
-              - metalk8s.addons.dex.deployed.tls-secret
+              - metalk8s.addons.dex.deployed
         watched: False
       etcd:
         path: /etc/kubernetes/pki/etcd/server.crt

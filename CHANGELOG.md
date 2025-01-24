@@ -1,6 +1,13 @@
 # CHANGELOG
 
-## Release 128.0.1 (in development)
+## Release 128.0.3 (in development)
+
+### Enhancements
+
+- Redeploy backup, ingresses, salt-master and dex when renewing certificates
+  (PR[#4508](https://github.com/scality/metalk8s/pull/4508))
+
+## Release 128.0.1
 
 ### Enhancements
 

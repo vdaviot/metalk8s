@@ -1,23 +1,29 @@
+import { MetricsTimeSpanProvider } from '@scality/core-ui/dist/components/linetemporalchart/MetricTimespanProvider';
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from '@testing-library/react';
 import React from 'react';
-import { ThemeProvider } from 'styled-components';
-import { render } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { screen, waitForElementToBeRemoved } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
-import AlertProvider from '../../containers/AlertProvider';
+import { QueryClient } from 'react-query';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import { applyMiddleware, compose, createStore } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
-import { StyleSheetManager, StylisPlugin } from 'styled-components';
-import { MetricsTimeSpanProvider } from '@scality/core-ui/dist/components/linetemporalchart/MetricTimespanProvider';
+import {
+  StyleSheetManager,
+  StylisPlugin,
+  ThemeProvider,
+} from 'styled-components';
+import AlertProvider from '../../containers/AlertProvider';
 
+import { ToastProvider } from '@scality/core-ui';
+import { coreUIAvailableThemes } from '@scality/core-ui/dist/style/theme';
+import StartTimeProvider from '../../containers/StartTimeProvider';
 import reducer from '../../ducks/reducer';
 import translations_en from '../../translations/en.json';
-import StartTimeProvider from '../../containers/StartTimeProvider';
-import { coreUIAvailableThemes } from '@scality/core-ui/dist/style/theme';
-import { ToastProvider } from '@scality/core-ui';
+import { QueryClientProvider } from '../../QueryClientProvider';
 
 const composeEnhancers =
   // @ts-expect-error - FIXME when you are working on it
@@ -71,8 +77,6 @@ export const metalK8sConfig = {
 };
 export const AllTheProviders = (initialPath: string = '/') => {
   return ({ children }: { children: React.ReactNode }) => {
-    const history = createMemoryHistory();
-    history.push(initialPath);
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: {
@@ -85,8 +89,9 @@ export const AllTheProviders = (initialPath: string = '/') => {
 
     // When you use jest-preview, you need to set the environment variable JEST_PREVIEW at on.
     if (process.env.JEST_PREVIEW === 'on') {
+      console.log('JEST_PREVIEW is on');
       return (
-        <Router history={history}>
+        <MemoryRouter initialEntries={[initialPath]}>
           <IntlProvider locale="en" messages={translations_en}>
             <ToastProvider>
               <Provider store={buildStore()}>
@@ -102,7 +107,7 @@ export const AllTheProviders = (initialPath: string = '/') => {
               </Provider>
             </ToastProvider>
           </IntlProvider>
-        </Router>
+        </MemoryRouter>
       );
     }
 
@@ -111,7 +116,7 @@ export const AllTheProviders = (initialPath: string = '/') => {
         stylisPlugins={[simplifiedStylesPlugin]}
         disableVendorPrefixes
       >
-        <Router history={history}>
+        <MemoryRouter>
           <IntlProvider locale="en" messages={translations_en}>
             <ToastProvider>
               <Provider store={buildStore()}>
@@ -127,7 +132,7 @@ export const AllTheProviders = (initialPath: string = '/') => {
               </Provider>
             </ToastProvider>
           </IntlProvider>
-        </Router>
+        </MemoryRouter>
       </StyleSheetManager>
     );
   };
@@ -138,7 +143,6 @@ const customRender = (
   options = {},
   providersArgs: [string] = ['/'],
 ) =>
-  // @ts-expect-error - FIXME when you are working on it
   render(ui, {
     wrapper: AllTheProviders(...providersArgs),
     ...options,

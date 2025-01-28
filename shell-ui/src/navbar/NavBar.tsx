@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { RouteProps, matchPath, useHistory } from 'react-router';
+import { RouteProps, matchPath, useNavigate } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 
@@ -155,7 +155,7 @@ export const useNavbarLinksToActions = (
   const location = useLocation();
   const doesRouteMatch = useCallback(
     (path: RouteProps) => {
-      return matchPath(location.pathname, path);
+      return matchPath(path.path + '*', location.pathname);
     },
     [location],
   );
@@ -188,9 +188,6 @@ export const useNavbarLinksToActions = (
                   'i',
                 ).toString()
               : link.view.app.appHistoryBasePath + link.view.view.path,
-            exact: link.view.view.exact,
-            strict: link.view.view.strict,
-            sensitive: link.view.view.sensitive,
           })
         : normalizePath((link.view as NonFederatedView).url) ===
           window.location.origin + window.location.pathname,
@@ -261,7 +258,7 @@ export const Navbar = ({
   const { openLink } = useLinkOpener();
   const { logOut } = useLogOut();
   const { getLinks } = useNavbar();
-  const history = useHistory();
+  const navigate = useNavigate();
   const navbarLinks = useMemo(() => getLinks(), [getLinks]);
   const navbarMainActions = useNavbarLinksToActions(navbarLinks.main);
   const navbarSecondaryActions = useNavbarLinksToActions(navbarLinks.secondary);
@@ -303,7 +300,8 @@ export const Navbar = ({
       const url = link.view.isFederated
         ? link.view.app.appHistoryBasePath + link.view.view.path
         : (link.view as NonFederatedView).url;
-      history.replace(url);
+
+      navigate(url, { replace: true });
     }
   }, [navbarMainActions]);
 

@@ -1,12 +1,12 @@
 import { defaultOptions } from '@scality/core-ui/dist/components/healthselectorv2/HealthSelector.component';
 import { HealthSelector } from '@scality/core-ui/dist/next';
-import { useHistory, useRouteMatch } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useURLQuery } from '../services/utils';
 
 const ActiveAlertsFilter = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const query = useURLQuery();
-  const match = useRouteMatch();
+  const { pathname } = useLocation();
   const selectedFilter = query.get('severity') ?? 'all';
 
   const displayOptions = ['all', 'warning', 'critical'];
@@ -20,7 +20,7 @@ const ActiveAlertsFilter = () => {
       id="alert_filter"
       onChange={(newValue) => {
         query.set('severity', newValue);
-        history.push(`${match.url}?${query.toString()}`);
+        navigate(`${pathname}?${query.toString()}`);
       }}
       value={selectedFilter}
       options={options}

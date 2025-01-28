@@ -1,13 +1,16 @@
 import { MetricsTimeSpanProvider } from '@scality/core-ui/dist/next';
-import Layout from './Layout';
 import AlertProvider from './AlertProvider';
 import FederatedIntlProvider from './IntlProvider';
+import Layout from './Layout';
 import StartTimeProvider from './StartTimeProvider';
+import { useLocation } from 'react-router-dom';
 
 const App = () => {
+  const location = useLocation();
+
   return (
     <FederatedIntlProvider>
-      <MetricsTimeSpanProvider>
+      <MetricsTimeSpanProvider location={location}>
         <StartTimeProvider>
           <AlertProvider>
             <Layout />

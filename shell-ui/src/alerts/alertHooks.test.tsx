@@ -2,10 +2,11 @@ import React from 'react';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { renderHook } from '@testing-library/react-hooks';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient } from 'react-query';
 import AlertProvider from './AlertProvider';
 import { useHighestSeverityAlerts } from './alertHooks';
 import { afterAll, beforeAll, jest } from '@jest/globals';
+import { QueryClientProvider } from '../QueryClientProvider';
 const testService = 'http://10.0.0.1/api/alertmanager';
 
 const VOLUME_DEGRADED_ALERT = {

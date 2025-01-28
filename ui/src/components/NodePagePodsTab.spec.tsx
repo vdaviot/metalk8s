@@ -2,12 +2,13 @@ import { coreUIAvailableThemes } from '@scality/core-ui/dist/style/theme';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { IntlProvider } from 'react-intl';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient } from 'react-query';
 import { useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import { mockOffsetSize } from '../tests/mocks/util';
 import translations_en from '../translations/en.json';
 import NodePagePodsTab from './NodePagePodsTab';
+import { QueryClientProvider } from '../QueryClientProvider';
 
 const mockUseSelector = useSelector as jest.Mock;
 

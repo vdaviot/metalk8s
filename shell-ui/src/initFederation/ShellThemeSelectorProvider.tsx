@@ -13,22 +13,10 @@ type ThemeContextValues = {
   assets: { logoPath: string };
 };
 
-if (!window.shellContexts) {
-  // @ts-expect-error - FIXME when you are working on it
-  window.shellContexts = {};
-}
-// @ts-expect-error - FIXME when you are working on it
-if (!window.shellContexts.ShellThemeContext) {
-  // @ts-expect-error - FIXME when you are working on it
-  window.shellContexts.ShellThemeContext =
-    React.createContext<ThemeContextValues | null>(null);
-}
+const ShellThemeContext = React.createContext<ThemeContextValues | null>(null);
 
 export function useShellThemeSelector(): ThemeContextValues {
-  const themeContext: ThemeContextValues = useContext(
-    // @ts-expect-error - FIXME when you are working on it
-    window.shellContexts.ShellThemeContext,
-  );
+  const themeContext: ThemeContextValues = useContext(ShellThemeContext);
 
   if (themeContext === null) {
     throw new Error(
@@ -97,8 +85,7 @@ export function ShellThemeSelectorProvider({
   };
 
   return (
-    // @ts-expect-error - FIXME when you are working on it
-    <window.shellContexts.ShellThemeContext.Provider
+    <ShellThemeContext.Provider
       value={{
         themeMode,
         setThemeMode: changeThemeMode,
@@ -107,7 +94,6 @@ export function ShellThemeSelectorProvider({
       }}
     >
       {children(selectedTheme, themeMode)}
-      {/* @ts-expect-error - FIXME when you are working on it */}
-    </window.shellContexts.ShellThemeContext.Provider>
+    </ShellThemeContext.Provider>
   );
 }

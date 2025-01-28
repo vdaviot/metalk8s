@@ -98,6 +98,7 @@ runs:
       shell: bash
       env:
         TF_VAR_cloud: ${{ inputs.CLOUD }}
+        TF_VAR_flavors_map: '{ ovh = { default = "d2-8", bastion = "b3-16" } }'
         MAX_RETRIES: "20"
       run: |
         for try in $(seq 1 ${MAX_RETRIES}); do

@@ -1,28 +1,27 @@
-import React, { useEffect } from 'react';
-import { useRouteMatch } from 'react-router';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import VolumeContent from './VolumePageContent';
-import { fetchPodsAction } from '../ducks/app/pods';
+import { useParams } from 'react-router';
+import { fetchVolumeStatsAction } from '../ducks/app/monitoring';
 import { fetchNodesAction } from '../ducks/app/nodes';
+import { fetchPodsAction } from '../ducks/app/pods';
+import { fetchPersistentVolumeClaimAction } from '../ducks/app/volumes';
+import { useTypedSelector, useVolumesWithAlerts } from '../hooks';
+import { useFetchCurrentVolumeStats } from '../hooks/monitoring';
+import { useRefreshNodes } from '../hooks/nodes';
 import {
-  useRefreshVolume,
   useFetchCurrentVolumeObject,
   useGetPersistentVolumes,
+  useRefreshVolume,
 } from '../hooks/volumes';
-import { useFetchCurrentVolumeStats } from '../hooks/monitoring';
-import { fetchPersistentVolumeClaimAction } from '../ducks/app/volumes';
-import { fetchVolumeStatsAction } from '../ducks/app/monitoring';
-import { useRefreshNodes } from '../hooks/nodes';
-import { useTypedSelector, useVolumesWithAlerts } from '../hooks';
+import VolumeContent from './VolumePageContent';
 
 // <VolumePage> component fetchs all the data used by volume page from redux store.
 // the data for <VolumeMetricGraphCard>: get the default metrics time span `last 24 hours`, and the component itself can change the time span base on the dropdown selection.
 // <VolumeContent> component extracts the current volume name from URL and sends volume specific data to sub components.
 const VolumePage = (props) => {
   const dispatch = useDispatch();
-  const match = useRouteMatch();
-  // @ts-expect-error - FIXME when you are working on it
-  const currentVolumeName = match.params.name;
+  const params = useParams();
+  const currentVolumeName = params.name;
   useFetchCurrentVolumeObject(currentVolumeName);
   useRefreshNodes();
   useGetPersistentVolumes();

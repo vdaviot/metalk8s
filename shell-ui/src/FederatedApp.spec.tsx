@@ -1,10 +1,11 @@
-import { setupServer } from 'msw/node';
-import { rest } from 'msw';
-import { screen, render, within, waitFor } from '@testing-library/react';
-import './navbar/index';
-import { waitForLoadingToFinish } from './navbar/__TESTS__/utils';
 import { jest } from '@jest/globals';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import App, { queryClient } from './FederatedApp';
+import { waitForLoadingToFinish } from './navbar/__TESTS__/utils';
+import './navbar/index';
+
 export const configurationHandlers = [
   rest.get(
     'http://localhost:3000/.well-known/micro-app-configuration',
@@ -245,11 +246,20 @@ describe('FederatedApp', () => {
       expect(screen.getByRole('navigation')).toBeInTheDocument(),
     );
     //V
-    const navbar = screen.getByRole('navigation');
+    let navbar = screen.getByRole('navigation');
     expect(navbar).toBeInTheDocument();
-    await waitFor(() =>
-      expect(within(navbar).getByText(/Platform/i)).toBeInTheDocument(),
+
+    await waitFor(
+      () => {
+        navbar = screen.getByRole('navigation');
+
+        return expect(
+          within(navbar).getByText(/Platform/i),
+        ).toBeInTheDocument();
+      },
+      { timeout: 5000 },
     );
+
     expect(within(navbar).getByText(/Platform/i)).toBeInTheDocument();
     expect(within(navbar).getByText(/Alerts/i)).toBeInTheDocument();
   });

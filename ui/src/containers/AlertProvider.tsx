@@ -1,20 +1,24 @@
 import React from 'react';
-import type { FilterLabels, Alert } from '../services/alertUtils';
+import { QueryObserverResult } from 'react-query';
 import { STATUS_HEALTH } from '../constants';
 import { useConfig } from '../FederableApp';
-import { QueryObserverResult } from 'react-query';
+import type { Alert, FilterLabels } from '../services/alertUtils';
+import { useShellAlerts } from '@scality/module-federation';
 export type Status = 'healthy' | 'warning' | 'critical';
 
 export const useAlerts = (
-  filters: FilterLabels,
+  filters?: FilterLabels,
 ): Omit<QueryObserverResult<Alert[]>, 'data'> & { alerts?: Alert[] } => {
-  return window.shellAlerts.hooks.useAlerts(filters);
+  const { alertHooks } = useShellAlerts();
+  return alertHooks.useAlerts(filters);
 };
 export const useHighestSeverityAlerts = (filters: FilterLabels) => {
-  return window.shellAlerts.hooks.useHighestSeverityAlerts(filters);
+  const { alertHooks } = useShellAlerts();
+  return alertHooks.useHighestSeverityAlerts(filters);
 };
 export const useAlertLibrary = () => {
-  return window.shellAlerts.alertSelectors;
+  const { alertSelectors } = useShellAlerts();
+  return alertSelectors;
 };
 
 export const highestAlertToStatus = (alerts?: Alert[]): Status => {
@@ -34,10 +38,11 @@ export const highestAlertToStatus = (alerts?: Alert[]): Status => {
 
 const AlertProvider = ({ children }: { children: React.ReactNode }) => {
   const { url_alertmanager } = useConfig();
+  const alerts = useShellAlerts();
   return (
-    <window.shellAlerts.AlertsProvider alertManagerUrl={url_alertmanager}>
+    <alerts.AlertsProvider alertManagerUrl={url_alertmanager}>
       {children}
-    </window.shellAlerts.AlertsProvider>
+    </alerts.AlertsProvider>
   );
 };
 

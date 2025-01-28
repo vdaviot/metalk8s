@@ -1,11 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App, { ShellTypes } from './FederatedApp';
-import { NotificationCenterContextType } from './NotificationCenterProvider';
-import { History } from 'history';
-import {
-  BuildtimeWebFinger,
-  RuntimeWebFinger,
-} from './initFederation/ConfigurationProviders';
+import { createRoot } from 'react-dom/client';
+import App from './FederatedApp';
 
-ReactDOM.render(<App />, document.getElementById('app'));
+const rootElement = document.getElementById('app');
+
+if (rootElement) {
+  const root = createRoot(rootElement);
+  root.render(<App />);
+}

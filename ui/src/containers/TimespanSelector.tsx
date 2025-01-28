@@ -1,17 +1,16 @@
-import React from 'react';
+import { Dropdown, Icon } from '@scality/core-ui';
 import { queryTimeSpansCodes } from '@scality/core-ui/dist/components/constants';
 import { useMetricsTimeSpan } from '@scality/core-ui/dist/next';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import {
   LAST_ONE_HOUR,
   LAST_SEVEN_DAYS,
   LAST_TWENTY_FOUR_HOURS,
 } from '../constants';
 import { useURLQuery } from '../services/utils';
-import { Dropdown, Icon } from '@scality/core-ui';
 
 const TimespanSelector = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const query = useURLQuery();
   const { label } = useMetricsTimeSpan();
 
@@ -21,7 +20,7 @@ const TimespanSelector = () => {
 
     if (formatted) {
       query.set('from', formatted.query);
-      history.push({
+      navigate({
         search: query.toString(),
       });
     }

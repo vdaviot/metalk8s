@@ -1,22 +1,12 @@
 import { createContext, useContext } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 
 const ShellHistoryContext = createContext<ReturnType<
-  typeof useHistory<unknown>
+  typeof useNavigate
 > | null>(null);
-if (!window.shellContexts) {
-  window.shellContexts = {
-    ShellHistoryContext,
-    ...window.shellContexts,
-  };
-}
-
-if (!window.shellContexts.ShellHistoryContext) {
-  window.shellContexts.ShellHistoryContext = ShellHistoryContext;
-}
 
 export const useShellHistory = () => {
-  const contextValue = useContext(window.shellContexts.ShellHistoryContext);
+  const contextValue = useContext(ShellHistoryContext);
 
   if (!contextValue) {
     throw new Error(
@@ -27,10 +17,10 @@ export const useShellHistory = () => {
   return contextValue;
 };
 export const ShellHistoryProvider = ({ children }) => {
-  const history = useHistory();
+  const history = useNavigate();
   return (
-    <window.shellContexts.ShellHistoryContext.Provider value={history}>
+    <ShellHistoryContext.Provider value={history}>
       {children}
-    </window.shellContexts.ShellHistoryContext.Provider>
+    </ShellHistoryContext.Provider>
   );
 };

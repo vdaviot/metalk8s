@@ -2,12 +2,11 @@ import { CoreUiThemeProvider } from '@scality/core-ui/dist/components/coreuithem
 import { renderHook } from '@testing-library/react-hooks';
 import { setupServer } from 'msw/node';
 import React from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient } from 'react-query';
 import { MemoryRouter } from 'react-router';
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { useAuth } from 'oidc-react';
-import { act } from 'react-test-renderer';
 import { SolutionsNavbar } from '.';
 import { WithInitFederationProviders } from '../FederatedApp';
 import { configurationHandlers } from '../FederatedApp.spec';
@@ -19,6 +18,7 @@ import { ShellThemeSelectorProvider } from '../initFederation/ShellThemeSelector
 import { waitForLoadingToFinish } from './__TESTS__/utils';
 import { LanguageProvider } from './lang';
 import { useNavbar } from './navbarHooks';
+import { QueryClientProvider } from '../QueryClientProvider';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -128,77 +128,99 @@ describe('useNavbar', () => {
   };
   it('should retrieve navbar configuration', async () => {
     //E
-    const { result, waitForNextUpdate } = renderHook(() => useNavbar(), {
+    const { result } = renderHook(() => useNavbar(), {
       wrapper,
     });
-    await waitForNextUpdate();
-    //V
-    expect(result.current.getLinks()).toStrictEqual(expectedDefaultNavbarLinks);
+    await waitFor(() => {
+      expect(result.current.getLinks()).toStrictEqual(
+        expectedDefaultNavbarLinks,
+      );
+    });
   });
   it('should set main navbar links', async () => {
     //S
-    const { result, waitForNextUpdate } = renderHook(() => useNavbar(), {
+    const { result } = renderHook(() => useNavbar(), {
       wrapper,
     });
 
-    await act(() => waitForNextUpdate());
+    await waitFor(() => {
+      expect(result.current.setMainLinks).toBeDefined();
+    });
+
     //E
     act(() =>
       // @ts-expect-error - FIXME when you are working on it
       result.current.setMainLinks([expectedDefaultNavbarLinks.main[0]]),
     );
+
     //V
-    expect(result.current.getLinks()).toStrictEqual({
-      ...expectedDefaultNavbarLinks,
-      main: [expectedDefaultNavbarLinks.main[0]],
+    await waitFor(() => {
+      expect(result.current.getLinks()).toStrictEqual({
+        ...expectedDefaultNavbarLinks,
+        main: [expectedDefaultNavbarLinks.main[0]],
+      });
     });
   });
   it('should set secondary navbar links', async () => {
     //S
-    const { result, waitForNextUpdate } = renderHook(() => useNavbar(), {
+    const { result } = renderHook(() => useNavbar(), {
       wrapper,
     });
-    await waitForNextUpdate();
+
+    await waitFor(() => {
+      expect(result.current.setSecondaryLinks).toBeDefined();
+    });
     //E
     act(() =>
       // @ts-expect-error - FIXME when you are working on it
       result.current.setSecondaryLinks([expectedDefaultNavbarLinks.main[0]]),
     );
     //V
-    expect(result.current.getLinks()).toStrictEqual({
-      ...expectedDefaultNavbarLinks,
-      secondary: [expectedDefaultNavbarLinks.main[0]],
+    await waitFor(() => {
+      expect(result.current.getLinks()).toStrictEqual({
+        ...expectedDefaultNavbarLinks,
+        secondary: [expectedDefaultNavbarLinks.main[0]],
+      });
     });
   });
   it('should set user dropdown links', async () => {
     //S
-    const { result, waitForNextUpdate } = renderHook(() => useNavbar(), {
+    const { result } = renderHook(() => useNavbar(), {
       wrapper,
     });
-    await waitForNextUpdate();
     //E
+    await waitFor(() => {
+      expect(result.current.setUserDropdownLinks).toBeDefined();
+    });
     act(() =>
       // @ts-expect-error - FIXME when you are working on it
       result.current.setUserDropdownLinks([expectedDefaultNavbarLinks.main[0]]),
     );
     //V
-    expect(result.current.getLinks()).toStrictEqual({
-      ...expectedDefaultNavbarLinks,
-      userDropdown: [expectedDefaultNavbarLinks.main[0]],
+    await waitFor(() => {
+      expect(result.current.getLinks()).toStrictEqual({
+        ...expectedDefaultNavbarLinks,
+        userDropdown: [expectedDefaultNavbarLinks.main[0]],
+      });
     });
   });
   it('should set logo link', async () => {
     //S
-    const { result, waitForNextUpdate } = renderHook(() => useNavbar(), {
+    const { result } = renderHook(() => useNavbar(), {
       wrapper,
     });
-    await waitForNextUpdate();
     //E
+    await waitFor(() => {
+      expect(result.current.setLogoLink).toBeDefined();
+    });
+
     act(() => result.current.setLogoLink('http://localhost:3000'));
     //V
-    expect(result.current.getLinks()).toStrictEqual({
-      ...expectedDefaultNavbarLinks,
-      logoHref: 'http://localhost:3000',
+    await waitFor(() => {
+      expect(result.current.getLinks()).toStrictEqual({
+        ...expectedDefaultNavbarLinks,
+        logoHref: 'http://localhost:3000',
+      });
     });
   });
   it('should display the Notification Center for Platform Admin', async () => {

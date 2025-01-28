@@ -2,7 +2,7 @@ import './index';
 import packageJson from '../../package.json';
 const { version } = packageJson;
 import { render } from '@testing-library/react';
-import { QueryClientProvider, QueryClient } from 'react-query';
+import { QueryClient } from 'react-query';
 import { renderHook } from '@testing-library/react-hooks';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
@@ -11,6 +11,7 @@ import { createContext, useContext } from 'react';
 import { useQuery } from 'react-query';
 import AlertProvider from './AlertProvider';
 import { useAlerts } from './alertHooks';
+import { QueryClientProvider } from '../QueryClientProvider';
 const testService = 'http://10.0.0.1/api/alertmanager';
 const alerts = [
   {
@@ -135,7 +136,6 @@ describe('alerts', () => {
     );
 
     //E
-    // @ts-expect-error - FIXME when you are working on it
     const { result, waitForNextUpdate } = renderHook(() => useAlerts(), {
       wrapper,
     });

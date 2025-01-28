@@ -1,31 +1,32 @@
-import React, { useCallback, useEffect, Suspense, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { matchPath, RouteProps, Route, Redirect } from 'react-router';
-import { useHistory, useLocation, Switch } from 'react-router-dom';
 import {
-  Notifications,
-  Loader,
+  AppContainer,
   ErrorPage404,
   Icon,
-  AppContainer,
+  Notifications,
   Sidebar,
 } from '@scality/core-ui';
+import { lazy, useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
+import { useDispatch } from 'react-redux';
+import { matchPath, Navigate, Route } from 'react-router';
+import { Routes, useLocation } from 'react-router-dom';
 import { removeNotificationAction } from '../ducks/app/notifications';
 import { setIntlAction } from '../ducks/config';
-import CreateVolume from './CreateVolume';
 import { useTypedSelector } from '../hooks';
 
-const ConfigureAlerting = React.lazy(
+import CreateVolume from './CreateVolume';
+import { useBasenameRelativeNavigate } from '@scality/module-federation';
+
+const ConfigureAlerting = lazy(
   () => import('../alert-configuration/ConfigureAlerting'),
 );
-const NodeCreateForm = React.lazy(() => import('./NodeCreateForm'));
-const NodePage = React.lazy(() => import('./NodePage'));
-const About = React.lazy(() => import('./About'));
-const PrivateRoute = React.lazy(() => import('./PrivateRoute'));
-const VolumePage = React.lazy(() => import('./VolumePage'));
-const DashboardPage = React.lazy(() => import('./DashboardPage'));
-const AlertPage = React.lazy(() => import('./AlertPage'));
+const NodeCreateForm = lazy(() => import('./NodeCreateForm'));
+const NodePage = lazy(() => import('./NodePage'));
+const About = lazy(() => import('./About'));
+const PrivateRoute = lazy(() => import('./PrivateRoute'));
+const VolumePage = lazy(() => import('./VolumePage'));
+const DashboardPage = lazy(() => import('./DashboardPage'));
+const AlertPage = lazy(() => import('./AlertPage'));
 
 export const NotificationDisplayer = () => {
   const notifications = useTypedSelector(
@@ -64,43 +65,30 @@ const Layout = () => {
     localStorage.setItem('sidebar_expanded', String(!isSideMenuExpanded));
   };
 
-  const history = useHistory();
+  const navigate = useBasenameRelativeNavigate();
+
   const location = useLocation();
 
+  const basename = useTypedSelector((state) => state.config.api?.ui_base_path);
   const doesRouteMatch = useCallback(
-    (paths: RouteProps | RouteProps[]) => {
-      const location = history.location;
+    (paths: string | string[]) => {
       if (Array.isArray(paths)) {
-        const foundMatchingRoute = paths.find((path) => {
-          const demo = matchPath(location.pathname, path);
-          return demo;
-        });
+        const foundMatchingRoute = paths.find(
+          (path) => !!matchPath(basename + path + '*', location.pathname),
+        );
         return !!foundMatchingRoute;
       } else {
-        return !!matchPath(location.pathname, paths);
+        return !!matchPath(basename + paths + '*', location.pathname);
       }
     },
-    [location],
+    [location.pathname],
   );
 
   const routeWithoutSideBars = [
-    {
-      path: '/alerts',
-      exact: true,
-      strict: true,
-    },
-    {
-      path: '/nodes/create',
-      exact: true,
-    },
-    {
-      path: '/volumes/createVolume',
-      exact: true,
-    },
-    {
-      path: '/configure-alerts',
-      exact: true,
-    },
+    '/alerts',
+    '/nodes/create',
+    '/volumes/createVolume',
+    '/configure-alerts',
   ];
 
   const hideSideBar = doesRouteMatch(routeWithoutSideBars);
@@ -117,13 +105,9 @@ const Layout = () => {
         }),
         icon: <Icon name="Dashboard" />,
         onClick: () => {
-          history.push('/dashboard');
+          navigate('/dashboard');
         },
-        active: doesRouteMatch({
-          path: '/dashboard',
-          exact: true,
-          strict: true,
-        }),
+        active: doesRouteMatch('/dashboard'),
         'data-cy': 'sidebar_item_dashboard',
       },
       {
@@ -132,13 +116,9 @@ const Layout = () => {
         }),
         icon: <Icon name="Node-backend" />,
         onClick: () => {
-          history.push('/nodes');
+          navigate('/nodes');
         },
-        active: doesRouteMatch({
-          path: '/nodes',
-          exact: false,
-          strict: true,
-        }),
+        active: doesRouteMatch('/nodes'),
         'data-cy': 'sidebar_item_nodes',
       },
       {
@@ -147,13 +127,9 @@ const Layout = () => {
         }),
         icon: <Icon name="Node-pdf" />,
         onClick: () => {
-          history.push('/volumes');
+          navigate('/volumes');
         },
-        active: doesRouteMatch({
-          path: '/volumes',
-          exact: false,
-          strict: true,
-        }),
+        active: doesRouteMatch('/volumes'),
         'data-cy': 'sidebar_item_volumes',
       },
     ],
@@ -168,41 +144,92 @@ const Layout = () => {
       }
     >
       <NotificationDisplayer />
-      <Suspense fallback={<Loader size="massive" centered={true} />}>
-        <Switch>
-          <PrivateRoute
-            exact
-            path="/"
-            component={() => <Redirect to="/dashboard" />}
-          />
-          <PrivateRoute exact path="/nodes/create" component={NodeCreateForm} />
-          <PrivateRoute
-            path={`/nodes/:id/createVolume`}
-            component={CreateVolume}
-          />
-          <PrivateRoute
-            exact
-            path="/volumes/createVolume"
-            component={CreateVolume}
-          />
-          <PrivateRoute path="/nodes" component={NodePage} />
-          <PrivateRoute path="/volumes/:name?" component={VolumePage} />
-          <PrivateRoute exact path="/about" component={About} />
-          <PrivateRoute exact path="/alerts" component={AlertPage} />
-          <PrivateRoute exact path="/dashboard" component={DashboardPage} />
-          <PrivateRoute
-            exact
-            path="/configure-alerts"
-            component={ConfigureAlerting}
-            canAccess={(_, userAccessRight) => {
-              return userAccessRight.canConfigureEmailNotification;
-            }}
-          />
-          <Route>
+      <Routes>
+        <Route
+          path="nodes/create"
+          element={
+            <PrivateRoute>
+              <NodeCreateForm />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="nodes/:id/createVolume"
+          element={
+            <PrivateRoute>
+              <CreateVolume />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="volumes/createVolume"
+          element={
+            <PrivateRoute>
+              <CreateVolume />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="nodes/*"
+          element={
+            <PrivateRoute>
+              <NodePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="volumes/:name?*"
+          element={
+            <PrivateRoute>
+              <VolumePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="about"
+          element={
+            <PrivateRoute>
+              <About />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="alerts"
+          element={
+            <PrivateRoute>
+              <AlertPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="dashboard"
+          element={
+            <PrivateRoute>
+              <DashboardPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="configure-alerts"
+          element={
+            <PrivateRoute
+              path="configure-alerts"
+              canAccess={(_, userAccessRight) => {
+                return userAccessRight.canConfigureEmailNotification;
+              }}
+            >
+              <ConfigureAlerting />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/" element={<Navigate to="dashboard" replace />} />
+        <Route
+          path="*"
+          element={
             <ErrorPage404 data-cy="sc-error-page404" locale={language} />
-          </Route>
-        </Switch>
-      </Suspense>
+          }
+        />
+      </Routes>
     </AppContainer>
   );
 };

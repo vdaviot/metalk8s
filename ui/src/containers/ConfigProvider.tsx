@@ -1,6 +1,10 @@
+import { useShellHooks } from '@scality/module-federation';
+
 export function useLinkOpener() {
-  return window.shellHooks.useLinkOpener();
+  const { useLinkOpener } = useShellHooks();
+  return useLinkOpener();
 }
 export function useDiscoveredViews() {
-  return window.shellHooks.useDiscoveredViews();
+  const { useDiscoveredViews } = useShellHooks();
+  return useDiscoveredViews();
 }

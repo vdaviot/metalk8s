@@ -1,26 +1,26 @@
-import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import {
-  StatusWrapper,
-  ConstrainedText,
-  TextBadge,
   AppContainer,
+  ConstrainedText,
+  FormattedDateTime,
   Stack,
+  StatusWrapper,
+  TextBadge,
   Wrap,
   spacing,
-  FormattedDateTime,
 } from '@scality/core-ui';
 import { Button, Table } from '@scality/core-ui/dist/next';
 import { fontSize } from '@scality/core-ui/dist/style/theme';
-import { useAlerts } from './AlertProvider';
-import StatusIcon from '../components/StatusIcon';
-import { STATUS_WARNING, STATUS_CRITICAL, STATUS_HEALTH } from '../constants';
-import { compareHealth } from '../services/utils';
-import CircleStatus from '../components/CircleStatus';
-import { useIntl } from 'react-intl';
 import isEqual from 'lodash.isequal';
-import { useHistory } from 'react-router';
+import React, { useMemo } from 'react';
+import { useIntl } from 'react-intl';
+import styled from 'styled-components';
+import CircleStatus from '../components/CircleStatus';
+import StatusIcon from '../components/StatusIcon';
+import { STATUS_CRITICAL, STATUS_HEALTH, STATUS_WARNING } from '../constants';
 import { useUserAccessRight } from '../hooks';
+import { compareHealth } from '../services/utils';
+import { useAlerts } from './AlertProvider';
+import { useBasenameRelativeNavigate } from '@scality/module-federation';
 
 const AlertPageHeaderContainer = styled.div`
   display: flex;
@@ -106,11 +106,12 @@ function AlertPageHeader({
   critical: number;
   warning: number;
 }) {
-  const history = useHistory();
+  const navigate = useBasenameRelativeNavigate();
   const intl = useIntl();
   const alertStatus = getAlertStatus(critical, warning);
 
   const { canConfigureEmailNotification } = useUserAccessRight();
+
   return (
     <AlertPageHeaderContainer>
       <Stack>
@@ -154,7 +155,7 @@ function AlertPageHeader({
           label="Email notification configuration"
           variant="secondary"
           onClick={() => {
-            history.push('/configure-alerts');
+            navigate('/configure-alerts');
           }}
         />
       ) : null}

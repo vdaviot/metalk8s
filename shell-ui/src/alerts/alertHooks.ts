@@ -90,16 +90,14 @@ export const useHighestSeverityAlerts = (filters: FilterLabels): Alert[] => {
  *
  * @returns react query result
  */
-export function useAlerts(filters: FilterLabels) {
+export function useAlerts(filters?: FilterLabels) {
   const query = useContext(AlertContext);
 
   if (!query) {
     throw new Error(
       'The useAlerts hook can only be used within AlertProvider.',
     );
-    // @ts-expect-error - FIXME when you are working on it
   } else if (query.status === 'success') {
-    // @ts-expect-error - FIXME when you are working on it
     const newQuery = { ...query, alerts: filterAlerts(query.data, filters) };
     delete newQuery.data;
     return newQuery;

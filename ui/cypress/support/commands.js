@@ -63,10 +63,12 @@ Cypress.Commands.add(
       cy.intercept('GET', '/config.json', stubConfig);
     }
     if (stubUIDiscovery) {
-      cy.intercept('GET', '/shell/deployed-ui-apps.json', stubUIDiscovery);
+      cy.intercept('GET', '/shell/deployed-ui-apps.json', {
+        ...stubUIDiscovery,
+      });
     }
 
-    cy.intercept('GET', '/.well-known/runtime-app-configuration', {
+    cy.intercept('GET', '**/.well-known/runtime-app-configuration*', {
       fixture: 'runtime-app-configuration',
     });
 
@@ -88,8 +90,10 @@ Cypress.Commands.add(
           statusCode: 500,
         });
     });
-    cy.intercept('POST', '/api/salt/login', { fixture: 'salt-api/login.json' });
-    cy.intercept('GET', '/api/salt/events*', (req) =>
+    cy.intercept('POST', '**/api/salt/login', {
+      fixture: 'salt-api/login.json',
+    });
+    cy.intercept('GET', '**/api/salt/events*', (req) =>
       req.reply(`data: ${JSON.stringify({})} \n\n`, {
         'content-type': 'text/event-stream',
       }),
@@ -99,13 +103,15 @@ Cypress.Commands.add(
     cy.intercept(
       {
         method: 'GET',
-        pathname: '/api/kubernetes/api/v1/namespaces',
+        pathname: '**/api/kubernetes/api/v1/namespaces',
         query: { fieldSelector: 'metadata.name=kube-system' },
       },
       { fixture: 'kubernetes/namespace-kube-system.json' },
     );
     cy.fixture('kubernetes/nodes.json').then((nodes) => {
-      cy.intercept('GET', '/api/kubernetes/api/v1/nodes', { body: nodes });
+      cy.intercept('GET', '**/api/kubernetes/api/v1/nodes', { body: nodes }).as(
+        'getNodes',
+      );
 
       cy.intercept(
         'GET',
@@ -117,26 +123,26 @@ Cypress.Commands.add(
       );
     });
 
-    cy.intercept('GET', '/api/kubernetes/api/v1/pods', {
+    cy.intercept('GET', '**/api/kubernetes/api/v1/pods', {
       fixture: 'kubernetes/pods.json',
     });
-    cy.intercept('GET', '/api/kubernetes/api/v1/persistentvolumes', {
+    cy.intercept('GET', '**/api/kubernetes/api/v1/persistentvolumes', {
       fixture: 'kubernetes/persistentvolumes.json',
     });
 
     cy.intercept(
       'GET',
-      '/api/kubernetes/apis/storage.metalk8s.scality.com/v1alpha1/volumes',
+      '**/api/kubernetes/apis/storage.metalk8s.scality.com/v1alpha1/volumes',
       { fixture: 'kubernetes/volumes.json' },
     );
 
-    cy.intercept('GET', '/api/kubernetes/api/v1/persistentvolumeclaims', {
+    cy.intercept('GET', '**/api/kubernetes/api/v1/persistentvolumeclaims', {
       fixture: 'kubernetes/persistentvolumeclaims.json',
     });
 
     cy.intercept(
       'GET',
-      'api/kubernetes/apis/storage.k8s.io/v1/storageclasses',
+      '**/api/kubernetes/apis/storage.k8s.io/v1/storageclasses',
       {
         fixture: 'kubernetes/storageclasses.json',
       },
@@ -193,12 +199,12 @@ Cypress.Commands.add(
         } else req.reply({ body: EMPTY_QUERY_RANGE_RESULT });
       },
     );
-    cy.intercept('GET', '/api/prometheus/api/v1/alerts', {
+    cy.intercept('GET', '**/api/prometheus/api/v1/alerts', {
       fixture: 'prometheus/empty-alerts.json',
     });
 
     // Alertmanager
-    cy.intercept('GET', '/api/alertmanager/api/v2/alerts', {
+    cy.intercept('GET', '**/api/alertmanager/api/v2/alerts', {
       fixture: 'alertmanager/alerts.json',
     });
   },
@@ -258,13 +264,7 @@ Cypress.Commands.add('badLogin', () => {
     });
 });
 
-Cypress.Commands.add('stubHistory', () => {
-  cy.window()
-    .its('__history__')
-    .then((history) => {
-      cy.stub(history, 'push').as('historyPush');
-    });
-});
+Cypress.Commands.add('stubHistory', () => {});
 
 const VOLUME_NAME = 'test-volume-sparse';
 const STORAGECLASS = 'metalk8s';
@@ -272,25 +272,24 @@ const NODE_NAME = 'bootstrap';
 const VOLUME_SIZE = '1 GiB';
 
 Cypress.Commands.add('fillVolumeCreationForm', (volume_type) => {
+  cy.wait('@getNodes');
   // The following steps are to fill the required fields of create volume form
   cy.get('input[name=name]').type(VOLUME_NAME);
 
   // Force click is because the input element is not visiable
-  cy.findByLabelText(/node \*/i)
-    .focus()
-    .click({ force: true });
+  cy.findByRole('listbox', { name: /select a node/i }).click({ force: true });
 
   cy.findByRole('option', { name: new RegExp(`${NODE_NAME}`, 'i') }).click();
 
-  cy.findByLabelText(/storage class \*/i)
-    .focus()
-    .click({ force: true });
+  cy.findByRole('listbox', { name: /select a storage class/i }).click({
+    force: true,
+  });
 
   cy.findByRole('option', { name: new RegExp(`${STORAGECLASS}`, 'i') }).click();
 
-  cy.findByLabelText(/type \*/i)
-    .focus()
-    .click({ force: true });
+  cy.findByRole('listbox', { name: /Select a type of volume/i }).click({
+    force: true,
+  });
 
   cy.findByRole('option', { name: new RegExp(`${volume_type}`, 'i') }).click();
 

@@ -1,20 +1,22 @@
 import { Icon, ProgressBar, Tooltip, Wrap, spacing } from '@scality/core-ui';
-import { Box, Button, Table } from '@scality/core-ui/dist/next';
+import { Button, Table } from '@scality/core-ui/dist/next';
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { useHistory } from 'react-router';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { useTheme } from 'styled-components';
 import CircleStatus from './CircleStatus';
 import { Latency } from './Latency';
 import { TooltipContent, UnknownIcon } from './TableRow';
+import { useCurrentApp } from '@scality/module-federation';
 
 const VolumeListTable = (props) => {
   const { volumeListData, volumeName } = props;
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const intl = useIntl();
   const theme = useTheme();
+  const { appHistoryBasePath } = useCurrentApp();
+
   const columns = React.useMemo(() => {
     return [
       {
@@ -167,15 +169,13 @@ const VolumeListTable = (props) => {
         /\/volumes\/[^/]*\//,
         `/volumes/${row.values.name}/`,
       );
-      history.push({
-        pathname: newPath,
-        search: query.toString(),
-      });
+      navigate(`${newPath}?${query.toString()}`);
     } else {
-      history.push({
-        pathname: `/volumes/${row.values.name}/overview`,
-        search: query.toString(),
-      });
+      navigate(
+        `${appHistoryBasePath}/volumes/${
+          row.values.name
+        }/overview?${query.toString()}`,
+      );
     }
   };
 
@@ -202,7 +202,7 @@ const VolumeListTable = (props) => {
           })}
           icon={<Icon name="Create-add" />}
           onClick={() => {
-            history.push('/volumes/createVolume');
+            navigate(appHistoryBasePath + '/volumes/createVolume');
           }}
           data-cy="create_volume_button"
         />

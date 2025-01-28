@@ -1,26 +1,20 @@
 /* eslint no-unused-vars: 0 */
 import { AppContainer, EmptyState, TwoPanelLayout } from '@scality/core-ui';
 import { useEffect, useState } from 'react';
-import {
-  Redirect,
-  Route,
-  Switch,
-  useHistory,
-  useRouteMatch,
-} from 'react-router-dom';
+import { Route, Routes, useResolvedPath } from 'react-router';
 import NodeListTable from '../components/NodeListTable';
 import { LeftSideInstanceList } from '../components/style/CommonLayoutStyle';
 import { usePrevious } from '../services/utils';
 import NodePageRSP from './NodePageRSP';
+import { useBasenameRelativeNavigate } from '@scality/module-federation';
 
 // <NodePageContent> get the current selected node and pass it to <NodeListTable> and <NodePageRSP>
 const NodePageContent = (props) => {
   const { nodeTableData, loading } = props;
-  const { path } = useRouteMatch();
-  const [defaultSelectNodeName, setDefaultSelectNodeName] = useState(null);
+  const path = useResolvedPath('').pathname;
   const [isFirstLoadingDone, setIsFirstLoadingDone] = useState(false);
   const previousLoading = usePrevious(loading);
-  const history = useHistory();
+  const navigate = useBasenameRelativeNavigate();
 
   /*
    ** Used to determine if a first loading has happened
@@ -31,10 +25,17 @@ const NodePageContent = (props) => {
       setIsFirstLoadingDone(true);
   }, [previousLoading, loading, isFirstLoadingDone]);
   useEffect(() => {
-    if (!defaultSelectNodeName && nodeTableData[0]?.name?.name) {
-      setDefaultSelectNodeName(nodeTableData[0]?.name?.name);
+    if (nodeTableData.length > 0) {
+      const firstNodeName = nodeTableData[0]?.name?.name;
+      if (
+        firstNodeName &&
+        !path.includes(firstNodeName) &&
+        path.endsWith('/nodes')
+      ) {
+        navigate(`/nodes/${firstNodeName}/overview`, { replace: true });
+      }
     } // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(nodeTableData), defaultSelectNodeName]);
+  }, [JSON.stringify(nodeTableData)]);
 
   if (!nodeTableData.length && isFirstLoadingDone) {
     return (
@@ -62,26 +63,12 @@ const NodePageContent = (props) => {
         }}
         rightPanel={{
           children: (
-            <Switch>
-              {/* Auto select the first node in the list */}
+            <Routes>
               <Route
-                exact
-                path={`${path}`}
-                render={() =>
-                  defaultSelectNodeName && (
-                    <Redirect
-                      to={`${path}/${defaultSelectNodeName}/overview`}
-                    />
-                  )
-                }
-              ></Route>
-              <Route
-                path={`${path}/:name`}
-                render={() => {
-                  return <NodePageRSP nodeTableData={nodeTableData} />;
-                }}
-              ></Route>
-            </Switch>
+                path=":name/*"
+                element={<NodePageRSP nodeTableData={nodeTableData} />}
+              />
+            </Routes>
           ),
         }}
       />

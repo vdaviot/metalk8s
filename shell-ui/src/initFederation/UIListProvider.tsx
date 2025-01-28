@@ -5,15 +5,7 @@ import { Loader } from '@scality/core-ui/dist/components/loader/Loader.component
 import { ErrorPage500 } from '@scality/core-ui/dist/components/error-pages/ErrorPage500.component';
 import type { SolutionUI } from '@scality/module-federation';
 
-if (!window.shellContexts) {
-  // @ts-expect-error - FIXME when you are working on it
-  window.shellContexts = {};
-}
-// @ts-expect-error - FIXME when you are working on it
-if (!window.shellContexts.UIListContext) {
-  // @ts-expect-error - FIXME when you are working on it
-  window.shellContexts.UIListContext = createContext(null);
-}
+const UIListContext = createContext(null);
 
 export function useDeployedAppsRetriever(): {
   retrieveDeployedApps: (selectors?: {
@@ -21,8 +13,7 @@ export function useDeployedAppsRetriever(): {
     name?: string;
   }) => SolutionUI[];
 } {
-  // @ts-expect-error - FIXME when you are working on it
-  const uiListContext = useContext(window.shellContexts.UIListContext);
+  const uiListContext = useContext(UIListContext);
 
   if (!uiListContext) {
     throw new Error(
@@ -32,9 +23,7 @@ export function useDeployedAppsRetriever(): {
 
   return {
     retrieveDeployedApps: (selectors) => {
-      // @ts-expect-error - FIXME when you are working on it
       if (selectors && uiListContext.uis) {
-        // @ts-expect-error - FIXME when you are working on it
         return uiListContext.uis.filter((ui) => {
           return (
             ((selectors.kind && selectors.kind === ui.kind) ||
@@ -43,7 +32,6 @@ export function useDeployedAppsRetriever(): {
           );
         });
       }
-      // @ts-expect-error - FIXME when you are working on it
       return uiListContext.uis || [];
     },
   };
@@ -52,8 +40,7 @@ export const useDeployedApps = (selectors?: {
   kind?: string;
   name?: string;
 }): SolutionUI[] => {
-  // @ts-expect-error - FIXME when you are working on it
-  const uiListContext = useContext(window.shellContexts.UIListContext);
+  const uiListContext = useContext(UIListContext);
 
   if (!uiListContext) {
     throw new Error("Can't use useDeployedApps outside of UIListProvider");
@@ -71,22 +58,20 @@ export const UIListProvider = ({
 }) => {
   const { status, data } = useQuery(
     'discoveredUIs',
-    () => {
-      return fetch(discoveryURL, { cache: 'no-cache' }).then((r) => {
-        if (r.ok) {
-          return r.json();
-        } else {
-          return Promise.reject();
-        }
-      });
+    async () => {
+      const r = await fetch(discoveryURL, { cache: 'no-cache' });
+      if (r.ok) {
+        return r.json();
+      } else {
+        return Promise.reject();
+      }
     },
     {
       refetchOnWindowFocus: false,
     },
   );
   return (
-    // @ts-expect-error - FIXME when you are working on it
-    <window.shellContexts.UIListContext.Provider
+    <UIListContext.Provider
       value={{
         uis: data,
       }}
@@ -96,7 +81,6 @@ export const UIListProvider = ({
       )}
       {status === 'error' && <ErrorPage500 data-cy="sc-error-page500" />}
       {status === 'success' && children}
-      {/* @ts-expect-error - FIXME when you are working on it */}
-    </window.shellContexts.UIListContext.Provider>
+    </UIListContext.Provider>
   );
 };

@@ -6,11 +6,12 @@ import NotificationCenterProvider, {
 } from '../NotificationCenterProvider';
 import NotificationCenter from './NotificationCenter';
 import userEvent from '@testing-library/user-event';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient } from 'react-query';
 import { prepareRenderMultipleHooks } from './__TESTS__/testMultipleHooks';
-import { MemoryRouter, Route, Switch } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ShellHistoryProvider } from '../initFederation/ShellHistoryProvider';
 import { useNotificationCenter } from '../useNotificationCenter';
+import { QueryClientProvider } from '../QueryClientProvider';
 
 export const notificationCenterSelectors = {
   notificationCenterButton: () =>
@@ -24,6 +25,7 @@ export const notificationCenterSelectors = {
   notificationCenterComboBox: () =>
     screen.getByRole('combobox', { name: /notification center/i }),
 };
+
 describe('NotificationCenter', () => {
   const wrapper = ({ children }: PropsWithChildren<Record<string, never>>) => {
     return (
@@ -33,14 +35,12 @@ describe('NotificationCenter', () => {
             <NotificationCenterProvider>
               <NotificationCenter />
               <div>{children}</div>
-              <Switch>
-                <Route path="/" exact>
-                  Home page
-                </Route>
-                <Route path="/alerts">Alert page</Route>
-                <Route path="/license">License page</Route>
-                <Route path="/new-version">New version page</Route>
-              </Switch>
+              <Routes>
+                <Route path="/" element={<>Home page</>} />
+                <Route path="/alerts" element={<>Alert page</>} />
+                <Route path="/license" element={<>License page</>} />
+                <Route path="/new-version" element={<>New version page</>} />
+              </Routes>
             </NotificationCenterProvider>
           </ShellHistoryProvider>
         </MemoryRouter>

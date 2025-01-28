@@ -112,7 +112,6 @@
   image to `rockylinux:9.5-minimal`
   (PR[#4483](https://github.com/scality/metalk8s/pull/4483))
 
-## Release 128.0.1 (in development)
 ## Release 128.0.3 (in development)
 
 ### Enhancements

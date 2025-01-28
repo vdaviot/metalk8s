@@ -36,7 +36,7 @@ runs:
           cd metalk8s/ui
           rm -rf babel.config.js
           #replace http://localhost in cypress/fixtures/deployed-ui-apps.json by ${{ inputs.TARGET_URL }}
-          sed -i "s|http://localhost|${{ inputs.TARGET_URL }}|g" cypress/fixtures/deployed-ui-apps.json
+          sed -i 's|http://localhost|${{ inputs.TARGET_URL }}|g' cypress/fixtures/deployed-ui-apps.json
           CYPRESS_BASE_URL=\"${{ inputs.TARGET_URL }}\" npm run \"test:${{ inputs.TEST_FILTERS }}\"
 
     - name: Create dest directory

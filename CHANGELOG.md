@@ -113,11 +113,32 @@
   (PR[#4483](https://github.com/scality/metalk8s/pull/4483))
 
 ## Release 128.0.1 (in development)
+## Release 128.0.3 (in development)
+
+### Enhancements
+
+- Redeploy backup, ingresses, salt-master and dex when renewing certificates
+  (PR[#4508](https://github.com/scality/metalk8s/pull/4508))
+
+## Release 128.0.2
 
 ### Enhancements
 
 - Only use modern Ciphers in Ingress configuration
   (PR[#4488](https://github.com/scality/metalk8s/pull/4488)) 
+
+### Bug fixes
+
+- Loki Grafana dashboard and datasources are enabled only
+  if Loki is enabled.
+  (PR[#4464](https://github.com/scality/metalk8s/pull/4464))
+
+## Release 128.0.1
+
+### Enhancements
+
+- Bump core-ui version to [0.145.0](https://github.com/scality/core-ui/releases/tag/0.145.0)
+  (PR[#4441](https://github.com/scality/metalk8s/pull/4441))
 
 ## Release 128.0.0
 
@@ -231,10 +252,6 @@
 
 - Do no longer use `latest` for `storage-operator` image
   (PR[#4299](https://github.com/scality/metalk8s/pull/4299))
-
-- Loki Grafana dashboard and datasources are enabled only
-  if Loki is enabled.
-  (PR[#4464](https://github.com/scality/metalk8s/pull/4464))
 
 ## Release 127.0.7 (in development)
 

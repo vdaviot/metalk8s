@@ -267,7 +267,7 @@ certificates:
         path: /etc/kubernetes/controller-manager.conf
         renew:
           sls:
-            - metalk8s.kubernetes.controller-manager.kubeconfig
+            - metalk8s.kubernetes.controller-manager.installed
         watched: False
       kubelet:
         path: /etc/kubernetes/kubelet.conf
@@ -279,13 +279,13 @@ certificates:
         path: /etc/salt/master-kubeconfig.conf
         renew:
           sls:
-            - metalk8s.salt.master.kubeconfig
+            - metalk8s.salt.master
         watched: False
       scheduler:
         path: /etc/kubernetes/scheduler.conf
         renew:
           sls:
-            - metalk8s.kubernetes.scheduler.kubeconfig
+            - metalk8s.kubernetes.scheduler.installed
         watched: False
   server:
     days_remaining: 90
@@ -302,6 +302,9 @@ certificates:
         renew:
           sls:
             - metalk8s.backup.certs.server
+          post:
+            orch:
+              - metalk8s.backup.deployed
         watched: False
       control-plane-ingress:
         path: /etc/metalk8s/pki/nginx-ingress/control-plane-server.crt
@@ -310,7 +313,7 @@ certificates:
             - metalk8s.addons.nginx-ingress-control-plane.certs
           post:
             orch:
-              - metalk8s.addons.nginx-ingress-control-plane.deployed.tls-secret
+              - metalk8s.addons.nginx-ingress-control-plane.deployed
         watched: False
       dex:
         path: /etc/metalk8s/pki/dex/server.crt
@@ -319,7 +322,7 @@ certificates:
             - metalk8s.addons.dex.certs
           post:
             orch:
-              - metalk8s.addons.dex.deployed.tls-secret
+              - metalk8s.addons.dex.deployed
         watched: False
       etcd:
         path: /etc/kubernetes/pki/etcd/server.crt
@@ -346,5 +349,5 @@ certificates:
             - metalk8s.addons.nginx-ingress.certs
           post:
             orch:
-              - metalk8s.addons.nginx-ingress.deployed.tls-secret
+              - metalk8s.addons.nginx-ingress.deployed
         watched: False

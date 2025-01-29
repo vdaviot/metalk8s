@@ -1,20 +1,20 @@
-import fs from 'fs';
-import path from 'path';
 import {
   act,
+  configure,
   screen,
   waitFor,
   waitForElementToBeRemoved,
-  configure,
 } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import fs from 'fs';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import userEvent from '@testing-library/user-event';
-import { Route, Switch } from 'react-router';
+import path from 'path';
+import { Route, Routes } from 'react-router';
 
-import ConfigureAlerting from './ConfigureAlerting';
 import { render, waitForLoadingToFinish } from '../components/__TEST__/util';
 import { NotificationDisplayer } from '../containers/Layout';
+import ConfigureAlerting from './ConfigureAlerting';
 
 const saltLoginRequest = jest.fn();
 const patchAlertmanagerConfig = jest.fn();
@@ -164,14 +164,10 @@ const commonSetup = async () => {
   render(
     <>
       <NotificationDisplayer />
-      <Switch>
-        <Route exact path="/alerts">
-          <div>Redirected Alert Page</div>
-        </Route>
-        <Route exact path="/">
-          <ConfigureAlerting />
-        </Route>
-      </Switch>
+      <Routes>
+        <Route path="/alerts" element={<div>Redirected Alert Page</div>} />
+        <Route path="/" element={<ConfigureAlerting />} />
+      </Routes>
     </>,
   );
 
@@ -259,6 +255,13 @@ describe('<ConfigureAlerting />', () => {
 
     await act(async () => {
       await userEvent.click(selectors.authSelect.authClick());
+    });
+
+    await waitFor(() => {
+      expect(selectors.authSelect.optionCramMd5()).toBeInTheDocument();
+    });
+
+    await act(async () => {
       await userEvent.click(selectors.authSelect.optionCramMd5());
     });
 
@@ -268,6 +271,13 @@ describe('<ConfigureAlerting />', () => {
 
     await act(async () => {
       await userEvent.click(selectors.authSelect.authClick());
+    });
+
+    await waitFor(() => {
+      expect(selectors.authSelect.optionPlain()).toBeInTheDocument();
+    });
+
+    await act(async () => {
       await userEvent.click(selectors.authSelect.optionPlain());
     });
 
@@ -355,8 +365,18 @@ describe('<ConfigureAlerting />', () => {
   it('show errors on submit with not all required field', async () => {
     await commonSetup();
 
+    await waitFor(() => {
+      expect(selectors.enableConfiguration()).toBeInTheDocument();
+    });
     await act(async () => {
       await userEvent.click(selectors.enableConfiguration());
+    });
+
+    await waitFor(() => {
+      expect(selectors.saveButton()).toBeInTheDocument();
+    });
+
+    await act(async () => {
       await userEvent.click(selectors.saveButton());
     });
 
@@ -403,7 +423,13 @@ describe('<ConfigureAlerting />', () => {
         selectors.recipient(),
         'user1@test.com, user2@test.com',
       );
+    });
 
+    await waitFor(() => {
+      expect(selectors.saveButton()).toBeInTheDocument();
+    });
+
+    await act(async () => {
       await userEvent.click(selectors.saveButton());
     });
 
@@ -460,19 +486,38 @@ spec:
       );
       await userEvent.clear(selectors.port());
       await userEvent.type(selectors.port(), '22');
+    });
 
+    await waitFor(() => {
+      expect(selectors.authSelect.authClick()).toBeInTheDocument();
+    });
+
+    await act(async () => {
       await userEvent.click(selectors.authSelect.authClick());
+    });
+
+    await waitFor(() => {
+      expect(selectors.authSelect.optionNoAuth()).toBeInTheDocument();
+    });
+
+    await act(async () => {
       await userEvent.click(selectors.authSelect.optionNoAuth());
+    });
 
-      await userEvent.clear(selectors.sender());
-      await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
+    await userEvent.clear(selectors.sender());
+    await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
 
-      await userEvent.clear(selectors.recipient());
-      await userEvent.type(
-        selectors.recipient(),
-        'user1@test.com, user2@test.com',
-      );
+    await userEvent.clear(selectors.recipient());
+    await userEvent.type(
+      selectors.recipient(),
+      'user1@test.com, user2@test.com',
+    );
 
+    await waitFor(() => {
+      expect(selectors.saveButton()).toBeInTheDocument();
+    });
+
+    await act(async () => {
       await userEvent.click(selectors.saveButton());
     });
 
@@ -542,7 +587,13 @@ spec:
         selectors.recipient(),
         'user1@test.com, user2@test.com',
       );
+    });
 
+    await waitFor(() => {
+      expect(selectors.saveButton()).toBeInTheDocument();
+    });
+
+    await act(async () => {
       await userEvent.click(selectors.saveButton());
     });
 
@@ -602,21 +653,21 @@ spec:
         'smtp4dev.default.svc.cluster.local',
       );
       await userEvent.type(selectors.port(), '42');
-
-      await userEvent.click(selectors.authSelect.authClick());
-      await userEvent.click(selectors.authSelect.optionLogin());
-
-      await userEvent.type(selectors.username(), 'Renard');
-      await userEvent.type(selectors.password(), 'Renard Password');
-
-      await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
-      await userEvent.type(
-        selectors.recipient(),
-        'user1@test.com, user2@test.com',
-      );
-
-      await userEvent.click(selectors.saveButton());
     });
+
+    await userEvent.click(selectors.authSelect.authClick());
+    await userEvent.click(selectors.authSelect.optionLogin());
+
+    await userEvent.type(selectors.username(), 'Renard');
+    await userEvent.type(selectors.password(), 'Renard Password');
+
+    await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
+    await userEvent.type(
+      selectors.recipient(),
+      'user1@test.com, user2@test.com',
+    );
+
+    await userEvent.click(selectors.saveButton());
 
     await waitForElementToBeRemoved(() => {
       return screen.getByText(/Saving\.\.\./);
@@ -670,21 +721,21 @@ spec:
         'smtp4dev.default.svc.cluster.local',
       );
       await userEvent.type(selectors.port(), '42');
-
-      await userEvent.click(selectors.authSelect.authClick());
-      await userEvent.click(selectors.authSelect.optionCramMd5());
-
-      await userEvent.type(selectors.username(), 'Renard');
-      await userEvent.type(selectors.secret(), 'xxxyyyzzz-secret');
-
-      await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
-      await userEvent.type(
-        selectors.recipient(),
-        'user1@test.com, user2@test.com',
-      );
-
-      await userEvent.click(selectors.saveButton());
     });
+
+    await userEvent.click(selectors.authSelect.authClick());
+    await userEvent.click(selectors.authSelect.optionCramMd5());
+
+    await userEvent.type(selectors.username(), 'Renard');
+    await userEvent.type(selectors.secret(), 'xxxyyyzzz-secret');
+
+    await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
+    await userEvent.type(
+      selectors.recipient(),
+      'user1@test.com, user2@test.com',
+    );
+
+    await userEvent.click(selectors.saveButton());
 
     await waitForElementToBeRemoved(() => {
       return screen.getByText(/Saving\.\.\./);
@@ -738,22 +789,21 @@ spec:
         'smtp4dev.default.svc.cluster.local',
       );
       await userEvent.type(selectors.port(), '42');
-
-      await userEvent.click(selectors.authSelect.authClick());
-      await userEvent.click(selectors.authSelect.optionPlain());
-
-      await userEvent.type(selectors.identity(), 'RenardID');
-      await userEvent.type(selectors.username(), 'Renard');
-      await userEvent.type(selectors.password(), 'xxxyyyzzz-password');
-
-      await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
-      await userEvent.type(
-        selectors.recipient(),
-        'user1@test.com, user2@test.com',
-      );
-
-      await userEvent.click(selectors.saveButton());
     });
+    await userEvent.click(selectors.authSelect.authClick());
+    await userEvent.click(selectors.authSelect.optionPlain());
+
+    await userEvent.type(selectors.identity(), 'RenardID');
+    await userEvent.type(selectors.username(), 'Renard');
+    await userEvent.type(selectors.password(), 'xxxyyyzzz-password');
+
+    await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
+    await userEvent.type(
+      selectors.recipient(),
+      'user1@test.com, user2@test.com',
+    );
+
+    await userEvent.click(selectors.saveButton());
 
     await waitForElementToBeRemoved(() => {
       return screen.getByText(/Saving\.\.\./);
@@ -876,21 +926,20 @@ spec:
         'smtp4dev.default.svc.cluster.local',
       );
       await userEvent.type(selectors.port(), '42');
-
-      await userEvent.click(selectors.authSelect.authClick());
-      await userEvent.click(selectors.authSelect.optionLogin());
-
-      await userEvent.type(selectors.username(), 'Renard');
-      await userEvent.type(selectors.password(), 'Renard Password');
-
-      await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
-      await userEvent.type(
-        selectors.recipient(),
-        'user1@test.com, user2@test.com',
-      );
-
-      await userEvent.click(selectors.sendTestingEmailButton());
     });
+    await userEvent.click(selectors.authSelect.authClick());
+    await userEvent.click(selectors.authSelect.optionLogin());
+
+    await userEvent.type(selectors.username(), 'Renard');
+    await userEvent.type(selectors.password(), 'Renard Password');
+
+    await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
+    await userEvent.type(
+      selectors.recipient(),
+      'user1@test.com, user2@test.com',
+    );
+
+    await userEvent.click(selectors.sendTestingEmailButton());
 
     expect(selectors.sendTestingEmailButton()).toBeDisabled();
     await waitForElementToBeRemoved(() => {
@@ -950,22 +999,22 @@ spec:
         'smtp4dev.default.svc.cluster.local',
       );
       await userEvent.type(selectors.port(), '42');
-
-      await userEvent.click(selectors.authSelect.authClick());
-      await userEvent.click(selectors.authSelect.optionPlain());
-
-      await userEvent.type(selectors.identity(), 'Renard ID');
-      await userEvent.type(selectors.username(), 'Renard');
-      await userEvent.type(selectors.password(), 'Renard Password');
-
-      await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
-      await userEvent.type(
-        selectors.recipient(),
-        'user1@test.com, user2@test.com',
-      );
-
-      await userEvent.click(selectors.sendTestingEmailButton());
     });
+
+    await userEvent.click(selectors.authSelect.authClick());
+    await userEvent.click(selectors.authSelect.optionPlain());
+
+    await userEvent.type(selectors.identity(), 'Renard ID');
+    await userEvent.type(selectors.username(), 'Renard');
+    await userEvent.type(selectors.password(), 'Renard Password');
+
+    await userEvent.type(selectors.sender(), 'renard.admin@scality.com');
+    await userEvent.type(
+      selectors.recipient(),
+      'user1@test.com, user2@test.com',
+    );
+
+    await userEvent.click(selectors.sendTestingEmailButton());
 
     expect(selectors.sendTestingEmailButton()).toBeDisabled();
     await waitForElementToBeRemoved(() => {

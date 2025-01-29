@@ -134,6 +134,7 @@ runs:
         TF_VAR_rhsm_username: "${{ inputs.rhsm-username }}"
         TF_VAR_rhsm_password: "${{ inputs.rhsm-password }}"
         TF_VAR_ingress_remote_ip_prefix: "${{ inputs.AUTHORIZED_CIDRS }}"
+        TF_VAR_flavors_map: '{ ovh = { default = "d2-8", bastion = "b3-16" } }'
         MAX_RETRIES: "3"
         TFVARS_DIR: "${{ github.workspace }}/.github/spawn/tfvars"
       run: |

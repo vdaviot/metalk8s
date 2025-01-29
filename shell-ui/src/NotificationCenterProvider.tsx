@@ -1,4 +1,4 @@
-import React, { Dispatch, createContext, useReducer } from 'react';
+import { Dispatch, FC, ReactNode, createContext, useReducer } from 'react';
 
 export type Notification = {
   id: string;
@@ -18,16 +18,12 @@ export type NotificationCenterContextType = {
   dispatch: Dispatch<NotificationCenterActions>;
 };
 
-if (!window.shellContexts) {
-  //@ts-ignore
-  window.shellContexts = {};
-}
-if (!window.shellContexts.NotificationContext) {
-  window.shellContexts.NotificationContext =
-    createContext<NotificationCenterContextType | null>(null);
-}
 export const NotificationCenterContext =
-  window.shellContexts.NotificationContext;
+  createContext<NotificationCenterContextType | null>(null);
+
+type NotificationCenterProviderProps = {
+  children: ReactNode;
+};
 
 export enum NotificationActionType {
   PUBLISH,
@@ -50,7 +46,9 @@ export type NotificationCenterActions =
 
 const LOCAL_STORAGE_NOTIFICATION_PREFIX = 'notification-center__';
 
-const NotificationCenterProvider = ({ children }) => {
+const NotificationCenterProvider: FC<NotificationCenterProviderProps> = ({
+  children,
+}) => {
   const notificationReducer = (
     state: InternalNotification[],
     action: NotificationCenterActions,

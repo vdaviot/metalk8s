@@ -420,7 +420,7 @@ jobs:
           tags: ghcr.io/${{ github.repository_owner }}/metalk8s-nginx-integration-tests:${{ github.sha }}
 
   integration_tests_ui:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04-8core
     needs:
       - build_integration_container_nginx
       - changed-files
@@ -456,7 +456,7 @@ jobs:
       - name: Install Cypress and its dependencies
         run: |
           cd ui
-          PKGS="har-validator cypress cypress-cucumber-preprocessor cypress-wait-until @testing-library/cypress"
+          PKGS="har-validator cypress cypress-wait-until @testing-library/cypress querystring"
           for pkg in $PKGS; do
             npm install --no-save --no-package-lock --legacy-peer-deps $pkg@$(node -p \
               -e "require('./package-lock.json').dependencies['$pkg'].version" \

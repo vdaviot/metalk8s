@@ -115,7 +115,6 @@ export const MetricsTimeSpanProvider = ({
   );
 };
 export const useVolumesWithAlerts = (nodeName?: string) => {
-  // @ts-expect-error - FIXME when you are working on it
   const { alerts } = useAlerts();
   const volumeListData = useTypedSelector((state) =>
     // @ts-expect-error - FIXME when you are working on it

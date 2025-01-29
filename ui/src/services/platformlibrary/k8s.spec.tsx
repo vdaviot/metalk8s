@@ -2,9 +2,10 @@ import React from 'react';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { renderHook } from '@testing-library/react-hooks';
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
+import { QueryClient, useQuery } from 'react-query';
 import { getNodesCountQuery, getVolumesCountQuery } from './k8s';
 import { afterAll, beforeAll, jest } from '@jest/globals';
+import { QueryClientProvider } from '../../QueryClientProvider';
 const k8sUrl = 'https://10.0.0.1:8443/api/kubernetes';
 const nodes = {
   kind: 'NodeList',

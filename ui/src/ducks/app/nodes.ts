@@ -428,7 +428,7 @@ export function* createNode({ payload }) {
   if (!result.error) {
     yield call(fetchNodes);
     const historyState = yield select(historySelector);
-    yield call(historyState.history.push, '/nodes');
+    yield call(historyState.history, '/nodes');
     yield put(
       addNotificationSuccessAction({
         title: intl.formatMessage({

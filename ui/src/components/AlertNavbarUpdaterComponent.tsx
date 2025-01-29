@@ -33,6 +33,7 @@ export default function AlertNavbarUpdaterComponent({
   return (
     <FederatedIntlProvider>
       <AppConfigProvider
+        // @ts-expect-error - TODO: fix the type of componentWithInjectedImports
         componentWithInjectedImports={AppConfigProviderWithoutRedux}
       >
         <AlertProvider>

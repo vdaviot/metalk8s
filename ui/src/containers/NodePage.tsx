@@ -1,16 +1,14 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
-import { refreshNodesAction, stopRefreshNodesAction } from '../ducks/app/nodes';
-import { useRefreshEffect } from '../services/utils';
-import NodePageContent from './NodePageContent';
-import { getNodeListData } from '../services/NodeUtils';
-import { useAlerts } from './AlertProvider';
 import { useTheme } from 'styled-components';
+import { refreshNodesAction, stopRefreshNodesAction } from '../ducks/app/nodes';
 import { useTypedSelector } from '../hooks';
+import { getNodeListData } from '../services/NodeUtils';
+import { useRefreshEffect } from '../services/utils';
+import { useAlerts } from './AlertProvider';
+import NodePageContent from './NodePageContent';
 
 const NodePage = (props) => {
   useRefreshEffect(refreshNodesAction, stopRefreshNodesAction);
-  // @ts-expect-error - FIXME when you are working on it
   const { alerts } = useAlerts();
   const theme = useTheme();
   const nodeTableData = useSelector(

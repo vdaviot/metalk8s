@@ -1,8 +1,3 @@
-import React, { useCallback } from 'react';
-import { useHistory } from 'react-router';
-import { useLocation, useRouteMatch } from 'react-router-dom';
-import { useIntl } from 'react-intl';
-import styled from 'styled-components';
 import {
   ConstrainedText,
   Icon,
@@ -11,7 +6,13 @@ import {
   Wrap,
   spacing,
 } from '@scality/core-ui';
-import { Box, Button, Table } from '@scality/core-ui/dist/next';
+import { Button, Table } from '@scality/core-ui/dist/next';
+import React, { useCallback } from 'react';
+import { useIntl } from 'react-intl';
+import { useNavigate, useResolvedPath } from 'react-router';
+import { useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+import { useTypedSelector } from '../hooks';
 import { useURLQuery } from '../services/utils';
 import CircleStatus from './CircleStatus';
 const StatusText = styled.div`
@@ -21,13 +22,16 @@ const StatusText = styled.div`
 `;
 
 const NodeListTable = ({ nodeTableData }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const query = useURLQuery();
   const intl = useIntl();
-  const { path } = useRouteMatch();
-  const selectedNodeName =
-    history?.location?.pathname?.split('/')?.slice(2)[0] || '';
+  const path = useResolvedPath('');
+
+  const basename = useTypedSelector((state) => state.config.api?.ui_base_path);
+
+  const selectedNodeName = location?.pathname.split('/')?.slice(2)[1] || '';
+
   const columns = React.useMemo(
     () => [
       {
@@ -128,23 +132,17 @@ const NodeListTable = ({ nodeTableData }) => {
         location.pathname.endsWith('partitions') ||
         location.pathname.endsWith('details');
 
+      const newPath = location.pathname.replace(
+        /\/nodes\/[^/]*\//,
+        `/nodes/${nodeName}/`,
+      );
       if (isTabSelected) {
-        const newPath = location.pathname.replace(
-          /\/nodes\/[^/]*\//,
-          `/nodes/${nodeName}/`,
-        );
-        history.push({
-          pathname: newPath,
-          search: query.toString(),
-        });
+        navigate(`${newPath}?${query.toString()}`);
       } else {
-        history.push({
-          pathname: `${path}/${nodeName}/overview`,
-          search: query.toString(),
-        });
+        navigate(`${newPath}/overview?${query.toString()}`);
       }
     },
-    [history, location.pathname, path, query],
+    [navigate, location.pathname, path, query],
   );
   return (
     <Table
@@ -169,7 +167,7 @@ const NodeListTable = ({ nodeTableData }) => {
           })}
           icon={<Icon name="Create-add" />}
           onClick={() => {
-            history.push('/nodes/create');
+            navigate(basename + '/nodes/create');
           }}
           data-cy="create_node_button"
         />

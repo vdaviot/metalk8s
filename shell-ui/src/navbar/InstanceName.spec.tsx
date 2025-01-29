@@ -9,9 +9,10 @@ import {
 } from '@testing-library/react';
 import { jest } from '@jest/globals';
 import userEvent from '@testing-library/user-event';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient } from 'react-query';
 import { ToastProvider } from '@scality/core-ui/dist/components/toast/ToastProvider';
 import { UserData } from '../auth/AuthProvider';
+import { QueryClientProvider } from '../QueryClientProvider';
 
 jest.mock('../initFederation/ConfigurationProviders', () => ({
   useConfigRetriever: () => ({

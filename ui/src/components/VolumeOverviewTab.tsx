@@ -12,7 +12,6 @@ import { fontSize, fontWeight } from '@scality/core-ui/dist/style/theme';
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import styled, { useTheme } from 'styled-components';
 import {
@@ -36,6 +35,7 @@ import {
   OverviewResourceName,
   VolumeTab,
 } from './style/CommonLayoutStyle';
+import { useBasenameRelativeNavigate } from '@scality/module-federation';
 const VolumeDetailCardContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -108,7 +108,7 @@ const VolumeDetailCard = (props) => {
     alertlist,
   } = props;
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useBasenameRelativeNavigate();
   const location = useLocation();
   const intl = useIntl();
   const query = new URLSearchParams(location.search);
@@ -137,18 +137,18 @@ const VolumeDetailCard = (props) => {
     }
 
     if (isAddNodefilter && hightvolumeName) {
-      history.push(`/volumes/${hightvolumeName}/overview?node=${nodeName}`);
+      navigate(`/volumes/${hightvolumeName}/overview?node=${nodeName}`);
     } else if (!isAddNodefilter && hightvolumeName) {
-      history.push(`/volumes/${hightvolumeName}/overview`);
+      navigate(`/volumes/${hightvolumeName}/overview`);
     } else if (isAddNodefilter && !hightvolumeName) {
-      history.push(`/volumes/?node=${nodeName}`);
+      navigate(`/volumes/?node=${nodeName}`);
     } else {
-      history.push('/volumes');
+      navigate('/volumes');
     }
   };
 
   const onClickNodeName = () => {
-    history.push(`/nodes/${nodeName}/overview`);
+    navigate(`/nodes/${nodeName}/overview`);
   };
 
   const onClickCancelButton = () => {

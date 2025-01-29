@@ -1,8 +1,6 @@
 import { ErrorPage401, ErrorPageAuth } from '@scality/core-ui';
 import { ReactNode, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router';
-import { Route } from 'react-router-dom';
 import { updateAPIConfigAction } from '../ducks/config';
 import {
   UserAccessRight,
@@ -11,16 +9,28 @@ import {
   useUserAccessRight,
   useUserRoles,
 } from '../hooks';
+import {
+  useBasenameRelativeNavigate,
+  useShellHooks,
+} from '@scality/module-federation';
 
 export const useAuth = () => {
-  return window.shellHooks.useAuth();
+  const { useAuth } = useShellHooks();
+  return useAuth();
 };
 
 export const useShellConfig = () => {
-  return window.shellHooks.useShellConfig();
+  const { useShellConfig } = useShellHooks();
+  return useShellConfig();
 };
 
-const AccessRouteGuard = ({ component, ...rest }) => {
+const AccessRouteGuard = ({
+  children,
+  ...rest
+}: {
+  children: ReactNode;
+  canAccess: (roles: UserRoles, userAccessRight: UserAccessRight) => boolean;
+}) => {
   const roles = useUserRoles();
   const userAccessRight = useUserAccessRight();
   const canAccess = rest.canAccess(roles, userAccessRight);
@@ -28,21 +38,28 @@ const AccessRouteGuard = ({ component, ...rest }) => {
   if (!canAccess) {
     return <ErrorPage401 />;
   }
-  return <Route {...rest} component={component} />;
+  return <>{children}</>;
 };
 
-const PrivateRoute = ({ component, ...rest }: PrivateRouteProps) => {
-  rest.canAccess = rest.canAccess ? rest.canAccess : () => true;
+type PrivateRouteProps = {
+  children: ReactNode;
+  path?: string;
+  canAccess?: (roles: UserRoles, userAccessRight: UserAccessRight) => boolean;
+};
+
+const PrivateRoute = ({ children, ...rest }: PrivateRouteProps) => {
+  const canAccess = rest.canAccess ? rest.canAccess : () => true;
   const { language, api } = useTypedSelector((state) => state.config);
   const { isAuthError } = useTypedSelector(
     (state) => state.app.authError,
     (left, right) => left.isAuthError === right.isAuthError,
   );
   const url_support = api?.url_support;
-  const { userData } = window.shellHooks.useAuth();
+  const { useAuth } = useShellHooks();
+  const { userData } = useAuth();
+  const navigate = useBasenameRelativeNavigate();
 
   const dispatch = useDispatch();
-  const history = useHistory();
 
   useMemo(() => {
     dispatch(updateAPIConfigAction(userData)); // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -54,12 +71,14 @@ const PrivateRoute = ({ component, ...rest }: PrivateRouteProps) => {
         supportLink={url_support}
         locale={language}
         onReturnHomeClick={() => {
-          history.push('/');
+          navigate('/');
         }}
       />
     );
   } else if (userData.token && userData.username) {
-    return <AccessRouteGuard {...rest} component={component} />;
+    return (
+      <AccessRouteGuard canAccess={canAccess}>{children}</AccessRouteGuard>
+    );
   } else {
     return (
       <ErrorPageAuth
@@ -69,12 +88,6 @@ const PrivateRoute = ({ component, ...rest }: PrivateRouteProps) => {
       />
     );
   }
-};
-type PrivateRouteProps = {
-  component: ReactNode;
-  path: string;
-  exact?: boolean;
-  canAccess?: (roles: UserRoles, userAccessRight: UserAccessRight) => boolean;
 };
 
 export default PrivateRoute;

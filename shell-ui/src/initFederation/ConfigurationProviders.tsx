@@ -2,26 +2,11 @@ import { ErrorPage500 } from '@scality/core-ui/dist/components/error-pages/Error
 import { IconName } from '@scality/core-ui/dist/components/icon/Icon.component';
 import { Loader } from '@scality/core-ui/dist/components/loader/Loader.component';
 import { SolutionUI } from '@scality/module-federation';
-import React, { createContext, useContext } from 'react';
+import React, { useMemo, useSyncExternalStore } from 'react';
 import { useQueries, UseQueryResult } from 'react-query';
 import { useShellConfig } from './ShellConfigProvider';
 import { useShellHistory } from './ShellHistoryProvider';
 import { useDeployedApps, useDeployedAppsRetriever } from './UIListProvider';
-
-if (!window.shellContexts) {
-  // @ts-expect-error - FIXME when you are working on it
-  window.shellContexts = {};
-}
-
-if (!window.shellContexts.WebFingersContext) {
-  window.shellContexts.WebFingersContext = createContext<
-    | null
-    | UseQueryResult<
-        BuildtimeWebFinger | RuntimeWebFinger<Record<string, unknown>>,
-        unknown
-      >[]
-  >(null);
-}
 
 export type OAuth2ProxyConfig = {
   kind: 'OAuth2Proxy'; //todo : add other entries
@@ -85,10 +70,8 @@ export function useConfigRetriever(): {
     name: string;
   }) => (T extends 'build' ? BuildtimeWebFinger : RuntimeWebFinger<T>) | null;
 } {
+  const { state: webFingerContextValue } = useWebFingersStore();
   const { retrieveDeployedApps } = useDeployedAppsRetriever();
-  const webFingerContextValue = useContext(
-    window.shellContexts.WebFingersContext,
-  );
 
   if (!webFingerContextValue) {
     throw new Error(
@@ -142,15 +125,18 @@ export function useConfig<T extends 'build' | Record<string, unknown>>({
   configType: T extends 'build' ? 'build' : 'run';
   name: string;
 }): null | T extends 'build' ? BuildtimeWebFinger : RuntimeWebFinger<T> {
-  const { retrieveConfiguration } = useConfigRetriever();
-  const webFingerContextValue = useContext(
-    window.shellContexts.WebFingersContext,
-  );
+  // Utiliser le nouveau hook useWebFingersStore
+  const { state: webFingerContextValue } = useWebFingersStore();
 
-  if (!webFingerContextValue) {
+  // Utiliser le retrieveConfiguration du hook useConfigRetriever
+  const { retrieveConfiguration } = useConfigRetriever();
+
+  // Vérifier que le contexte est disponible
+  if (!webFingerContextValue || webFingerContextValue.length === 0) {
     throw new Error("Can't use useConfig outside of ConfigurationProvider");
   }
 
+  // Récupérer et retourner la configuration
   return retrieveConfiguration({
     configType,
     name,
@@ -179,6 +165,72 @@ export type NonFederatedView = {
   icon?: IconName;
 };
 export type ViewDefinition = FederatedView | NonFederatedView;
+
+// External store implementation
+class WebFingersStore {
+  private listeners: Set<() => void> = new Set();
+  private _state: UseQueryResult<
+    BuildtimeWebFinger | RuntimeWebFinger<Record<string, unknown>>,
+    unknown
+  >[] = [];
+
+  subscribe = (listener: () => void) => {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  };
+
+  getState = () => {
+    return this._state;
+  };
+
+  private isStateEqual(
+    currentState: UseQueryResult<
+      BuildtimeWebFinger | RuntimeWebFinger<Record<string, unknown>>,
+      unknown
+    >[],
+    newState: UseQueryResult<
+      BuildtimeWebFinger | RuntimeWebFinger<Record<string, unknown>>,
+      unknown
+    >[],
+  ) {
+    return (
+      currentState.length === newState.length &&
+      currentState.every(
+        (item, index) =>
+          JSON.stringify(item) === JSON.stringify(newState[index]),
+      )
+    );
+  }
+
+  updateState = (
+    newState: UseQueryResult<
+      BuildtimeWebFinger | RuntimeWebFinger<Record<string, unknown>>,
+      unknown
+    >[],
+  ) => {
+    if (!this.isStateEqual(this._state, newState)) {
+      this._state = newState;
+      this.listeners.forEach((listener) => listener());
+    }
+  };
+}
+
+const webFingersStore = new WebFingersStore();
+
+export function useWebFingersStore() {
+  const state = useSyncExternalStore(
+    webFingersStore.subscribe,
+    webFingersStore.getState,
+  );
+
+  return {
+    state,
+    updateWebFingersState: webFingersStore.updateState,
+  };
+}
+
 export function useDiscoveredViews(): ViewDefinition[] {
   const { retrieveConfiguration } = useConfigRetriever();
   const { retrieveDeployedApps } = useDeployedAppsRetriever();
@@ -249,7 +301,7 @@ export function useDiscoveredViews(): ViewDefinition[] {
   return discoveredViews;
 }
 export const useLinkOpener = () => {
-  const history = useShellHistory();
+  const navigate = useShellHistory();
   return {
     openLink: (
       to:
@@ -273,7 +325,7 @@ export const useLinkOpener = () => {
           window.open(to.url, '_blank');
         }
       } else if (to.isFederated) {
-        history.push(to.app.appHistoryBasePath + to.view.path);
+        navigate(to.app.appHistoryBasePath + to.view.path);
       } else {
         // @ts-expect-error - FIXME when you are working on it
         window.location.href = to.url;
@@ -286,6 +338,7 @@ export const ConfigurationProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const { updateWebFingersState } = useWebFingersStore();
   const deployedUIs = useDeployedApps();
   const results = useQueries(
     deployedUIs.flatMap((ui) => [
@@ -323,6 +376,11 @@ export const ConfigurationProvider = ({
       },
     ]),
   );
+
+  useMemo(() => {
+    updateWebFingersState(results);
+  }, [results]);
+
   const statuses = Array.from(new Set(results.map((result) => result.status)));
   const globalStatus = statuses.includes('error')
     ? 'error'
@@ -333,13 +391,14 @@ export const ConfigurationProvider = ({
     : statuses.includes('idle') && statuses.includes('success')
     ? 'loading'
     : 'success';
+
   return (
-    <window.shellContexts.WebFingersContext.Provider value={results}>
+    <>
       {(globalStatus === 'loading' || globalStatus === 'idle') && (
         <Loader size="massive" centered={true} aria-label="loading" />
       )}
       {globalStatus === 'error' && <ErrorPage500 data-cy="sc-error-page500" />}
       {globalStatus === 'success' && children}
-    </window.shellContexts.WebFingersContext.Provider>
+    </>
   );
 };

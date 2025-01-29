@@ -1,5 +1,6 @@
 import { CoreUiThemeProvider } from '@scality/core-ui/dist/components/coreuithemeprovider/CoreUiThemeProvider';
 import { ErrorPage500 } from '@scality/core-ui/dist/components/error-pages/ErrorPage500.component';
+import { Loader } from '@scality/core-ui/dist/components/loader/Loader.component';
 import { ScrollbarWrapper } from '@scality/core-ui/dist/components/scrollbarwrapper/ScrollbarWrapper.component';
 import { ToastProvider } from '@scality/core-ui/dist/components/toast/ToastProvider';
 import {
@@ -7,66 +8,40 @@ import {
   FederatedComponentProps,
   SolutionUI,
 } from '@scality/module-federation';
-import { createBrowserHistory } from 'history';
 import React, { useEffect, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { Route, Router, Switch } from 'react-router-dom';
-import { Loader } from '@scality/core-ui/dist/components/loader/Loader.component';
+import { QueryClient } from 'react-query';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import NotificationCenterProvider, {
-  NotificationCenterContextType,
-} from './NotificationCenterProvider';
+import { loadShare } from '@module-federation/enhanced/runtime';
+import { useQuery } from 'react-query';
+import NotificationCenterProvider from './NotificationCenterProvider';
 import { AuthConfigProvider, useAuthConfig } from './auth/AuthConfigProvider';
 import { AuthProvider, useAuth } from './auth/AuthProvider';
 import { FirstTimeLoginProvider } from './auth/FirstTimeLoginProvider';
+import {
+  ShellAlerts,
+  shellAlerts,
+  ShellHooks,
+  shellHooks,
+} from './hooks/useShellHooks';
 import './index.css';
 import {
   ConfigurationProvider,
   FederatedView,
   useConfigRetriever,
-  useConfig,
   useDiscoveredViews,
-  useLinkOpener,
-  BuildtimeWebFinger,
-  RuntimeWebFinger,
 } from './initFederation/ConfigurationProviders';
 import {
   ShellConfigProvider,
   useShellConfig,
 } from './initFederation/ShellConfigProvider';
 import { ShellHistoryProvider } from './initFederation/ShellHistoryProvider';
-import {
-  ShellThemeSelectorProvider,
-  useShellThemeSelector,
-} from './initFederation/ShellThemeSelectorProvider';
-import {
-  UIListProvider,
-  useDeployedApps,
-} from './initFederation/UIListProvider';
+import { ShellThemeSelectorProvider } from './initFederation/ShellThemeSelectorProvider';
+import { UIListProvider } from './initFederation/UIListProvider';
 import { SolutionsNavbar } from './navbar';
 import { LanguageProvider, useLanguage } from './navbar/lang';
-import AlertProvider from './alerts/AlertProvider';
-import {
-  getAlertingAlertSelectors,
-  getAuthenticationAlertSelectors,
-  getBootstrapAlertSelectors,
-  getDashboardingAlertSelectors,
-  getIngressControllerAlertSelectors,
-  getK8SMasterAlertSelectors,
-  getLoggingAlertSelectors,
-  getMonitoringAlertSelectors,
-  getNetworksAlertSelectors,
-  getNodesAlertSelectors,
-  getPlatformAlertSelectors,
-  getServicesAlertSelectors,
-  getVolumesAlertSelectors,
-  useAlerts,
-  useHighestSeverityAlerts,
-} from './alerts';
-import { useHistory } from 'react-router';
-import { useQuery, UseQueryResult } from 'react-query';
-import { loadShare } from '@module-federation/enhanced/runtime';
+import { QueryClientProvider } from './QueryClientProvider';
 
 /**
  * This is a mock function to replace the real loadShare function when running tests.
@@ -86,95 +61,9 @@ const loadShareModule =
 
 export const queryClient = new QueryClient();
 
-export type ShellTypes = {
-  shellHooks: {
-    useAuthConfig: typeof useAuthConfig;
-    useAuth: typeof useAuth;
-    useConfigRetriever: typeof useConfigRetriever;
-    useDiscoveredViews: typeof useDiscoveredViews;
-    useShellConfig: typeof useShellConfig;
-    useLanguage: typeof useLanguage;
-    useConfig: typeof useConfig;
-    useLinkOpener: typeof useLinkOpener;
-    useDeployedApps: typeof useDeployedApps;
-    useShellThemeSelector: typeof useShellThemeSelector;
-  };
-  shellAlerts: {
-    AlertsProvider: typeof AlertProvider;
-    hooks: {
-      useAlerts: typeof useAlerts;
-      useHighestSeverityAlerts: typeof useHighestSeverityAlerts;
-    };
-    alertSelectors: {
-      getPlatformAlertSelectors: typeof getPlatformAlertSelectors;
-      getNodesAlertSelectors: typeof getNodesAlertSelectors;
-      getVolumesAlertSelectors: typeof getVolumesAlertSelectors;
-      getNetworksAlertSelectors: typeof getNetworksAlertSelectors;
-      getServicesAlertSelectors: typeof getServicesAlertSelectors;
-      getK8SMasterAlertSelectors: typeof getK8SMasterAlertSelectors;
-      getBootstrapAlertSelectors: typeof getBootstrapAlertSelectors;
-      getMonitoringAlertSelectors: typeof getMonitoringAlertSelectors;
-      getAlertingAlertSelectors: typeof getAlertingAlertSelectors;
-      getLoggingAlertSelectors: typeof getLoggingAlertSelectors;
-      getDashboardingAlertSelectors: typeof getDashboardingAlertSelectors;
-      getIngressControllerAlertSelectors: typeof getIngressControllerAlertSelectors;
-      getAuthenticationAlertSelectors: typeof getAuthenticationAlertSelectors;
-    };
-  };
-};
-
-declare global {
-  interface Window {
-    shellContexts: {
-      ShellHistoryContext: React.Context<ReturnType<typeof useHistory> | null>;
-      NotificationContext: React.Context<null | NotificationCenterContextType>;
-      WebFingersContext: React.Context<
-        | null
-        | UseQueryResult<
-            BuildtimeWebFinger | RuntimeWebFinger<Record<string, unknown>>,
-            unknown
-          >[]
-      >;
-    };
-    shellHooks: ShellTypes['shellHooks'];
-    shellAlerts: ShellTypes['shellAlerts'];
-  }
-}
-
-window.shellHooks = {
-  useAuthConfig,
-  useAuth,
-  useConfigRetriever,
-  useDiscoveredViews,
-  useShellConfig,
-  useLanguage,
-  useConfig,
-  useLinkOpener: useLinkOpener,
-  useDeployedApps: useDeployedApps,
-  useShellThemeSelector: useShellThemeSelector,
-};
-
-window.shellAlerts = {
-  AlertsProvider: AlertProvider,
-  hooks: {
-    useAlerts: useAlerts,
-    useHighestSeverityAlerts: useHighestSeverityAlerts,
-  },
-  alertSelectors: {
-    getPlatformAlertSelectors: getPlatformAlertSelectors,
-    getNodesAlertSelectors: getNodesAlertSelectors,
-    getVolumesAlertSelectors: getVolumesAlertSelectors,
-    getNetworksAlertSelectors: getNetworksAlertSelectors,
-    getServicesAlertSelectors: getServicesAlertSelectors,
-    getK8SMasterAlertSelectors: getK8SMasterAlertSelectors,
-    getBootstrapAlertSelectors: getBootstrapAlertSelectors,
-    getMonitoringAlertSelectors: getMonitoringAlertSelectors,
-    getAlertingAlertSelectors: getAlertingAlertSelectors,
-    getLoggingAlertSelectors: getLoggingAlertSelectors,
-    getDashboardingAlertSelectors: getDashboardingAlertSelectors,
-    getIngressControllerAlertSelectors: getIngressControllerAlertSelectors,
-    getAuthenticationAlertSelectors: getAuthenticationAlertSelectors,
-  },
+export type FederatedAppProps = {
+  shellHooks: ShellHooks;
+  shellAlerts: ShellAlerts;
 };
 
 function FederatedRoute({
@@ -230,6 +119,11 @@ function ProtectedFederatedRoute({
   const { userData } = useAuth();
   const { retrieveConfiguration } = useConfigRetriever();
 
+  const federatedAppProps: FederatedAppProps = {
+    shellHooks,
+    shellAlerts,
+  };
+
   if (
     userData &&
     (groups?.some((group) => userData.groups.includes(group)) ?? true)
@@ -242,7 +136,7 @@ function ProtectedFederatedRoute({
       <FederatedComponent
         url={`${app.url}${appBuildConfig?.spec.remoteEntryPath}?version=${app.version}`}
         module={module}
-        props={{}}
+        props={federatedAppProps}
         scope={scope}
         app={app}
       />
@@ -255,6 +149,7 @@ function ProtectedFederatedRoute({
 function InternalRouter() {
   const discoveredViews = useDiscoveredViews();
   const { retrieveConfiguration } = useConfigRetriever();
+
   const routes = useMemo(
     () =>
       (
@@ -284,55 +179,43 @@ function InternalRouter() {
 
         .map(({ app, view, groups }) => ({
           path: app.appHistoryBasePath + view.path,
+          basename: app.appHistoryBasePath,
           exact: view.exact,
           strict: view.strict,
           sensitive: view.sensitive,
-          component: () => {
-            const federatedAppHistory = useMemo(
-              () =>
-                createBrowserHistory({
-                  basename: app.appHistoryBasePath,
-                }),
-              [],
-            );
-            return (
-              <Router history={federatedAppHistory} key={app.name}>
-                <FederatedRoute
-                  url={
-                    app.url +
-                    retrieveConfiguration<'build'>({
-                      configType: 'build',
-                      name: app.name,
-                    })?.spec.remoteEntryPath
-                  }
-                  module={view.module}
-                  scope={view.scope}
-                  app={app}
-                  groups={groups}
-                />
-              </Router>
-            );
-          },
+          element: (
+            <FederatedRoute
+              url={
+                app.url +
+                retrieveConfiguration<'build'>({
+                  configType: 'build',
+                  name: app.name,
+                })?.spec.remoteEntryPath
+              }
+              module={view.module}
+              scope={view.scope}
+              app={app}
+              groups={groups}
+            />
+          ),
         })),
     [JSON.stringify(discoveredViews)],
   );
+
   return (
-    <>
-      <Switch>
-        {routes.map((route) => (
-          <Route key={route.path} {...route} />
-        ))}
-      </Switch>
-    </>
+    <Routes>
+      {routes.map((route) => (
+        <Route
+          key={route.path}
+          path={`${route.basename}/*`}
+          element={route.element}
+        />
+      ))}
+    </Routes>
   );
 }
 
 function InternalApp() {
-  const history = useMemo(() => {
-    const history = createBrowserHistory({});
-    return history;
-  }, []);
-
   const { status } = useQuery({
     queryKey: ['load-share-deps'],
     queryFn: async () => {
@@ -349,7 +232,7 @@ function InternalApp() {
   });
 
   return (
-    <Router history={history}>
+    <BrowserRouter>
       <ShellHistoryProvider>
         <FirstTimeLoginProvider>
           <NotificationCenterProvider>
@@ -365,7 +248,7 @@ function InternalApp() {
           </NotificationCenterProvider>
         </FirstTimeLoginProvider>
       </ShellHistoryProvider>
-    </Router>
+    </BrowserRouter>
   );
 }
 

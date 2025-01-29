@@ -1,8 +1,7 @@
 import { Tabs } from '@scality/core-ui/dist/next';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRouteMatch } from 'react-router';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router';
 
 import {
   AppContainer,
@@ -48,8 +47,8 @@ const NodePageRSP = (props) => {
   const { nodeTableData } = props;
   const dispatch = useDispatch();
   const intl = useIntl();
-  const { url } = useRouteMatch();
-  // @ts-expect-error - FIXME when you are working on it
+  const { pathname } = useLocation();
+  const baseUrl = pathname.substring(0, pathname.lastIndexOf('/'));
   const { name } = useParams();
   const [memoCacheReset, setMemoCacheReset] = useState(0);
   // Initialize the `metricsTimeSpan` in saga state base on the URL query.
@@ -106,6 +105,7 @@ const NodePageRSP = (props) => {
   const workloadPlaneInterface =
     nodesIPsInfo[name]?.workloadPlane?.interface ?? '';
   const currentNode = nodeTableData?.find((node) => node.name.name === name);
+
   useEffect(() => {
     dispatch(
       updateNodeStatsFetchArgumentAction({
@@ -165,7 +165,7 @@ const NodePageRSP = (props) => {
       </AppContainer.OverallSummary>
       <Tabs>
         <Tabs.Tab
-          path={`${url}/overview`}
+          path={`${baseUrl}/overview`}
           label={intl.formatMessage({
             id: 'overview',
           })}
@@ -180,7 +180,7 @@ const NodePageRSP = (props) => {
           />
         </Tabs.Tab>
         <Tabs.Tab
-          path={`${url}/alerts`}
+          path={`${baseUrl}/alerts`}
           label={intl.formatMessage({
             id: 'alerts',
           })}
@@ -200,7 +200,7 @@ const NodePageRSP = (props) => {
           <AlertsTab alerts={alertsNode} status={alertList.status} />
         </Tabs.Tab>
         <Tabs.Tab
-          path={`${url}/metrics`}
+          path={`${baseUrl}/metrics`}
           label={intl.formatMessage({
             id: 'metrics',
           })}
@@ -216,7 +216,7 @@ const NodePageRSP = (props) => {
         </Tabs.Tab>
         <Tabs.Tab
           data-cy="volumes_tab_node_page"
-          path={`${url}/volumes`}
+          path={`${baseUrl}/volumes`}
           label={intl.formatMessage({
             id: 'volumes',
           })}
@@ -225,7 +225,7 @@ const NodePageRSP = (props) => {
           <NodePageVolumesTab nodeName={name} />
         </Tabs.Tab>
         <Tabs.Tab
-          path={`${url}/pods`}
+          path={`${baseUrl}/pods`}
           data-cy="pods_tab_node_page"
           label={intl.formatMessage({
             id: 'pods',
@@ -237,7 +237,7 @@ const NodePageRSP = (props) => {
         </Tabs.Tab>
         <Tabs.Tab
           data-cy="partition_tab_node_page"
-          path={`${url}/partitions`}
+          path={`${baseUrl}/partitions`}
           label="Partitions"
           withoutPadding
         >
@@ -248,7 +248,7 @@ const NodePageRSP = (props) => {
           label={intl.formatMessage({
             id: 'details',
           })}
-          path={`${url}/details`}
+          path={`${baseUrl}/details`}
         >
           <NodePageDetailsTab />
         </Tabs.Tab>

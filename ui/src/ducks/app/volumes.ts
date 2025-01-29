@@ -491,7 +491,7 @@ export function* createVolumes({
         // @ts-expect-error - FIXME when you are working on it
         const { history } = yield select((state: RootState) => state.history);
         yield call(
-          history.push,
+          history,
           `/volumes/${newVolumes[i].name}/overview?node=${newVolumes[i].node}`,
         );
         yield put(

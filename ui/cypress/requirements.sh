@@ -29,13 +29,13 @@ RPM_PACKAGES=(
 )
 NODE_PACKAGES=(
     har-validator@5.1.5
-    cypress@5.6.0
-    cypress-cucumber-preprocessor@4.0.0
-    cypress-wait-until@1.7.1
-    @testing-library/cypress@7.0.3
+    cypress@13.17.0
+    cypress-wait-until@3.0.2
+    @testing-library/cypress@10.0.0
+    querystring@0.2.1
 )
 
-curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -
+curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
 
 sudo yum install "${YUM_OPTS[@]}" "${RPM_PACKAGES[@]}"
 
@@ -43,5 +43,5 @@ npm install "${NPM_OPTS[@]}" "${NODE_PACKAGES[@]}"
 
 sudo ln -s "$PWD/node_modules/cypress/bin/cypress" /usr/local/bin/cypress
 
-sudo chown root:root "$HOME/.cache/Cypress/5.6.0/Cypress/chrome-sandbox"
-sudo chmod 4755 "$HOME/.cache/Cypress/5.6.0/Cypress/chrome-sandbox"
+sudo chown root:root "$HOME/.cache/Cypress/13.17.0/Cypress/chrome-sandbox"
+sudo chmod 4755 "$HOME/.cache/Cypress/13.17.0/Cypress/chrome-sandbox"

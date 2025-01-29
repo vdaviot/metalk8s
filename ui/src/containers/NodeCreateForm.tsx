@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Banner,
   Checkbox,
@@ -17,7 +16,7 @@ import isEmpty from 'lodash.isempty';
 import { useEffect } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import {
@@ -74,7 +73,7 @@ const NodeCreateForm = () => {
     infra: false,
   };
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const intl = useIntl();
   useEffect(() => {
     dispatch(fetchClusterVersionAction());
@@ -137,7 +136,7 @@ const NodeCreateForm = () => {
                   })}
                   type="button"
                   variant="outline"
-                  onClick={() => history.goBack()}
+                  onClick={() => navigate(-1)}
                 />
                 <Button
                   label={intl.formatMessage({

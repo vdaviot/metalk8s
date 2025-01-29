@@ -7,7 +7,6 @@ import {
 } from '@scality/core-ui';
 import { fontSize, fontWeight } from '@scality/core-ui/dist/style/theme';
 import { useIntl } from 'react-intl';
-import { useHistory } from 'react-router';
 import styled from 'styled-components';
 import { STATUS_HEALTH } from '../constants';
 import type { Status } from '../containers/AlertProvider';
@@ -17,6 +16,7 @@ import {
 } from '../containers/ConfigProvider';
 import type { Alert } from '../services/alertUtils';
 import CircleStatus from './CircleStatus';
+import { useBasenameRelativeNavigate } from '@scality/module-federation';
 const ServiceItemLabelWrapper = styled.div`
   display: flex;
   align-items: baseline;
@@ -87,7 +87,7 @@ const HealthItem = ({
 }) => {
   const intl = useIntl();
   const { openLink } = useLinkOpener();
-  const history = useHistory();
+  const navigate = useBasenameRelativeNavigate();
   const discoveredViews = useDiscoveredViews();
   const alertView = discoveredViews.find((view) => {
     return view.isFederated && view.view.path === '/alerts';
@@ -144,7 +144,7 @@ const HealthItem = ({
           <div
             onClick={() => {
               openLink(alertView);
-              history.replace('/alerts');
+              navigate('/alerts', { replace: true });
             }}
             data-testid="alert-link"
           >

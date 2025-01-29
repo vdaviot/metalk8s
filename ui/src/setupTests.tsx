@@ -3,7 +3,9 @@ import { setupMock as setupLocalStorageMock } from './tests/mocks/localStorage';
 import '@testing-library/jest-dom/extend-expect';
 import 'babel-polyfill';
 import { Alert } from './services/alertUtils';
-import React from 'react';
+import React, { JSX } from 'react';
+import { TextEncoder, TextDecoder } from 'util';
+
 setupLocalStorageMock();
 
 window.fetch = (url, ...rest) =>
@@ -138,3 +140,104 @@ jest.mock('./containers/PrivateRoute', () => ({
     };
   }),
 }));
+
+export const mockShellHooks = {
+  useAuthConfig: jest.fn(),
+  useAuth: jest.fn(() => ({
+    userData: {
+      token: 'xxx',
+      original: {
+        session_state: 'session-state-1',
+      },
+      groups: ['StorageManager'],
+    },
+    getToken: () => Promise.resolve('xxx'),
+  })),
+  useConfigRetriever: jest.fn(() => {
+    return {
+      retrieveConfiguration: jest.fn(() => {
+        return {
+          spec: {
+            remoteEntryPath: '/remoteEntry.js',
+          },
+        };
+      }),
+    };
+  }),
+  useDiscoveredViews: jest.fn(),
+  useShellConfig: jest.fn(),
+  useLanguage: jest.fn(),
+  useConfig: jest.fn(),
+  useLinkOpener: jest.fn(() => {
+    return { openLink: jest.fn() };
+  }),
+  useDeployedApps: jest.fn(() => {
+    return [
+      {
+        kind: 'zenko-ui',
+        name: 'zenko-ui.eu-west-1',
+        version: 'local-dev',
+        url: 'http://127.0.0.1:8383/zenko',
+        appHistoryBasePath: '/data',
+      },
+    ];
+  }),
+  useShellThemeSelector: jest.fn(() => {
+    return {
+      theme: 'dark',
+      setTheme: jest.fn(),
+    };
+  }),
+  useNotificationCenter: jest.fn(),
+};
+
+export const mockShellAlerts = {
+  AlertsProvider: ({
+    alertManagerUrl,
+    children,
+  }: {
+    alertManagerUrl: string;
+    children: JSX.Element;
+  }) => <>{children}</>,
+  alertHooks: {
+    useAlerts: jest.fn(),
+    useHighestSeverityAlerts: jest.fn(),
+  },
+  alertSelectors: {
+    getPlatformAlertSelectors: jest.fn(),
+    getNodesAlertSelectors: jest.fn(),
+    getVolumesAlertSelectors: jest.fn(),
+    getNetworksAlertSelectors: jest.fn(),
+    getServicesAlertSelectors: jest.fn(),
+    getK8SMasterAlertSelectors: jest.fn(),
+    getBootstrapAlertSelectors: jest.fn(),
+    getMonitoringAlertSelectors: jest.fn(),
+    getAlertingAlertSelectors: jest.fn(),
+    getLoggingAlertSelectors: jest.fn(),
+    getDashboardingAlertSelectors: jest.fn(),
+    getIngressControllerAlertSelectors: jest.fn(),
+    getAuthenticationAlertSelectors: jest.fn(),
+  },
+};
+
+jest.mock('@scality/module-federation', () => {
+  const original = jest.requireActual('@scality/module-federation');
+  const router = jest.requireActual('react-router');
+  return {
+    ...original,
+    useCurrentApp: jest.fn(() => {
+      return {
+        kind: 'metalk8s-ui',
+        view: 'platform',
+        appHistoryBasePath: '',
+      };
+    }),
+    useBasenameRelativeNavigate: router.useNavigate,
+    ShellHooksProvider: ({ children }) => <>{children}</>,
+    useShellHooks: () => mockShellHooks,
+    useShellAlerts: () => mockShellAlerts,
+  };
+});
+
+(global as any).TextEncoder = TextEncoder;
+(global as any).TextDecoder = TextDecoder;

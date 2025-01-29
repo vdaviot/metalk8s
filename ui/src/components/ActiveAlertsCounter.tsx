@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useHistory, useLocation, useRouteMatch } from 'react-router';
+import { useLocation, useResolvedPath } from 'react-router';
 import { Icon } from '@scality/core-ui/dist/components/icon/Icon.component';
 import { padding, fontSize } from '@scality/core-ui/dist/style/theme';
 import { STATUS_WARNING, STATUS_CRITICAL } from '../constants';
+import { useBasenameRelativeNavigate } from '@scality/module-federation';
 export const CountersWrapper = styled.div`
   color: ${(props) => props.theme.textPrimary};
   display: flex;
@@ -47,9 +48,9 @@ const CounterIcon = ({ name, status }) => {
 
 const ActiveAlertsCounter = (props) => {
   const { criticalCounter, warningCounter } = props;
-  const history = useHistory();
+  const navigate = useBasenameRelativeNavigate();
   const location = useLocation();
-  let { url } = useRouteMatch();
+  let url = useResolvedPath('').pathname;
 
   const getLink = (status) => {
     const query = new URLSearchParams(location.search);
@@ -66,7 +67,7 @@ const ActiveAlertsCounter = (props) => {
   return (
     <CountersWrapper>
       <CounterWrapper
-        onClick={() => history.push(getLink(STATUS_CRITICAL))}
+        onClick={() => navigate(getLink(STATUS_CRITICAL))}
         data-cy="critical_counter_node"
       >
         <CounterTitle>Critical</CounterTitle>
@@ -76,7 +77,7 @@ const ActiveAlertsCounter = (props) => {
         </CounterValueWrapper>
       </CounterWrapper>
       <CounterWrapper
-        onClick={() => history.push(getLink(STATUS_WARNING))}
+        onClick={() => navigate(getLink(STATUS_WARNING))}
         data-cy="warning_counter_node"
       >
         <CounterTitle>Warning</CounterTitle>

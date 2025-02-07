@@ -1,7 +1,14 @@
 {%- set dest_version = pillar.metalk8s.cluster_version %}
-{%- set master_nodes = salt.metalk8s.minions_by_role('master') %}
+{%- set master_nodes = salt.metalk8s.minions_by_role('master') | sort %}
+{%- set bootstrap_nodes = salt.metalk8s.minions_by_role('bootstrap') | sort %}
 
-{%- for node in master_nodes | sort %}
+# move bootstrap nodes to beginning of list
+{%- for node in bootstrap_nodes %}
+{%- do master_nodes.remove(node) %}
+{%- do master_nodes.insert(0, node) %}
+{%- endfor %}
+
+{%- for node in master_nodes %}
 
 Sync {{ node }} minion:
   salt.function:

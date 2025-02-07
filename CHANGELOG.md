@@ -112,6 +112,12 @@
   image to `rockylinux:9.5-minimal`
   (PR[#4483](https://github.com/scality/metalk8s/pull/4483))
 
+### Bug fixes
+
+- Fix a bug where upgrading apiserver on a non-bootstrap node
+  before the bootstrap would throw an error.
+  (PR[#4514](https://github.com/scality/metalk8s/pull/4514))
+
 ## Release 128.0.3 (in development)
 
 ### Enhancements

@@ -9,6 +9,12 @@ import { useConfigRetriever } from '../initFederation/ConfigurationProviders';
 import { useDeployedApps } from '../initFederation/UIListProvider';
 import { useNotificationCenter } from '../useNotificationCenter';
 import { useNavbar } from './navbarHooks';
+import {
+  ShellAlerts,
+  shellAlerts,
+  ShellHooks,
+  shellHooks,
+} from '../hooks/useShellHooks';
 
 export const NavbarUpdaterComponents = () => {
   const deployedApps = useDeployedApps();
@@ -41,7 +47,16 @@ export const NavbarUpdaterComponents = () => {
       {componentsToFederate.map((component, index) => {
         return (
           <Fragment key={index}>
-            <ErrorBoundary FallbackComponent={() => <></>}>
+            <ErrorBoundary
+              FallbackComponent={(props) => {
+                console.error(
+                  'error while loading navbar updater component',
+                  component,
+                  props,
+                );
+                return <></>;
+              }}
+            >
               <FederatedComponent
                 key={component.module}
                 url={`${component.app.url}${component.remoteEntryPath}?version=${component.app.version}`}
@@ -54,6 +69,8 @@ export const NavbarUpdaterComponents = () => {
                   unPublishNotification: unPublish,
                   isFirstTimeLogin: firstTimeLogin,
                   userData,
+                  shellHooks,
+                  shellAlerts,
                 }}
               />
             </ErrorBoundary>

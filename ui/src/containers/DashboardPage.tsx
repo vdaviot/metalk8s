@@ -9,7 +9,6 @@ import DashboardServices from '../components/DashboardServices';
 import DashboardGlobalHealth from '../components/DashboardGlobalHealth';
 import TimespanSelector from './TimespanSelector';
 import DashboardNetwork from '../components/DashboardNetwork';
-import { Outlet } from 'react-router';
 
 const DashboardGrid = styled.div`
   display: grid;

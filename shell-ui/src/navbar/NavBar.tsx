@@ -122,30 +122,6 @@ const Link = ({
   );
 };
 
-function prefetch(url: string) {
-  return new Promise((resolve, reject) => {
-    const existingElement = [
-      ...(document.head?.querySelectorAll('script') || []),
-      // @ts-expect-error - FIXME when you are working on it
-    ].find((scriptElement) => scriptElement.attributes.src?.value === url);
-
-    if (existingElement) {
-      // @ts-expect-error - FIXME when you are working on it
-      resolve();
-    }
-
-    const script = document.createElement('script');
-    script.src = url;
-    script.async = true;
-    script.onload = (evt) => {
-      script.setAttribute('data-loaded', 'true');
-      resolve(evt);
-    };
-    script.onerror = reject;
-    document.head?.appendChild(script);
-  });
-}
-
 export const useNavbarLinksToActions = (
   links: TypeLink[],
 ): {
@@ -154,8 +130,8 @@ export const useNavbarLinksToActions = (
 }[] => {
   const location = useLocation();
   const doesRouteMatch = useCallback(
-    (path: RouteProps) => {
-      return matchPath(path.path + '*', location.pathname);
+    ({ path, exact }: { path: string; exact: boolean }) => {
+      return matchPath(path + (exact ? '' : '*'), location.pathname);
     },
     [location],
   );
@@ -181,6 +157,7 @@ export const useNavbarLinksToActions = (
     .find((link) =>
       link.view.isFederated
         ? doesRouteMatch({
+            exact: link.view.view.exact,
             path: link.view.view.activeIfMatches
               ? new RegExp(
                   link.view.app.appHistoryBasePath +

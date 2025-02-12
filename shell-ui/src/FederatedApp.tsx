@@ -8,10 +8,17 @@ import {
   FederatedComponentProps,
   SolutionUI,
 } from '@scality/module-federation';
-import React, { useEffect, useMemo } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useTransition,
+  useRef,
+  useState,
+} from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryClient } from 'react-query';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router';
 
 import { loadShare } from '@module-federation/enhanced/runtime';
 import { useQuery } from 'react-query';
@@ -229,6 +236,9 @@ function InternalApp() {
         loadShareModule('@scality/module-federation'),
       ]);
     },
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   return (

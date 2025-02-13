@@ -129,7 +129,6 @@
   before the bootstrap would throw an error.
   (PR[#4514](https://github.com/scality/metalk8s/pull/4514))
 
-## Release 128.0.3 (in development)
 ## Release 128.0.4 (in development)
 
 ## Release 128.0.3

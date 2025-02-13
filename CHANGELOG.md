@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## Release 128.0.3 (in development)
+## Release 128.0.4 (in development)
+
+## Release 128.0.3
 
 ### Enhancements
 

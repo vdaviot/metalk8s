@@ -15,6 +15,13 @@
 
 ### Enhancements
 
+- Bump go version to
+  [1.24](https://golang.org/doc/devel/release.html#go1.24.minor)
+  and alertmanager go library version to
+  [0.27.0](https://github.com/prometheus/alertmanager/releases/tag/v0.27.0)
+  in `metalk8s-alert-logger` image
+  (PR[#4524](https://github.com/scality/metalk8s/pull/4524))
+
 - Implement super-admin user and bind admin to built-in cluster-admins role
   (PR[#4418](https://github.com/scality/metalk8s/pull/4418))
 

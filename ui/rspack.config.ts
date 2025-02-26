@@ -117,6 +117,8 @@ const config: Configuration = {
         './platformLibrary': './src/services/platformlibrary/k8s.ts',
         './AlertsNavbarUpdater':
           './src/components/AlertNavbarUpdaterComponent.tsx',
+        './Metalk8sLocalVolumeProvider':
+          './src/services/k8s/Metalk8sLocalVolumeProvider.ts',
       },
       remotes: !isProduction
         ? {
@@ -148,7 +150,19 @@ const config: Configuration = {
       },
     }),
     new rspack.CopyRspackPlugin({
-      patterns: [{ from: 'public' }],
+      patterns: [
+        { from: 'public' },
+        {
+          from: path.resolve(__dirname, 'build/static/js/@mf-types.zip'),
+          to: '@mf-types.zip',
+          noErrorOnMissing: true,
+        },
+        {
+          from: path.resolve(__dirname, 'build/static/js/@mf-types.d.ts'),
+          to: '@mf-types.d.ts',
+          noErrorOnMissing: true,
+        },
+      ],
     }),
     new rspack.DefinePlugin({
       NODE_ENV: process.env.NODE_ENV,

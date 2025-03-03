@@ -3,10 +3,24 @@ import packageJson from './package.json';
 import { Configuration } from '@rspack/cli';
 import rspack from '@rspack/core';
 import { ModuleFederationPlugin } from '@module-federation/enhanced/rspack';
+import fs from 'fs';
 
 const deps = packageJson.dependencies;
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+let version = process.env.VERSION;
+if (!version) {
+  const versionFileContents = fs.readFileSync(
+    path.join(__dirname, '../VERSION'),
+    { encoding: 'utf-8' },
+  );
+  const versionRegex =
+    /.*VERSION_MAJOR=(?<versionMajor>\d+)(\n){0,1}.*VERSION_MINOR=(?<versionMinor>\d+)(\n){0,1}.*VERSION_PATCH=(?<versionPatch>\d+)(\n){0,1}.*VERSION_SUFFIX=(?<versionSuffix>.*)/m;
+  const { versionMajor, versionMinor, versionPatch, versionSuffix } =
+    versionRegex.exec(versionFileContents).groups;
+  version = `${versionMajor}.${versionMinor}.${versionPatch}${versionSuffix}`;
+}
 
 const config: Configuration = {
   entry: {
@@ -97,7 +111,7 @@ const config: Configuration = {
   plugins: [
     new ModuleFederationPlugin({
       name: 'metalk8s',
-      filename: 'static/js/remoteEntry.js',
+      filename: `static/js/remoteEntry.${version}.js`,
       exposes: {
         './FederableApp': './src/FederableApp.tsx',
         './platformLibrary': './src/services/platformlibrary/k8s.ts',

@@ -12,6 +12,9 @@
   (PR[#4497](https://github.com/scality/metalk8s/pull/4497))
 
 ## Release 129.0.0 (in development)
+## Release 129.0.1 (in development)
+
+## Release 129.0.0
 
 ### Removals
 

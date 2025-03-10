@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Release 129.0.0 (in development)
+## Release 129.0.0
 
 ### Removals
 

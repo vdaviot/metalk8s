@@ -1,5 +1,7 @@
 import { CoreV1Api, CustomObjectsApi } from '@kubernetes/client-node';
-import Metalk8sLocalVolumeProvider from './Metalk8sLocalVolumeProvider';
+import Metalk8sLocalVolumeProvider, {
+  VolumeType,
+} from './Metalk8sLocalVolumeProvider';
 import { Metalk8sV1alpha1VolumeClient } from './Metalk8sVolumeClient.generated';
 import { updateApiServerConfig } from './api';
 
@@ -104,16 +106,19 @@ describe('Metalk8sLocalVolumeProvider', () => {
         IP: '192.168.1.100',
         devicePath: '/dev/sda',
         nodeName: 'test-node',
+        volumeType: VolumeType.Hardware,
       });
       expect(volumes[1]).toMatchObject({
         IP: '192.168.1.100',
         devicePath: 'test-lvm',
         nodeName: 'test-node',
+        volumeType: VolumeType.Virtual,
       });
       expect(volumes[2]).toMatchObject({
         IP: '192.168.1.100',
         devicePath: 'test-sparseLoop',
         nodeName: 'test-node',
+        volumeType: VolumeType.Virtual,
       });
     });
 

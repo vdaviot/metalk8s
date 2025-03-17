@@ -47,7 +47,7 @@ ENV LC_ALL=C.UTF-8
 RUN sudo ln -fs /usr/share/zoneinfo/UTC /etc/localtime
 
 # Install helm
-ARG HELM_VERSION=3.14.4
+ARG HELM_VERSION=3.17.2
 
 RUN curl --fail -L -o /tmp/helm.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     sudo tar -zxvf /tmp/helm.tar.gz -C /usr/local/bin/ linux-amd64/helm --strip-components 1 && \

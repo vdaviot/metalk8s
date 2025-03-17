@@ -12,6 +12,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         gawk \
         gcc \
         genisoimage \
+        gh \
         git \
         isomd5sum \
         libassuan-dev \

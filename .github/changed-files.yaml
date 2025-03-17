@@ -74,7 +74,6 @@ build:
   - "!solution-operator-lib/**"
   # Filter out devX and tools
   - "!.pre-commit-config.yaml"
-  - "!.devcontainer/**"
   - "!.gitignore"
   - "!LICENSE"
   - "!README.md"

@@ -79,17 +79,29 @@ jobs:
             echo "${!changed_files_var}"
           done
 
+  build-devcontainer:
+    uses: ./.github/workflows/build-devcontainer.yaml
+    secrets: inherit
+
   build:
-    needs: changed-files
+    needs:
+      - build-devcontainer
+      - changed-files
     if: needs.changed-files.outputs.build == 'true'
     uses: ./.github/workflows/build.yaml
+    with:
+      build-devcontainer: false
     secrets: inherit
 
   build-docs:
-    needs: changed-files
+    needs:
+      - build-devcontainer
+      - changed-files
     # Build of docs is triggered by "build" so do not re-trigger it
     if: needs.changed-files.outputs.docs == 'true' && needs.changed-files.outputs.build != 'true'
     uses: ./.github/workflows/build-docs.yaml
+    with:
+      build-devcontainer: false
     secrets: inherit
 
   build-shell-ui:

@@ -27,6 +27,7 @@ unit-tests-crd-client-generator:
 
 unit-tests-metalk8s-operator:
   - operator/**
+  - .devcontainer/**
 
 unit-tests-storage-operator:
   - storage-operator/**

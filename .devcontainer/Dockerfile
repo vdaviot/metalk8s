@@ -70,11 +70,18 @@ RUN curl --fail -L -o /tmp/helm.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}
 
 # Install go
 ARG GO_VERSION=1.20.14
+ENV GOROOT="/usr/local/go"
+# NOTE: We use a custom GOPATH so that we can use it both for vscode and root users
+ENV GOPATH="/usr/lib/go"
+ENV GOBIN="$GOPATH/bin"
+ENV PATH="$GOBIN:$GOROOT/bin:$PATH"
 
 RUN curl --fail -L -o /tmp/go.tar.gz https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
-    sudo tar -C /usr/local -xzf /tmp/go.tar.gz && \
-    sudo ln -s /usr/local/go/bin/go /usr/local/bin/go && \
-    sudo ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt && \
+    sudo tar -C /usr/local/ -xzf /tmp/go.tar.gz && \
+    sudo mkdir -p $GOPATH && \
+    sudo chown $(id -u):$(id -g) -R $GOROOT $GOPATH && \
+    cd $GOROOT/bin && mv go go${GO_VERSION} && ln -s go${GO_VERSION} go && \
+    printf 'export PATH="%s:%s/bin:$PATH"\n' $GOBIN $GOROOT | sudo tee -a /etc/bash.bashrc -a /etc/zsh/zshrc && \
     rm -rf /tmp/go.tar.gz
 
 # Install golangci-lint
@@ -97,7 +104,7 @@ ARG SKOPEO_VERSION=1.15.1
 RUN curl --fail -L -o /tmp/skopeo.tar.gz https://github.com/containers/skopeo/archive/refs/tags/v${SKOPEO_VERSION}.tar.gz && \
     tar -zxvf /tmp/skopeo.tar.gz -C /tmp && \
     cd /tmp/skopeo-${SKOPEO_VERSION} && \
-    sudo make bin/skopeo && \
+    sudo "PATH=$PATH" make bin/skopeo && \
     sudo mv bin/skopeo /usr/local/bin/ && \
     cd && \
     rm -rf /tmp/skopeo.tar.gz /tmp/skopeo-${SKOPEO_VERSION}

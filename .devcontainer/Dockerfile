@@ -58,7 +58,11 @@ RUN pyenv install 3.10.12 3.6.15 2.7 && \
     pyenv global 3.10.12 3.6.15 2.7
 
 # Install python libs
-RUN pyenv exec pip install "tox~=4.4.12" "pre-commit~=3.3.3" "virtualenv<20.22.0" "esbonio>=0.12.0"
+RUN pip3 install --no-cache-dir --upgrade pip && \
+    pip3.6 install --no-cache-dir --upgrade pip && \
+    pip3 install --no-cache-dir "tox~=4.4.12" "pre-commit~=3.3.3" "virtualenv<20.22.0" "esbonio>=0.12.0" && \
+    pip3.6 install --no-cache-dir "poetry~=1.1.15" && \
+    pyenv rehash
 
 # Install helm
 ARG HELM_VERSION=3.17.2

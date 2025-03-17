@@ -14,6 +14,6 @@ if [ "$CODESPACES" = "true" ]; then
 fi
 
 echo "Install pre-commit hooks"
-pre-commit install
+pre-commit install --install-hooks
 
 echo "End of setup"

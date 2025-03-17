@@ -46,6 +46,21 @@ ENV LC_ALL=C.UTF-8
 # See: https://github.com/python-babel/babel/issues/990
 RUN sudo ln -fs /usr/share/zoneinfo/UTC /etc/localtime
 
+ENV PYENV_ROOT="/usr/local/pyenv"
+ENV PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"
+
+# Install pyenv
+RUN sudo git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT && \
+    sudo chown $(id -u):$(id -g) -R $PYENV_ROOT && \
+    printf 'export PYENV_ROOT=%s\nexport PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"\nif command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init -)"\nfi\n' $PYENV_ROOT | sudo tee -a /etc/bash.bashrc -a /etc/zsh/zshrc
+
+# Install pythons
+RUN pyenv install 3.10.12 3.6.15 2.7 && \
+    pyenv global 3.10.12 3.6.15 2.7
+
+# Install python libs
+RUN pyenv exec pip install "tox~=4.4.12" "pre-commit~=3.3.3" "virtualenv<20.22.0" "esbonio>=0.12.0"
+
 # Install helm
 ARG HELM_VERSION=3.17.2
 
@@ -68,18 +83,6 @@ ARG GOLANGCI_VERSION=1.54.2
 RUN curl --fail -L -o /tmp/install.sh https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh && \
     sudo bash /tmp/install.sh v${GOLANGCI_VERSION} && \
     rm -f /tmp/install.sh
-
-# Install pyenv
-RUN git clone https://github.com/pyenv/pyenv.git ~/.pyenv && \
-    echo 'export PATH="$HOME/.pyenv/bin:$PATH"\nif command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init -)"\nfi' | tee -a ~/.bashrc -a ~/.zshrc && \
-    export PATH="$HOME/.pyenv/bin:$PATH" && eval "$(pyenv init -)"
-
-# Install pythons
-RUN ~/.pyenv/bin/pyenv install 3.10.12 3.6.15 2.7 && \
-    ~/.pyenv/bin/pyenv global 3.10.12 3.6.15 2.7
-    
-# Install python libs
-RUN ~/.pyenv/bin/pyenv exec pip install "tox~=4.4.12" "pre-commit~=3.3.3" "virtualenv<20.22.0" "esbonio>=0.12.0"
 
 # Install crane
 ARG CRANE_VERSION=0.20.0

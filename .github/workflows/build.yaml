@@ -115,10 +115,13 @@ jobs:
       ref: ${{ inputs.ref }}
 
   build-docs:
+    needs:
+      - build-devcontainer
     uses: ./.github/workflows/build-docs.yaml
     secrets: inherit
     with:
       ref: ${{ inputs.ref }}
+      build-devcontainer: false
 
   write-final-status:
     runs-on: ubuntu-20.04

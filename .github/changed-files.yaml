@@ -9,6 +9,7 @@ docs:
   - tools/lib-alert-tree/**
   - tools/rule_extractor/alerting_rules.json
   - tox.ini
+  - .devcontainer/**
 
 shell-ui:
   - shell-ui/**

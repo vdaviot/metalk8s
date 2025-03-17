@@ -8,6 +8,11 @@ on:
         default: ${{ github.ref }}
         required: false
         type: string
+      build-devcontainer:
+        description: "True will build the devcontainer"
+        default: true
+        required: false
+        type: boolean
     secrets:
       ARTIFACTS_USER:
         required: true
@@ -15,23 +20,38 @@ on:
         required: true
 
 jobs:
+  build-devcontainer:
+    uses: ./.github/workflows/build-devcontainer.yaml
+    secrets: inherit
+    with:
+      # NOTE: We check "!= true" instead of just checking the value
+      # since by default when the workflow is call with "workflow dispatch"
+      # the input will (sadly) be "" and not use the default value
+      skip: ${{ inputs.build-devcontainer != true }}
+
   docs:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    needs:
+      - build-devcontainer
+    container:
+      image: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+      # We have to use `root` for the moment
+      # Sees: https://github.com/actions/checkout/issues/1575
+      # Could work with a user with 1001 id but not for docker
+      options: --user root
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
-      - name: Install Python 3
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-      - name: Install deps
-        run: |
-          export DEBIAN_FRONTEND=noninteractive
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends -y plantuml
-          python3.10 -m pip install tox~=4.0.19
+      - name: Set safe directory (since container is root and not user 1001)
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Build documentation for ReadTheDocs
         env:
           # Fake that we are building in a ReadTheDocs environment

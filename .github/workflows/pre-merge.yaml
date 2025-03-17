@@ -333,21 +333,29 @@ jobs:
         run: tox -e unit-tests
 
   unit_tests_lib_alert_tree:
-    needs: changed-files
-    if: needs.changed-files.outputs.unit-tests-lib-alert-tree == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    needs:
+      - build-devcontainer
+      - changed-files
+    container:
+      image: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+      # We have to use `root` for the moment
+      # Sees: https://github.com/actions/checkout/issues/1575
+      # Could work with a user with 1001 id but not for docker
+      options: --user root
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
+        shell: bash
         working-directory: "tools/lib-alert-tree"
+    if: needs.changed-files.outputs.unit-tests-lib-alert-tree == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Python 3
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.6"
-      - name: Install deps
-        run: python3.6 -m pip install poetry~=1.1.9
+      - name: Set safe directory (since container is root and not user 1001)
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Install lib_alert_tree
         run: poetry install -E cli
       - name: Run all lib_alert_tree unit tests

@@ -1,7 +1,10 @@
 {
   "name": "metalk8s",
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "Dockerfile",
+    "options": [
+      "--platform=linux/amd64"
+    ]
   },
   "features": {
     "ghcr.io/devcontainers/features/sshd:1": {},

@@ -38,6 +38,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 
 USER vscode
 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
 # Install helm
 ARG HELM_VERSION=3.14.4
 

@@ -8,6 +8,11 @@ on:
         default: ${{github.ref}}
         required: false
         type: string
+      build-devcontainer:
+        description: "True will build the devcontainer"
+        default: true
+        required: false
+        type: boolean
     outputs:
       artifact-name:
         description: "artifacts name"
@@ -24,6 +29,15 @@ on:
   workflow_dispatch:
 
 jobs:
+  build-devcontainer:
+    uses: ./.github/workflows/build-devcontainer.yaml
+    secrets: inherit
+    with:
+      # NOTE: We check "!= true" instead of just checking the value
+      # since by default when the workflow is call with "workflow dispatch"
+      # the input will (sadly) be "" and not use the default value
+      skip: ${{ inputs.build-devcontainer != true }}
+
   build:
     runs-on: ubuntu-20.04
     outputs:
@@ -113,7 +127,7 @@ jobs:
           password: ${{ secrets.ARTIFACTS_PASSWORD }}
           source: artifacts
       - name: Cleanup build tree
-        run: ./doit.sh clean && test ! -d _build
+        run: cd "${{ github.workspace }}" && ./doit.sh clean && test ! -d _build
 
   build-shell-ui:
     uses: ./.github/workflows/build-shell-ui.yaml

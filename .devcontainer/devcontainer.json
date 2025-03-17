@@ -4,6 +4,9 @@
     "dockerfile": "Dockerfile",
     "options": [
       "--platform=linux/amd64"
+    ],
+    "cacheFrom": [
+      "type=gha,scope=devcontainer"
     ]
   },
   "features": {

@@ -36,6 +36,7 @@ unit-tests-storage-operator:
 unit-tests-salt:
   - salt/**
   - tox.ini
+  - .devcontainer/**
 
 unit-tests-lib-alert-tree:
   - tools/lib-alert-tree/**

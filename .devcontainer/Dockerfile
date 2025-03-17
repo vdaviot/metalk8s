@@ -7,6 +7,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         bash-completion \
         build-essential \
         curl \
+        docker.io \
         enchant-2 \
         gawk \
         gcc \

@@ -13,12 +13,6 @@ if [ "$CODESPACES" = "true" ]; then
   git reset --hard HEAD
 fi
 
-# NOTE: Due to a bug in recent babel version, it cannot work with
-# default UTC timezone
-# See: https://github.com/python-babel/babel/issues/990
-echo "Updating localtime"
-sudo ln -fs /usr/share/zoneinfo/UTC /etc/localtime
-
 echo "Install pre-commit hooks"
 pre-commit install
 

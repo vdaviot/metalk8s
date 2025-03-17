@@ -41,6 +41,11 @@ USER vscode
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
+# NOTE: Due to a bug in recent babel version, it cannot work with
+# default UTC timezone
+# See: https://github.com/python-babel/babel/issues/990
+RUN sudo ln -fs /usr/share/zoneinfo/UTC /etc/localtime
+
 # Install helm
 ARG HELM_VERSION=3.14.4
 

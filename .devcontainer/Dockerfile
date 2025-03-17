@@ -92,7 +92,7 @@ RUN curl --fail -L -o /tmp/install.sh https://raw.githubusercontent.com/golangci
     rm -f /tmp/install.sh
 
 # Install crane
-ARG CRANE_VERSION=0.20.0
+ARG CRANE_VERSION=0.20.3
 
 RUN curl --fail -L -o /tmp/crane.tar.gz https://github.com/google/go-containerregistry/releases/download/v${CRANE_VERSION}/go-containerregistry_Linux_x86_64.tar.gz && \
     sudo tar -xzf /tmp/crane.tar.gz -C /usr/local/bin/ crane && \

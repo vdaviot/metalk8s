@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/base:jammy
+FROM mcr.microsoft.com/devcontainers/base:noble
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -26,7 +26,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         npm \
         pkg-config \
         plantuml \
-        python3.10-gdbm \
         shellcheck \
         tk-dev \
         tmux \

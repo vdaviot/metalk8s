@@ -17,7 +17,7 @@ on:
 
 jobs:
   retrieve-info:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       artifacts-link: ${{ inputs.artifacts-url || steps.artifacts.outputs.link }}
       version_major: ${{ steps.get-version.outputs.version_major }}
@@ -49,7 +49,7 @@ jobs:
           echo "version_full=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH-$VERSION_SUFFIX" >> $GITHUB_OUTPUT
 
   compute-lifecycle-promoted-matrix:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
       - retrieve-info
     env:
@@ -97,7 +97,7 @@ jobs:
           echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
   compute-lifecycle-dev-matrix:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
       - retrieve-info
     env:
@@ -232,7 +232,7 @@ jobs:
       artifacts-url: ${{ needs.retrieve-info.outputs.artifacts-link }}
 
   write-final-status:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs:
       - lifecycle-promoted
       - lifecycle-dev

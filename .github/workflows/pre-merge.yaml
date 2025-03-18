@@ -148,7 +148,7 @@ jobs:
   unit_tests_ui:
     needs: changed-files
     if: needs.changed-files.outputs.unit-tests-ui == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -191,7 +191,7 @@ jobs:
   unit_tests_shell_ui:
     needs: changed-files
     if: needs.changed-files.outputs.unit-tests-shell-ui == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -224,7 +224,7 @@ jobs:
   unit_tests_crd_client_generator:
     needs: changed-files
     if: needs.changed-files.outputs.unit-tests-crd-client-generator == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: "tools/crd-client-generator-js"
@@ -364,7 +364,7 @@ jobs:
   build_integration_container_nginx:
     needs: changed-files
     if: needs.changed-files.outputs.integration-tests-ui == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     permissions: write-all
     steps:
       - name: Checkout
@@ -433,7 +433,7 @@ jobs:
           tags: ghcr.io/${{ github.repository_owner }}/metalk8s-nginx-integration-tests:${{ github.sha }}
 
   integration_tests_ui:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
       - build_integration_container_nginx
       - changed-files
@@ -513,7 +513,7 @@ jobs:
           source: upload
 
   write-final-status:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
       - changed-files
       - build-docs

@@ -31,7 +31,7 @@ jobs:
   upgrade:
     # We need to use a large runner so that we have known runner IPs
     # It allows us to filter authorized IPs on the machines we spawn
-    runs-on: ubuntu-22.04-4core
+    runs-on: ubuntu-24.04-4core
     env:
       NAME: upgrade-${{ inputs.type }}
     steps:

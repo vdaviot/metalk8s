@@ -81,7 +81,7 @@ jobs:
   multi-node:
     # We need to use a large runner so that we have known runner IPs
     # It allows us to filter authorized IPs on the machines we spawn
-    runs-on: ubuntu-22.04-4core
+    runs-on: ubuntu-24.04-4core
     env:
       SSH_PRIVATE_KEY: "~/.ssh/terraform"
       NODES_COUNT: ${{ inputs.nodes-count }}
@@ -376,7 +376,7 @@ jobs:
       - multi-node
     # We need to use a large runner so that we have known runner IPs
     # It allows us to filter authorized IPs on the machines we spawn
-    runs-on: ubuntu-22.04-4core
+    runs-on: ubuntu-24.04-4core
     if: always()
     steps:
       - name: Checkout

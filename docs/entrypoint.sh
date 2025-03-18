@@ -12,5 +12,7 @@ if ! grep -q "$TARGET_UID" /etc/passwd; then
   useradd -u "$TARGET_UID" -g "$TARGET_GID" tempuser
 fi
 
+git config --global --add safe.directory /usr/src/metalk8s
+
 sudo chown -R "$TARGET_UID:$TARGET_GID" /tmp/tox
 sudo -u "$(id -u -n "$TARGET_UID")" -E TOX_USER_CONFIG_FILE=tox.ini TOX_CONFIG_FILE=tox.ini tox --workdir /tmp/tox -e docs -- "$@" >&2

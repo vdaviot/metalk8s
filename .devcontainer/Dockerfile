@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/base:jammy
+FROM mcr.microsoft.com/devcontainers/base:noble
 
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
@@ -7,10 +7,12 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         bash-completion \
         build-essential \
         curl \
+        docker.io \
         enchant-2 \
         gawk \
         gcc \
         genisoimage \
+        gh \
         git \
         isomd5sum \
         libassuan-dev \
@@ -24,7 +26,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         npm \
         pkg-config \
         plantuml \
-        python3.10-gdbm \
         shellcheck \
         tk-dev \
         tmux \
@@ -36,8 +37,35 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 
 USER vscode
 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
+# NOTE: Due to a bug in recent babel version, it cannot work with
+# default UTC timezone
+# See: https://github.com/python-babel/babel/issues/990
+RUN sudo ln -fs /usr/share/zoneinfo/UTC /etc/localtime
+
+ENV PYENV_ROOT="/usr/local/pyenv"
+ENV PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"
+
+# Install pyenv
+RUN sudo git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT && \
+    sudo chown $(id -u):$(id -g) -R $PYENV_ROOT && \
+    printf 'export PYENV_ROOT=%s\nexport PATH="$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH"\nif command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init -)"\nfi\n' $PYENV_ROOT | sudo tee -a /etc/bash.bashrc -a /etc/zsh/zshrc
+
+# Install pythons
+RUN pyenv install 3.10.12 3.6.15 2.7 && \
+    pyenv global 3.10.12 3.6.15 2.7
+
+# Install python libs
+RUN pip3 install --no-cache-dir --upgrade pip && \
+    pip3.6 install --no-cache-dir --upgrade pip && \
+    pip3 install --no-cache-dir "tox~=4.4.12" "pre-commit~=3.3.3" "virtualenv<20.22.0" "esbonio>=0.12.0" && \
+    pip3.6 install --no-cache-dir "poetry~=1.1.15" && \
+    pyenv rehash
+
 # Install helm
-ARG HELM_VERSION=3.16.2
+ARG HELM_VERSION=3.17.2
 
 RUN curl --fail -L -o /tmp/helm.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     sudo tar -zxvf /tmp/helm.tar.gz -C /usr/local/bin/ linux-amd64/helm --strip-components 1 && \
@@ -45,11 +73,18 @@ RUN curl --fail -L -o /tmp/helm.tar.gz https://get.helm.sh/helm-v${HELM_VERSION}
 
 # Install go
 ARG GO_VERSION=1.21.13
+ENV GOROOT="/usr/local/go"
+# NOTE: We use a custom GOPATH so that we can use it both for vscode and root users
+ENV GOPATH="/usr/lib/go"
+ENV GOBIN="$GOPATH/bin"
+ENV PATH="$GOBIN:$GOROOT/bin:$PATH"
 
 RUN curl --fail -L -o /tmp/go.tar.gz https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
-    sudo tar -C /usr/local -xzf /tmp/go.tar.gz && \
-    sudo ln -s /usr/local/go/bin/go /usr/local/bin/go && \
-    sudo ln -s /usr/local/go/bin/gofmt /usr/local/bin/gofmt && \
+    sudo tar -C /usr/local/ -xzf /tmp/go.tar.gz && \
+    sudo mkdir -p $GOPATH && \
+    sudo chown $(id -u):$(id -g) -R $GOROOT $GOPATH && \
+    cd $GOROOT/bin && mv go go${GO_VERSION} && ln -s go${GO_VERSION} go && \
+    printf 'export PATH="%s:%s/bin:$PATH"\n' $GOBIN $GOROOT | sudo tee -a /etc/bash.bashrc -a /etc/zsh/zshrc && \
     rm -rf /tmp/go.tar.gz
 
 # Install golangci-lint
@@ -59,20 +94,8 @@ RUN curl --fail -L -o /tmp/install.sh https://raw.githubusercontent.com/golangci
     sudo bash /tmp/install.sh v${GOLANGCI_VERSION} && \
     rm -f /tmp/install.sh
 
-# Install pyenv
-RUN git clone https://github.com/pyenv/pyenv.git ~/.pyenv && \
-    echo 'export PATH="$HOME/.pyenv/bin:$PATH"\nif command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init -)"\nfi' | tee -a ~/.bashrc -a ~/.zshrc && \
-    export PATH="$HOME/.pyenv/bin:$PATH" && eval "$(pyenv init -)"
-
-# Install pythons
-RUN ~/.pyenv/bin/pyenv install 3.10.12 3.6.15 && \
-    ~/.pyenv/bin/pyenv global 3.10.12 3.6.15
-
-# Install python libs
-RUN ~/.pyenv/bin/pyenv exec pip install "tox~=4.4.12" "pre-commit~=3.3.3" "virtualenv<20.22.0" "esbonio>=0.12.0"
-
-# Install crane and gcrane
-ARG CRANE_VERSION=0.20.2
+# Install crane
+ARG CRANE_VERSION=0.20.3
 
 RUN curl --fail -L -o /tmp/crane.tar.gz https://github.com/google/go-containerregistry/releases/download/v${CRANE_VERSION}/go-containerregistry_Linux_x86_64.tar.gz && \
     sudo tar -xzf /tmp/crane.tar.gz -C /usr/local/bin/ crane gcrane && \
@@ -84,7 +107,7 @@ ARG SKOPEO_VERSION=1.15.1
 RUN curl --fail -L -o /tmp/skopeo.tar.gz https://github.com/containers/skopeo/archive/refs/tags/v${SKOPEO_VERSION}.tar.gz && \
     tar -zxvf /tmp/skopeo.tar.gz -C /tmp && \
     cd /tmp/skopeo-${SKOPEO_VERSION} && \
-    sudo make bin/skopeo && \
+    sudo "PATH=$PATH" make bin/skopeo && \
     sudo mv bin/skopeo /usr/local/bin/ && \
     cd && \
     rm -rf /tmp/skopeo.tar.gz /tmp/skopeo-${SKOPEO_VERSION}

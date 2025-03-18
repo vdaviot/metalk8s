@@ -79,17 +79,29 @@ jobs:
             echo "${!changed_files_var}"
           done
 
+  build-devcontainer:
+    uses: ./.github/workflows/build-devcontainer.yaml
+    secrets: inherit
+
   build:
-    needs: changed-files
+    needs:
+      - build-devcontainer
+      - changed-files
     if: needs.changed-files.outputs.build == 'true'
     uses: ./.github/workflows/build.yaml
+    with:
+      build-devcontainer: false
     secrets: inherit
 
   build-docs:
-    needs: changed-files
+    needs:
+      - build-devcontainer
+      - changed-files
     # Build of docs is triggered by "build" so do not re-trigger it
     if: needs.changed-files.outputs.docs == 'true' && needs.changed-files.outputs.build != 'true'
     uses: ./.github/workflows/build-docs.yaml
+    with:
+      build-devcontainer: false
     secrets: inherit
 
   build-shell-ui:
@@ -110,43 +122,33 @@ jobs:
       artifacts-url: ${{ needs.build.outputs.artifact-link }}
 
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    needs:
+      - build-devcontainer
+    container:
+      image: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+      # We have to use `root` for the moment
+      # Sees: https://github.com/actions/checkout/issues/1575
+      # Could work with a user with 1001 id but not for docker
+      options: --user root
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Python 3
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-      # NOTE: Today python3.6 is needed by some lint steps
-      - name: Install Python 3.6
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.6"
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.21.13"
-      - name: Install deps
-        run: |
-          export DEBIAN_FRONTEND=noninteractive
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends -y shellcheck
-          python3.10 -m pip install tox~=4.0.11
-      - name: Install Helm
-        env:
-          HELM_VERSION: "3.16.2"
-        run: |
-          sudo curl -O https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
-              && sudo tar -zxvf helm-v${HELM_VERSION}-linux-amd64.tar.gz \
-              && sudo mv linux-amd64/helm /usr/local/bin/helm
+      - name: Set safe directory (since container is root and not user 1001)
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Run all linting targets
         run: ./doit.sh lint
 
   unit_tests_ui:
     needs: changed-files
     if: needs.changed-files.outputs.unit-tests-ui == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -189,7 +191,7 @@ jobs:
   unit_tests_shell_ui:
     needs: changed-files
     if: needs.changed-files.outputs.unit-tests-shell-ui == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -222,7 +224,7 @@ jobs:
   unit_tests_crd_client_generator:
     needs: changed-files
     if: needs.changed-files.outputs.unit-tests-crd-client-generator == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: "tools/crd-client-generator-js"
@@ -251,98 +253,109 @@ jobs:
         run: npm run test --no-update-notifier
 
   unit_tests_metalk8s_operator:
-    needs: changed-files
-    if: needs.changed-files.outputs.unit-tests-metalk8s-operator == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    needs:
+      - build-devcontainer
+      - changed-files
+    container:
+      image: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+      # We have to use `root` for the moment
+      # Sees: https://github.com/actions/checkout/issues/1575
+      # Could work with a user with 1001 id but not for docker
+      options: --user root
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
+        shell: bash
         working-directory: "operator"
+    if: needs.changed-files.outputs.unit-tests-metalk8s-operator == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.21.13"
-      - name: Cache Go modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-go-modules
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+      - name: Set safe directory (since container is root and not user 1001)
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Run all MetalK8s operator unit and integration tests
         run: make test
 
   unit_tests_storage_operator:
-    needs: changed-files
-    if: needs.changed-files.outputs.unit-tests-storage-operator == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    needs:
+      - build-devcontainer
+      - changed-files
+    container:
+      image: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+      # We have to use `root` for the moment
+      # Sees: https://github.com/actions/checkout/issues/1575
+      # Could work with a user with 1001 id but not for docker
+      options: --user root
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
+        shell: bash
         working-directory: "storage-operator"
+    if: needs.changed-files.outputs.unit-tests-storage-operator == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: "1.21.13"
-      - name: Cache Go modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-go-modules
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+      - name: Set safe directory (since container is root and not user 1001)
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Run all storage-operator unit and integration tests
         run: make test
 
   unit_tests_salt:
-    needs: changed-files
+    runs-on: ubuntu-latest
+    needs:
+      - build-devcontainer
+      - changed-files
+    container:
+      image: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+      # We have to use `root` for the moment
+      # Sees: https://github.com/actions/checkout/issues/1575
+      # Could work with a user with 1001 id but not for docker
+      options: --user root
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    defaults:
+      run:
+        shell: bash
     if: needs.changed-files.outputs.unit-tests-salt == 'true'
-    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Python 3.6
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.6"
-      - name: Install deps
-        run: |
-          pip install tox
+      - name: Set safe directory (since container is root and not user 1001)
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Run all salt unit tests
         run: tox -e unit-tests
 
   unit_tests_lib_alert_tree:
-    needs: changed-files
-    if: needs.changed-files.outputs.unit-tests-lib-alert-tree == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    needs:
+      - build-devcontainer
+      - changed-files
+    container:
+      image: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+      # We have to use `root` for the moment
+      # Sees: https://github.com/actions/checkout/issues/1575
+      # Could work with a user with 1001 id but not for docker
+      options: --user root
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     defaults:
       run:
+        shell: bash
         working-directory: "tools/lib-alert-tree"
+    if: needs.changed-files.outputs.unit-tests-lib-alert-tree == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install Python 3
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.6"
-      - name: Install deps
-        run: python3.6 -m pip install poetry~=1.1.9
+      - name: Set safe directory (since container is root and not user 1001)
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Install lib_alert_tree
         run: poetry install -E cli
       - name: Run all lib_alert_tree unit tests
@@ -351,7 +364,7 @@ jobs:
   build_integration_container_nginx:
     needs: changed-files
     if: needs.changed-files.outputs.integration-tests-ui == 'true'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     permissions: write-all
     steps:
       - name: Checkout
@@ -420,7 +433,7 @@ jobs:
           tags: ghcr.io/${{ github.repository_owner }}/metalk8s-nginx-integration-tests:${{ github.sha }}
 
   integration_tests_ui:
-    runs-on: ubuntu-22.04-8core
+    runs-on: ubuntu-24.04-8core
     needs:
       - build_integration_container_nginx
       - changed-files
@@ -500,7 +513,7 @@ jobs:
           source: upload
 
   write-final-status:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
       - changed-files
       - build-docs

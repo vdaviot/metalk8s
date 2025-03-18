@@ -8,6 +8,11 @@ on:
         default: ${{github.ref}}
         required: false
         type: string
+      build-devcontainer:
+        description: "True will build the devcontainer"
+        default: true
+        required: false
+        type: boolean
     outputs:
       artifact-name:
         description: "artifacts name"
@@ -24,19 +29,44 @@ on:
   workflow_dispatch:
 
 jobs:
+  build-devcontainer:
+    uses: ./.github/workflows/build-devcontainer.yaml
+    secrets: inherit
+    with:
+      # NOTE: We check "!= true" instead of just checking the value
+      # since by default when the workflow is call with "workflow dispatch"
+      # the input will (sadly) be "" and not use the default value
+      skip: ${{ inputs.build-devcontainer != true }}
+
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    needs:
+      - build-devcontainer
+    container:
+      image: ghcr.io/${{ github.repository }}/devcontainer:${{ github.sha }}
+      # We have to use `root` for the moment
+      # Sees: https://github.com/actions/checkout/issues/1575
+      # Could work with a user with 1001 id but not for docker
+      options: --user root
+      volumes:
+        # This "ugly" workaround is needed for now because we use a container to run the job
+        # so we use docker-in-docker but by default github mount the workspace in the container
+        # not at the same location
+        # - on the host it's on github.workspace => /home/runner/work/artesca/artesca
+        # - in the container it's on GITHUB_WORKSPACE => /__w/artesca/artesca
+        # Which means if we want to creata docker with bind mount we need to use the host path
+        # that's why we also mount the workspace in the container at the same location
+        - ${{ github.workspace }}:${{ github.workspace }}
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    defaults:
+      run:
+        shell: bash
     outputs:
       artifact-name: ${{ steps.upload.outputs.name }}
       artifact-link: ${{ steps.upload.outputs.link }}
     steps:
-      - name: Cleanup some unused ressources
-        # Because of the large number of images we embed in the ISO
-        # the disk space available start to be a problem.
-        # Let's remove some unused ressources to free some space.
-        run: |-
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /usr/share/dotnet
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -49,47 +79,10 @@ jobs:
           # NOTE: We fetch depth so that we can put the right `GIT` reference
           # in the product.txt
           fetch-depth: 0
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Install Python 3
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-      - name: setup cache for pip
-        uses: actions/cache@v4
-        env:
-          cache-name: pip-packages
-        with:
-          path: ~/.cache/pip/
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('buildchain/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Install deps
-        run: |
-          export DEBIAN_FRONTEND=noninteractive
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends -y \
-            genisoimage \
-            isomd5sum \
-            hardlink \
-            libgpgme-dev libassuan-dev libbtrfs-dev pkg-config libdevmapper-dev
-      - name: Install skopeo
-        # NOTE: We install skopeo from sources since the version available in "classic"
-        #      repositories is too old and not compatible with docker > 1.25 (which is the one embedded
-        #      in the image we use here)
-        env:
-          SKOPEO_VERSION: 1.15.1
-        run: |
-          curl -Lo skopeo.tar.gz https://github.com/containers/skopeo/archive/refs/tags/v${SKOPEO_VERSION}.tar.gz && \
-          tar -zxf skopeo.tar.gz && \
-          cd skopeo-${SKOPEO_VERSION} && \
-          make bin/skopeo && \
-          sudo mv bin/skopeo /usr/local/bin/ && \
-          cd .. && rm -rf skopeo.tar.gz skopeo-${SKOPEO_VERSION}
+      - name: Set safe directory (since container is root and not user 1001)
+        run: git config --global --add safe.directory ${{ github.workspace }}
       - name: Build everything
-        run: ./doit.sh -n 4 --verbosity 2 --failure-verbosity 2
+        run: cd "${{ github.workspace }}" && ./doit.sh -n 4 --verbosity 2 --failure-verbosity 2
       - name: Prepare artifacts
         env:
           DEST_DIR: "artifacts"
@@ -113,7 +106,7 @@ jobs:
           password: ${{ secrets.ARTIFACTS_PASSWORD }}
           source: artifacts
       - name: Cleanup build tree
-        run: ./doit.sh clean && test ! -d _build
+        run: cd "${{ github.workspace }}" && ./doit.sh clean && test ! -d _build
 
   build-shell-ui:
     uses: ./.github/workflows/build-shell-ui.yaml
@@ -122,13 +115,16 @@ jobs:
       ref: ${{ inputs.ref }}
 
   build-docs:
+    needs:
+      - build-devcontainer
     uses: ./.github/workflows/build-docs.yaml
     secrets: inherit
     with:
       ref: ${{ inputs.ref }}
+      build-devcontainer: false
 
   write-final-status:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs:
       - build
       - build-shell-ui

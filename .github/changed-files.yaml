@@ -9,6 +9,7 @@ docs:
   - tools/lib-alert-tree/**
   - tools/rule_extractor/alerting_rules.json
   - tox.ini
+  - .devcontainer/**
 
 shell-ui:
   - shell-ui/**
@@ -26,16 +27,20 @@ unit-tests-crd-client-generator:
 
 unit-tests-metalk8s-operator:
   - operator/**
+  - .devcontainer/**
 
 unit-tests-storage-operator:
   - storage-operator/**
+  - .devcontainer/**
 
 unit-tests-salt:
   - salt/**
   - tox.ini
+  - .devcontainer/**
 
 unit-tests-lib-alert-tree:
   - tools/lib-alert-tree/**
+  - .devcontainer/**
 
 integration-tests-ui:
   - *ui
@@ -74,7 +79,6 @@ build:
   - "!solution-operator-lib/**"
   # Filter out devX and tools
   - "!.pre-commit-config.yaml"
-  - "!.devcontainer/**"
   - "!.gitignore"
   - "!LICENSE"
   - "!README.md"

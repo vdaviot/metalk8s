@@ -72,7 +72,11 @@ def lint_python() -> types.TaskDict:
         *constants.ROOT.glob("salt/_roster/*.py"),
     ]
     cmd = " ".join(map(shlex.quote, ["tox", "-e", "lint", "--", "pylint"]))
-    env = {"PATH": os.environ["PATH"], "OSTYPE": os.uname().sysname}
+    env = {
+        "PATH": os.environ["PATH"],
+        "HOME": os.environ["HOME"],
+        "OSTYPE": os.uname().sysname,
+    }
     return {
         "name": "python",
         "title": utils.title_with_subtask_name("LINT"),

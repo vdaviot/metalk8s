@@ -12,7 +12,7 @@ jest.mock('../k8s/api', () => ({
 describe('Metalk8sLocalVolumeProvider', () => {
   let provider: Metalk8sLocalVolumeProvider;
   const mockUrl = 'mock-url';
-  const mockToken = 'mock-token';
+  const mockToken = jest.fn(() => Promise.resolve('mock-token'));
 
   const mockCustomObjectsApi = {
     listClusterCustomObject: jest.fn(),
@@ -39,8 +39,6 @@ describe('Metalk8sLocalVolumeProvider', () => {
     });
 
     provider = new Metalk8sLocalVolumeProvider(mockUrl, mockToken);
-    provider.k8sClient = mockCoreV1Api;
-    provider.volumeClient = mockVolumeClient;
   });
 
   describe('listLocalPersistentVolumes', () => {

@@ -2,6 +2,17 @@
 
 ## Release 129.0.3 (in development)
 
+### Enhancements
+
+- Bump ingress-nginx chart version to
+  [4.12.1](https://github.com/kubernetes/ingress-nginx/releases/tag/helm-chart-4.12.1)
+  The controller image has been bumped accordingly to
+  [v1.12.1](https://github.com/kubernetes/ingress-nginx/releases/tag/controller-v1.12.1)
+  (PR[#4544](https://github.com/scality/metalk8s/pull/4544))
+
+- Bump nginx image to [1.27.5-alpine](https://github.com/nginx/nginx/releases/tag/release-1.27.5)
+  (PR[#4544](https://github.com/scality/metalk8s/pull/4544))
+
 ## Release 129.0.2
 
 ## Release 129.0.1

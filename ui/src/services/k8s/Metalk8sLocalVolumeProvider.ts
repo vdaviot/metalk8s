@@ -80,4 +80,27 @@ export default class Metalk8sLocalVolumeProvider {
       );
     }
   };
+
+  // Since we don't have unique Serial Number for the disks, we need to retrieve the Volume Name from the PV.
+  public detachVolumes = async (
+    localPVs: LocalPersistentVolume[],
+  ): Promise<void> => {
+    const volumeNames = [];
+    for (const localPV of localPVs) {
+      // The volume name is the same as the PV name
+      const volumeName = localPV.metadata.name;
+      volumeNames.push(volumeName);
+    }
+    for (const volumeName of volumeNames) {
+      try {
+        await this.volumeClient.deleteMetalk8sV1alpha1Volume(volumeName);
+      } catch (error) {
+        throw new Error(
+          `Failed to delete MetalK8s volume ${volumeName}: ${
+            error instanceof Error ? error.message : JSON.stringify(error)
+          }`,
+        );
+      }
+    }
+  };
 }

@@ -2,8 +2,8 @@ import { CoreV1Api, CustomObjectsApi } from '@kubernetes/client-node';
 import Metalk8sLocalVolumeProvider, {
   VolumeType,
 } from './Metalk8sLocalVolumeProvider';
-import { Metalk8sV1alpha1VolumeClient } from './Metalk8sVolumeClient.generated';
 import { updateApiServerConfig } from './api';
+import { Metalk8sV1alpha1VolumeClient } from './Metalk8sVolumeClient.generated';
 
 jest.mock('../k8s/api', () => ({
   updateApiServerConfig: jest.fn(),
@@ -18,13 +18,18 @@ describe('Metalk8sLocalVolumeProvider', () => {
     listClusterCustomObject: jest.fn(),
   } as unknown as CustomObjectsApi;
 
-  const mockVolumeClient = new Metalk8sV1alpha1VolumeClient(
-    mockCustomObjectsApi,
-  );
+  const mockVolumeClient = {
+    deleteMetalk8sV1alpha1Volume: jest.fn().mockResolvedValue({ body: {} }),
+    getMetalk8sV1alpha1VolumeList: jest.fn(),
+    getMetalk8sV1alpha1Volume: jest.fn(),
+    createMetalk8sV1alpha1Volume: jest.fn(),
+    patchMetalk8sV1alpha1Volume: jest.fn(),
+  } as unknown as Metalk8sV1alpha1VolumeClient;
 
   const mockCoreV1Api = {
     listNode: jest.fn(),
     listPersistentVolume: jest.fn(),
+    deletePersistentVolume: jest.fn(),
   } as unknown as CoreV1Api;
 
   beforeEach(() => {
@@ -68,7 +73,7 @@ describe('Metalk8sLocalVolumeProvider', () => {
       });
 
       (
-        mockCustomObjectsApi.listClusterCustomObject as jest.Mock
+        mockVolumeClient.getMetalk8sV1alpha1VolumeList as jest.Mock
       ).mockResolvedValue({
         body: {
           items: [
@@ -150,12 +155,70 @@ describe('Metalk8sLocalVolumeProvider', () => {
       });
 
       (
-        mockCustomObjectsApi.listClusterCustomObject as jest.Mock
+        mockVolumeClient.getMetalk8sV1alpha1VolumeList as jest.Mock
       ).mockRejectedValue(new Error('Failed to fetch volumes'));
 
       await expect(
         provider.listLocalPersistentVolumes('test-node'),
-      ).rejects.toThrow('Failed to fetch metalk8s volumes');
+      ).rejects.toThrow(
+        'Failed to fetch local persistent volumes: Failed to fetch volumes',
+      );
+    });
+  });
+
+  describe('detachVolumes', () => {
+    it('should detach hardware volumes and virtual volumes', async () => {
+      //S
+      (
+        mockVolumeClient.deleteMetalk8sV1alpha1Volume as jest.Mock
+      ).mockResolvedValue({
+        body: {},
+      });
+      //E
+      await provider.detachVolumes([
+        {
+          IP: '192.168.1.100',
+          devicePath: '/dev/sda',
+          volumeType: VolumeType.Hardware,
+          nodeName: 'test-node',
+          metadata: { name: 'test-volume' },
+        },
+        {
+          IP: '192.168.1.100',
+          devicePath: 'test-lvm',
+          volumeType: VolumeType.Virtual,
+          nodeName: 'test-node',
+          metadata: { name: 'test-lvm' },
+        },
+      ]);
+      //V
+      expect(
+        mockVolumeClient.deleteMetalk8sV1alpha1Volume,
+      ).toHaveBeenCalledWith('test-volume');
+      expect(
+        mockVolumeClient.deleteMetalk8sV1alpha1Volume,
+      ).toHaveBeenCalledWith('test-lvm');
+    });
+
+    it('should raise an error if metalk8s volume deletion fails', async () => {
+      //S
+      (
+        mockVolumeClient.deleteMetalk8sV1alpha1Volume as jest.Mock
+      ).mockRejectedValue(new Error('Failed to delete metalk8s volume'));
+      //E+V
+      await expect(
+        provider.detachVolumes([
+          {
+            IP: '192.168.1.100',
+            devicePath: '/dev/sda',
+            volumeType: VolumeType.Hardware,
+            nodeName: 'test-node',
+            metadata: { name: 'test-volume' },
+          },
+        ]),
+      ).rejects.toThrow(
+        'Failed to delete MetalK8s volume test-volume: Failed to delete metalk8s volume',
+      );
     });
   });
 });

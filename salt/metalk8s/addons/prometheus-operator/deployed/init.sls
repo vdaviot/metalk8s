@@ -8,4 +8,5 @@ include:
   - .chart
   - .node-alerts-rules
   - .kube-alerts-rules
+  - .thanos-query-sd-files
   - .thanos-chart

@@ -13,6 +13,11 @@
 
 ## Release 129.0.1 (in development)
 
+### Enhancements
+
+- Allow Thanos Querier to discover sidecars for more Prometheus instances through a ConfigMap
+  (PR[#4546](https://github.com/scality/metalk8s/pull/4546))
+
 ## Release 129.0.0
 
 ### Removals

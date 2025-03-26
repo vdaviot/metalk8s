@@ -376,6 +376,7 @@ SALT_FILES: Tuple[Union[Path, targets.AtomicTarget], ...] = (
     ),
     Path("salt/metalk8s/addons/prometheus-operator/deployed/service-configuration.sls"),
     Path("salt/metalk8s/addons/prometheus-operator/deployed/thanos-chart.sls"),
+    Path("salt/metalk8s/addons/prometheus-operator/deployed/thanos-query-sd-files.sls"),
     Path("salt/metalk8s/addons/ui/deployed/dependencies.sls"),
     Path("salt/metalk8s/addons/ui/deployed/ingress.sls"),
     Path("salt/metalk8s/addons/ui/deployed/init.sls"),

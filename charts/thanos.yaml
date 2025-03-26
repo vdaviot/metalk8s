@@ -29,10 +29,13 @@ query:
 
   storeDNSDiscovery: false
   sidecarDNSDiscovery: false
-  
+
   stores:
     # Service deployed by Prometheus operator to expose Thanos sidecars
     - dnssrv+_grpc._tcp.prometheus-operator-thanos-discovery
+
+  serviceDiscoveryFileConfigMaps:
+    - thanos-query-sd-files
 
   tolerations:
     - key: 'node-role.kubernetes.io/bootstrap'

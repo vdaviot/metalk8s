@@ -14,20 +14,27 @@ export enum VolumeType {
   Virtual = 'Virtual',
 }
 
-export type LocalPersistentVolume = V1PersistentVolume & {
+export enum HardwareDiskType {
+  SATA = 'SATA',
+  NVMe = 'NVMe',
+}
+
+export type HardwareDisk = {
+  IP: string;
+  devicePath: string;
+  type: HardwareDiskType;
+};
+
+type LocalVolumeInfo = {
   IP: string;
   devicePath: string;
   nodeName: string;
   volumeType: VolumeType;
 };
 
-type LocalVolume = {
-  IP: string;
-  devicePath: string;
-  nodeName: string;
-  volumeType: VolumeType;
-  volumeName: string;
-};
+export type LocalPersistentVolume = V1PersistentVolume & LocalVolumeInfo;
+
+type LocalVolume = LocalVolumeInfo & { volumeName: string };
 
 export default class Metalk8sLocalVolumeProvider {
   apiUrl: string;
@@ -166,5 +173,85 @@ export default class Metalk8sLocalVolumeProvider {
     }
 
     return false;
+  };
+
+  public attachHardwareVolume = async (
+    hardwareDisk: HardwareDisk,
+  ): Promise<LocalVolume> => {
+    const { IP, devicePath, type } = hardwareDisk;
+
+    const token = await this.getToken();
+    const { coreV1, customObjects } = ApiK8s.updateApiServerConfig(
+      this.apiUrl,
+      token,
+    );
+    const volumeClient = new Metalk8sV1alpha1VolumeClient(customObjects);
+    const k8sClient = coreV1;
+
+    if (isError(volumeClient)) {
+      throw new Error(
+        `Failed to create volume client: ${volumeClient.error.message}`,
+      );
+    }
+    if (isError(k8sClient)) {
+      throw new Error(
+        `Failed to create k8s client: ${k8sClient.error.message}`,
+      );
+    }
+
+    const nodes = await k8sClient.listNode().catch((error) => {
+      throw new Error(
+        `Failed to fetch nodes: ${
+          error instanceof Error ? error.message : JSON.stringify(error)
+        }`,
+      );
+    });
+
+    if (isError(nodes)) {
+      throw new Error(`Failed to fetch nodes: ${nodes.error.message}`);
+    }
+    const nodeName = nodes.body.items.find((node) =>
+      node.status.addresses.find(
+        (address) => address.type === 'InternalIP' && address.address === IP,
+      ),
+    )?.metadata.name;
+    if (!nodeName) {
+      throw new Error(`Failed to find node for IP ${IP}`);
+    }
+    // The map between hardwareDisk Type and StorageClassName
+    // NVMe => SSD
+    // the rest=> HDD
+    const storageClassName =
+      type === HardwareDiskType.NVMe ? 'ssd-ext4' : 'hdd-ext4';
+
+    const volume = await volumeClient.createMetalk8sV1alpha1Volume({
+      apiVersion: 'storage.metalk8s.scality.com/v1alpha1',
+      kind: 'Volume',
+      metadata: {
+        // It will be changed to Disk Serial Number in the future.
+        name: `storage-data-${IP}-${devicePath}`,
+        labels: {
+          'xcore.scality.com/volume-type': 'data',
+        },
+      },
+      spec: {
+        nodeName,
+        rawBlockDevice: { devicePath },
+        storageClassName,
+      },
+    });
+    if (isError(volume)) {
+      throw new Error(
+        `Failed to attach hardware volume: ${volume.error.message}`,
+      );
+    }
+
+    return {
+      IP,
+      devicePath,
+      nodeName,
+      volumeType: VolumeType.Hardware,
+      volumeName: volume.metadata['name'],
+    };
   };
 }

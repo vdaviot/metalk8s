@@ -85,12 +85,9 @@ export default class Metalk8sLocalVolumeProvider {
   public detachVolumes = async (
     localPVs: LocalPersistentVolume[],
   ): Promise<void> => {
-    const volumeNames = [];
-    for (const localPV of localPVs) {
-      // The volume name is the same as the PV name
-      const volumeName = localPV.metadata.name;
-      volumeNames.push(volumeName);
-    }
+    // The volume name is the same as the PV name
+    const volumeNames = localPVs.map((localPV) => localPV.metadata.name);
+
     for (const volumeName of volumeNames) {
       try {
         await this.volumeClient.deleteMetalk8sV1alpha1Volume(volumeName);

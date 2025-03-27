@@ -8,9 +8,9 @@ on:
         default: ${{github.ref}}
         required: false
         type: string
-      build-devcontainer:
-        description: "True will build the devcontainer"
-        default: true
+      skip-devcontainer:
+        description: "True will skip the build of the devcontainer"
+        default: false
         required: false
         type: boolean
     outputs:
@@ -33,10 +33,10 @@ jobs:
     uses: ./.github/workflows/build-devcontainer.yaml
     secrets: inherit
     with:
-      # NOTE: We check "!= true" instead of just checking the value
+      # NOTE: We check "== true" instead of just checking the value
       # since by default when the workflow is call with "workflow dispatch"
       # the input will (sadly) be "" and not use the default value
-      skip: ${{ inputs.build-devcontainer != true }}
+      skip: ${{ inputs.skip-devcontainer == true }}
 
   build:
     runs-on: ubuntu-latest
@@ -121,7 +121,7 @@ jobs:
     secrets: inherit
     with:
       ref: ${{ inputs.ref }}
-      build-devcontainer: false
+      skip-devcontainer: true
 
   write-final-status:
     runs-on: ubuntu-24.04

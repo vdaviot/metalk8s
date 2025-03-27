@@ -99,6 +99,9 @@ spec:
         - --query.auto-downsampling
         - --store.sd-dns-resolver=miekgdns
         - --store=dnssrv+_grpc._tcp.prometheus-operator-thanos-discovery
+        - --store.sd-files=/etc/query/thanos-query-sd-files/*.yaml
+        - --store.sd-files=/etc/query/thanos-query-sd-files/*.yml
+        - --store.sd-files=/etc/query/thanos-query-sd-files/*.json
         - --store.sd-interval=5m
         image: {% endraw -%}{{ build_image_name("thanos", False) }}{%- raw %}:v0.36.1
         imagePullPolicy: IfNotPresent
@@ -117,7 +120,9 @@ spec:
             path: /-/ready
             port: http
         resources: {}
-        volumeMounts: null
+        volumeMounts:
+        - mountPath: /etc/query/thanos-query-sd-files
+          name: thanos-query-sd-files
       nodeSelector:
         node-role.kubernetes.io/infra: ''
       tolerations:
@@ -127,6 +132,10 @@ spec:
       - effect: NoSchedule
         key: node-role.kubernetes.io/infra
         operator: Exists
-      volumes: null
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: thanos-query-sd-files
+        name: thanos-query-sd-files
 
 {% endraw %}

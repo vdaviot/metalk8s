@@ -93,11 +93,15 @@ export default class Metalk8sLocalVolumeProvider {
   ): Promise<void> => {
     // The volume name is the same as the PV name
     const volumeNames = localPVs.map((localPV) => localPV.metadata.name);
-    const token = await this.getToken();
-    const { customObjects } = ApiK8s.updateApiServerConfig(this.apiUrl, token);
-    const volumeClient = new Metalk8sV1alpha1VolumeClient(customObjects);
 
     for (const volumeName of volumeNames) {
+      const token = await this.getToken();
+      const { customObjects } = ApiK8s.updateApiServerConfig(
+        this.apiUrl,
+        token,
+      );
+      const volumeClient = new Metalk8sV1alpha1VolumeClient(customObjects);
+
       try {
         const deleteVolume = await volumeClient.deleteMetalk8sV1alpha1Volume(
           volumeName,

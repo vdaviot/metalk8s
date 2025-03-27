@@ -78,7 +78,7 @@ export default class Metalk8sLocalVolumeProvider {
 
         return localPv;
       } else {
-        throw new Error(`Failed to fetch metalk8s volumes: ${volumes.error}`);
+        throw new Error(`${volumes.error.message}`);
       }
     } catch (error) {
       throw new Error(
@@ -99,7 +99,15 @@ export default class Metalk8sLocalVolumeProvider {
 
     for (const volumeName of volumeNames) {
       try {
-        await volumeClient.deleteMetalk8sV1alpha1Volume(volumeName);
+        const deleteVolume = await volumeClient.deleteMetalk8sV1alpha1Volume(
+          volumeName,
+        );
+
+        if (isError(deleteVolume)) {
+          throw new Error(
+            `Failed to delete MetalK8s volume ${volumeName}: ${deleteVolume.error.message}`,
+          );
+        }
       } catch (error) {
         throw new Error(
           `Failed to delete MetalK8s volume ${volumeName}: ${

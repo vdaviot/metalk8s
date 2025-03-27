@@ -90,7 +90,7 @@ jobs:
     if: needs.changed-files.outputs.build == 'true'
     uses: ./.github/workflows/build.yaml
     with:
-      build-devcontainer: false
+      skip-devcontainer: true
     secrets: inherit
 
   build-docs:
@@ -101,7 +101,7 @@ jobs:
     if: needs.changed-files.outputs.docs == 'true' && needs.changed-files.outputs.build != 'true'
     uses: ./.github/workflows/build-docs.yaml
     with:
-      build-devcontainer: false
+      skip-devcontainer: true
     secrets: inherit
 
   build-shell-ui:

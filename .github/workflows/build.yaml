@@ -8,9 +8,9 @@ on:
         default: ${{github.ref}}
         required: false
         type: string
-      build-devcontainer:
-        description: "True will build the devcontainer"
-        default: true
+      skip-devcontainer:
+        description: "True will skip the build of the devcontainer"
+        default: false
         required: false
         type: boolean
     outputs:
@@ -33,10 +33,10 @@ jobs:
     uses: ./.github/workflows/build-devcontainer.yaml
     secrets: inherit
     with:
-      # NOTE: We check "!= true" instead of just checking the value
+      # NOTE: We check "== true" instead of just checking the value
       # since by default when the workflow is call with "workflow dispatch"
       # the input will (sadly) be "" and not use the default value
-      skip: ${{ inputs.build-devcontainer != true }}
+      skip: ${{ inputs.skip-devcontainer == true }}
 
   build:
     runs-on: ubuntu-latest
@@ -52,8 +52,8 @@ jobs:
         # This "ugly" workaround is needed for now because we use a container to run the job
         # so we use docker-in-docker but by default github mount the workspace in the container
         # not at the same location
-        # - on the host it's on github.workspace => /home/runner/work/artesca/artesca
-        # - in the container it's on GITHUB_WORKSPACE => /__w/artesca/artesca
+        # - on the host it's on github.workspace => /home/runner/work/metalk8s/metalk8s
+        # - in the container it's on GITHUB_WORKSPACE => /__w/metalk8s/metalk8s
         # Which means if we want to creata docker with bind mount we need to use the host path
         # that's why we also mount the workspace in the container at the same location
         - ${{ github.workspace }}:${{ github.workspace }}
@@ -121,7 +121,7 @@ jobs:
     secrets: inherit
     with:
       ref: ${{ inputs.ref }}
-      build-devcontainer: false
+      skip-devcontainer: true
 
   write-final-status:
     runs-on: ubuntu-24.04

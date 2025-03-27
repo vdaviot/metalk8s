@@ -52,8 +52,8 @@ jobs:
         # This "ugly" workaround is needed for now because we use a container to run the job
         # so we use docker-in-docker but by default github mount the workspace in the container
         # not at the same location
-        # - on the host it's on github.workspace => /home/runner/work/artesca/artesca
-        # - in the container it's on GITHUB_WORKSPACE => /__w/artesca/artesca
+        # - on the host it's on github.workspace => /home/runner/work/metalk8s/metalk8s
+        # - in the container it's on GITHUB_WORKSPACE => /__w/metalk8s/metalk8s
         # Which means if we want to creata docker with bind mount we need to use the host path
         # that's why we also mount the workspace in the container at the same location
         - ${{ github.workspace }}:${{ github.workspace }}

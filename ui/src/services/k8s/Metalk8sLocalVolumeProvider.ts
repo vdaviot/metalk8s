@@ -1,4 +1,4 @@
-import { CoreV1Api, V1PersistentVolume } from '@kubernetes/client-node';
+import { V1PersistentVolume } from '@kubernetes/client-node';
 import * as ApiK8s from './api';
 import {
   Metalk8sV1alpha1VolumeClient,
@@ -22,18 +22,24 @@ export type LocalPersistentVolume = V1PersistentVolume & {
 };
 
 export default class Metalk8sLocalVolumeProvider {
-  volumeClient: Metalk8sV1alpha1VolumeClient;
-  k8sClient: CoreV1Api;
-  constructor(url: string, token: string) {
-    const { coreV1, customObjects } = ApiK8s.updateApiServerConfig(url, token);
-    this.volumeClient = new Metalk8sV1alpha1VolumeClient(customObjects);
-    this.k8sClient = coreV1;
+  apiUrl: string;
+  constructor(apiUrl: string, private getToken: () => Promise<string>) {
+    this.apiUrl = apiUrl;
   }
+
   public listLocalPersistentVolumes = async (
     serverName: string,
   ): Promise<LocalPersistentVolume[]> => {
     try {
-      const nodes = await this.k8sClient.listNode();
+      const token = await this.getToken();
+      const { coreV1, customObjects } = ApiK8s.updateApiServerConfig(
+        this.apiUrl,
+        token,
+      );
+      const volumeClient = new Metalk8sV1alpha1VolumeClient(customObjects);
+      const k8sClient = coreV1;
+
+      const nodes = await k8sClient.listNode();
       const nodeIP = nodes.body.items
         .find((node) => node.metadata.name === serverName)
         ?.status.addresses.find((address) => address.type === 'InternalIP');
@@ -42,13 +48,13 @@ export default class Metalk8sLocalVolumeProvider {
         throw new Error(`Failed to find IP for node ${serverName}`);
       }
 
-      const volumes = await this.volumeClient.getMetalk8sV1alpha1VolumeList();
+      const volumes = await volumeClient.getMetalk8sV1alpha1VolumeList();
 
       if (!isError(volumes)) {
         const nodeVolumes = volumes.body.items.filter(
           (volume) => volume.spec.nodeName === serverName,
         );
-        const pv = await this.k8sClient.listPersistentVolume();
+        const pv = await k8sClient.listPersistentVolume();
 
         const localPv = nodeVolumes.reduce((acc, item) => {
           const isLocalPv = pv.body.items.find(
@@ -72,7 +78,7 @@ export default class Metalk8sLocalVolumeProvider {
 
         return localPv;
       } else {
-        throw new Error(`Failed to fetch metalk8s volumes: ${volumes.error}`);
+        throw new Error(`${volumes.error.message}`);
       }
     } catch (error) {
       throw new Error(
@@ -87,10 +93,21 @@ export default class Metalk8sLocalVolumeProvider {
   ): Promise<void> => {
     // The volume name is the same as the PV name
     const volumeNames = localPVs.map((localPV) => localPV.metadata.name);
+    const token = await this.getToken();
+    const { customObjects } = ApiK8s.updateApiServerConfig(this.apiUrl, token);
+    const volumeClient = new Metalk8sV1alpha1VolumeClient(customObjects);
 
     for (const volumeName of volumeNames) {
       try {
-        await this.volumeClient.deleteMetalk8sV1alpha1Volume(volumeName);
+        const deleteVolume = await volumeClient.deleteMetalk8sV1alpha1Volume(
+          volumeName,
+        );
+
+        if (isError(deleteVolume)) {
+          throw new Error(
+            `Failed to delete MetalK8s volume ${volumeName}: ${deleteVolume.error.message}`,
+          );
+        }
       } catch (error) {
         throw new Error(
           `Failed to delete MetalK8s volume ${volumeName}: ${

@@ -227,4 +227,30 @@ describe('Metalk8sLocalVolumeProvider', () => {
       );
     });
   });
+
+  describe('waitForVolumeProvisioning', () => {
+    it('should wait for the volume to be provisioned', async () => {
+      //S
+      (
+        mockVolumeClient.getMetalk8sV1alpha1Volume as jest.Mock
+      ).mockResolvedValue({
+        body: {
+          status: { conditions: [{ type: 'Ready', status: 'Unknown' }] },
+        },
+      });
+
+      //E
+      await provider.waitForVolumeProvisioning('test-volume');
+      //V
+      expect(mockVolumeClient.getMetalk8sV1alpha1Volume).toHaveBeenCalledWith(
+        'test-volume',
+      );
+
+      (
+        mockVolumeClient.getMetalk8sV1alpha1Volume as jest.Mock
+      ).mockResolvedValue({
+        body: { status: { conditions: [{ type: 'Ready', status: 'True' }] } },
+      });
+    });
+  });
 });

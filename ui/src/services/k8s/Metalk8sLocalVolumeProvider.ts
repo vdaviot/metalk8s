@@ -21,6 +21,14 @@ export type LocalPersistentVolume = V1PersistentVolume & {
   volumeType: VolumeType;
 };
 
+type LocalVolume = {
+  IP: string;
+  devicePath: string;
+  nodeName: string;
+  volumeType: VolumeType;
+  volumeName: string;
+};
+
 export default class Metalk8sLocalVolumeProvider {
   apiUrl: string;
   constructor(apiUrl: string, private getToken: () => Promise<string>) {
@@ -89,36 +97,66 @@ export default class Metalk8sLocalVolumeProvider {
 
   // Since we don't have unique Serial Number for the disks, we need to retrieve the Volume Name from the PV.
   public detachVolumes = async (
-    localPVs: LocalPersistentVolume[],
+    localPV: LocalPersistentVolume,
   ): Promise<void> => {
     // The volume name is the same as the PV name
-    const volumeNames = localPVs.map((localPV) => localPV.metadata.name);
+    const volumeName = localPV.metadata.name;
+    const token = await this.getToken();
+    const { customObjects } = ApiK8s.updateApiServerConfig(this.apiUrl, token);
+    const volumeClient = new Metalk8sV1alpha1VolumeClient(customObjects);
 
-    for (const volumeName of volumeNames) {
-      const token = await this.getToken();
-      const { customObjects } = ApiK8s.updateApiServerConfig(
-        this.apiUrl,
-        token,
+    try {
+      await volumeClient.deleteMetalk8sV1alpha1Volume(volumeName);
+    } catch (error) {
+      throw new Error(
+        `Failed to delete MetalK8s volume ${volumeName}: ${
+          error instanceof Error ? error.message : JSON.stringify(error)
+        }`,
       );
-      const volumeClient = new Metalk8sV1alpha1VolumeClient(customObjects);
-
-      try {
-        const deleteVolume = await volumeClient.deleteMetalk8sV1alpha1Volume(
-          volumeName,
-        );
-
-        if (isError(deleteVolume)) {
-          throw new Error(
-            `Failed to delete MetalK8s volume ${volumeName}: ${deleteVolume.error.message}`,
-          );
-        }
-      } catch (error) {
-        throw new Error(
-          `Failed to delete MetalK8s volume ${volumeName}: ${
-            error instanceof Error ? error.message : JSON.stringify(error)
-          }`,
-        );
-      }
     }
+  };
+
+  public isVolumeProvisioned = async (
+    localVolume: LocalVolume,
+  ): Promise<boolean> => {
+    const volumeName = localVolume.volumeName;
+
+    const token = await this.getToken();
+    const { customObjects } = ApiK8s.updateApiServerConfig(this.apiUrl, token);
+    const volumeClient = new Metalk8sV1alpha1VolumeClient(customObjects);
+
+    if (isError(volumeClient)) {
+      throw new Error('Failed to create volume client');
+    }
+
+    const volume = await volumeClient.getMetalk8sV1alpha1Volume(volumeName);
+
+    if (isError(volume)) {
+      throw new Error(`Failed to get volume ${volumeName}: ${volume.error}`);
+    }
+
+    const volumeStatus = volume.status?.conditions?.find(
+      (condition) => condition.type === 'Ready',
+    );
+
+    if (!volumeStatus) {
+      return false;
+    }
+
+    if (volumeStatus?.status === 'Unknown') {
+      return false;
+    }
+
+    if (volumeStatus?.status === 'True') {
+      return true;
+    }
+
+    if (volumeStatus?.status === 'False') {
+      throw new Error(
+        `Volume ${volumeName} failed to provisioned: ${volumeStatus.message}`,
+      );
+    }
+
+    return false;
   };
 }

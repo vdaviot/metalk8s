@@ -96,7 +96,7 @@ export default class Metalk8sLocalVolumeProvider {
   };
 
   // Since we don't have unique Serial Number for the disks, we need to retrieve the Volume Name from the PV.
-  public detachVolumes = async (
+  public detachVolume = async (
     localPV: LocalPersistentVolume,
   ): Promise<void> => {
     // The volume name is the same as the PV name
@@ -106,7 +106,15 @@ export default class Metalk8sLocalVolumeProvider {
     const volumeClient = new Metalk8sV1alpha1VolumeClient(customObjects);
 
     try {
-      await volumeClient.deleteMetalk8sV1alpha1Volume(volumeName);
+      const deleteVolume = await volumeClient.deleteMetalk8sV1alpha1Volume(
+        volumeName,
+      );
+
+      if (isError(deleteVolume)) {
+        throw new Error(
+          `Failed to delete MetalK8s volume ${volumeName}: ${deleteVolume.error.message}`,
+        );
+      }
     } catch (error) {
       throw new Error(
         `Failed to delete MetalK8s volume ${volumeName}: ${
@@ -147,14 +155,14 @@ export default class Metalk8sLocalVolumeProvider {
       return false;
     }
 
-    if (volumeStatus?.status === 'True') {
-      return true;
-    }
-
     if (volumeStatus?.status === 'False') {
       throw new Error(
-        `Volume ${volumeName} failed to provisioned: ${volumeStatus.message}`,
+        `Volume ${volumeName} failed to provisioned: ${volumeStatus.reason} `,
       );
+    }
+
+    if (volumeStatus?.status === 'True') {
+      return true;
     }
 
     return false;

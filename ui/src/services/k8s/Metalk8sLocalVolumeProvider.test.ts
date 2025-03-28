@@ -20,6 +20,7 @@ describe('Metalk8sLocalVolumeProvider', () => {
   const mockCustomObjectsApi = {
     listClusterCustomObject: jest.fn(),
     deleteClusterCustomObject: jest.fn(),
+    getClusterCustomObject: jest.fn(),
   } as unknown as CustomObjectsApi;
 
   const mockCoreV1Api = {
@@ -160,8 +161,8 @@ describe('Metalk8sLocalVolumeProvider', () => {
     });
   });
 
-  describe('detachVolumes', () => {
-    it('should detach hardware volumes and virtual volumes', async () => {
+  describe('detachVolume', () => {
+    it('should detach volume', async () => {
       //S
       (
         mockCustomObjectsApi.deleteClusterCustomObject as jest.Mock
@@ -169,22 +170,13 @@ describe('Metalk8sLocalVolumeProvider', () => {
         body: {},
       });
       //E
-      await provider.detachVolumes([
-        {
-          IP: '192.168.1.100',
-          devicePath: '/dev/sda',
-          volumeType: VolumeType.Hardware,
-          nodeName: 'test-node',
-          metadata: { name: 'test-volume' },
-        },
-        {
-          IP: '192.168.1.100',
-          devicePath: 'test-lvm',
-          volumeType: VolumeType.Virtual,
-          nodeName: 'test-node',
-          metadata: { name: 'test-lvm' },
-        },
-      ]);
+      await provider.detachVolume({
+        IP: '192.168.1.100',
+        devicePath: '/dev/sda',
+        volumeType: VolumeType.Hardware,
+        nodeName: 'test-node',
+        metadata: { name: 'test-volume' },
+      });
       //V
       expect(
         mockCustomObjectsApi.deleteClusterCustomObject,
@@ -193,15 +185,6 @@ describe('Metalk8sLocalVolumeProvider', () => {
         MOCK_VERSION,
         MOCK_PLURAL,
         'test-volume',
-        {},
-      );
-      expect(
-        mockCustomObjectsApi.deleteClusterCustomObject,
-      ).toHaveBeenCalledWith(
-        MOCK_GROUP,
-        MOCK_VERSION,
-        MOCK_PLURAL,
-        'test-lvm',
         {},
       );
     });
@@ -213,44 +196,86 @@ describe('Metalk8sLocalVolumeProvider', () => {
       ).mockRejectedValue(new Error('Failed to delete metalk8s volume'));
       //E+V
       await expect(
-        provider.detachVolumes([
-          {
-            IP: '192.168.1.100',
-            devicePath: '/dev/sda',
-            volumeType: VolumeType.Hardware,
-            nodeName: 'test-node',
-            metadata: { name: 'test-volume' },
-          },
-        ]),
+        provider.detachVolume({
+          IP: '192.168.1.100',
+          devicePath: '/dev/sda',
+          volumeType: VolumeType.Hardware,
+          nodeName: 'test-node',
+          metadata: { name: 'test-volume' },
+        }),
       ).rejects.toThrow(
         'Failed to delete MetalK8s volume test-volume: Failed to delete metalk8s volume',
       );
     });
   });
 
-  describe('waitForVolumeProvisioning', () => {
-    it('should wait for the volume to be provisioned', async () => {
+  describe('isVolumeProvisioned', () => {
+    it('should return false if the volume is not yet provisioned', async () => {
       //S
       (
-        mockVolumeClient.getMetalk8sV1alpha1Volume as jest.Mock
+        mockCustomObjectsApi.getClusterCustomObject as jest.Mock
       ).mockResolvedValue({
-        body: {
-          status: { conditions: [{ type: 'Ready', status: 'Unknown' }] },
-        },
+        status: { conditions: [{ type: 'Ready', status: 'Unknown' }] },
       });
 
       //E
-      await provider.waitForVolumeProvisioning('test-volume');
-      //V
-      expect(mockVolumeClient.getMetalk8sV1alpha1Volume).toHaveBeenCalledWith(
-        'test-volume',
-      );
-
-      (
-        mockVolumeClient.getMetalk8sV1alpha1Volume as jest.Mock
-      ).mockResolvedValue({
-        body: { status: { conditions: [{ type: 'Ready', status: 'True' }] } },
+      const result = await provider.isVolumeProvisioned({
+        IP: '192.168.1.100',
+        devicePath: '/dev/sda',
+        volumeType: VolumeType.Hardware,
+        nodeName: 'test-node',
+        volumeName: 'test-volume',
       });
+      //V
+      expect(result).toBe(false);
+    });
+
+    it('should return true if the volume is provisioned', async () => {
+      //S
+      (
+        mockCustomObjectsApi.getClusterCustomObject as jest.Mock
+      ).mockResolvedValue({
+        status: { conditions: [{ type: 'Ready', status: 'True' }] },
+      });
+      //E
+      const result = await provider.isVolumeProvisioned({
+        IP: '192.168.1.100',
+        devicePath: '/dev/sda',
+        volumeType: VolumeType.Hardware,
+        nodeName: 'test-node',
+        volumeName: 'test-volume',
+      });
+      //V
+      expect(result).toBe(true);
+    });
+
+    it('should raise an error if the volume is failed to provisioned', async () => {
+      //S
+      (
+        mockCustomObjectsApi.getClusterCustomObject as jest.Mock
+      ).mockResolvedValue({
+        status: {
+          conditions: [
+            {
+              type: 'Ready',
+              status: 'False',
+              reason: 'Volume is not provisioned',
+            },
+          ],
+        },
+      });
+      //E+V
+      await expect(
+        provider.isVolumeProvisioned({
+          IP: '192.168.1.100',
+          devicePath: '/dev/sda',
+          volumeType: VolumeType.Hardware,
+          nodeName: 'test-node',
+          volumeName: 'test-volume',
+        }),
+      ).rejects.toThrow(
+        'Volume test-volume failed to provisioned: Volume is not provisioned',
+      );
     });
   });
 });

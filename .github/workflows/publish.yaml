@@ -58,6 +58,10 @@ jobs:
         run: >
           curl --fail -LO -u ${{ secrets.ARTIFACTS_USER }}:${{ secrets.ARTIFACTS_PASSWORD }}
           ${{ inputs.artifacts-url || steps.artifacts.outputs.link }}/images/shell.tar
+      - name: Retrieve shell SBOM from artifacts
+        run: >
+          curl --fail -LO -u ${{ secrets.ARTIFACTS_USER }}:${{ secrets.ARTIFACTS_PASSWORD }}
+          ${{ inputs.artifacts-url || steps.artifacts.outputs.link }}/images/shell.tar.sbom.spdx.json
       - name: Load shell-ui image
         run: docker load < shell-ui.tar.gz
       - name: Retrieve product.txt from artifacts
@@ -149,5 +153,6 @@ jobs:
           draft: false
           files: |
             shell.tar
+            shell.tar.sbom.spdx.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

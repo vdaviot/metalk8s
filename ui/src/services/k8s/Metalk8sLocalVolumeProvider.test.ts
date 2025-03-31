@@ -1,6 +1,7 @@
 import { CoreV1Api, CustomObjectsApi } from '@kubernetes/client-node';
 import { updateApiServerConfig } from './api';
 import Metalk8sLocalVolumeProvider, {
+  HardwareDiskType,
   VolumeType,
 } from './Metalk8sLocalVolumeProvider';
 
@@ -21,6 +22,7 @@ describe('Metalk8sLocalVolumeProvider', () => {
     listClusterCustomObject: jest.fn(),
     deleteClusterCustomObject: jest.fn(),
     getClusterCustomObject: jest.fn(),
+    createClusterCustomObject: jest.fn(),
   } as unknown as CustomObjectsApi;
 
   const mockCoreV1Api = {
@@ -276,6 +278,101 @@ describe('Metalk8sLocalVolumeProvider', () => {
       ).rejects.toThrow(
         'Volume test-volume failed to provisioned: Volume is not provisioned',
       );
+    });
+  });
+
+  describe('attachHardwareVolume', () => {
+    it('should attach hardware volume', async () => {
+      //S
+      (mockCoreV1Api.listNode as jest.Mock).mockResolvedValue({
+        body: {
+          apiVersion: 'v1',
+          kind: 'NodeList',
+          items: [
+            {
+              metadata: {
+                name: 'test-node',
+              },
+              status: {
+                addresses: [{ type: 'InternalIP', address: '192.168.1.100' }],
+              },
+            },
+          ],
+        },
+      });
+      (
+        mockCustomObjectsApi.createClusterCustomObject as jest.Mock
+      ).mockResolvedValue({
+        metadata: {
+          name: 'storage-data-192.168.1.100-dev-sda',
+        },
+      });
+      //E
+      const result = await provider.attachHardwareVolume({
+        IP: '192.168.1.100',
+        devicePath: '/dev/sda',
+        type: HardwareDiskType.NVMe,
+      });
+      //V
+      expect(
+        mockCustomObjectsApi.createClusterCustomObject,
+      ).toHaveBeenCalledWith(
+        'storage.metalk8s.scality.com',
+        'v1alpha1',
+        'volumes',
+        {
+          apiVersion: 'storage.metalk8s.scality.com/v1alpha1',
+          kind: 'Volume',
+          metadata: {
+            name: 'storage-data-192.168.1.100-dev-sda',
+            labels: {
+              'xcore.scality.com/volume-type': 'data',
+            },
+          },
+          spec: {
+            nodeName: 'test-node',
+            rawBlockDevice: { devicePath: '/dev/sda' },
+            storageClassName: 'ssd-ext4',
+          },
+        },
+      );
+      expect(result).toEqual({
+        IP: '192.168.1.100',
+        devicePath: '/dev/sda',
+        nodeName: 'test-node',
+        volumeType: VolumeType.Hardware,
+        volumeName: 'storage-data-192.168.1.100-dev-sda',
+      });
+    });
+
+    it('should raise an error if volume creation fails', async () => {
+      //S
+      (
+        mockCustomObjectsApi.createClusterCustomObject as jest.Mock
+      ).mockRejectedValue(new Error('Error'));
+      //E+V
+      await expect(
+        provider.attachHardwareVolume({
+          IP: '192.168.1.100',
+          devicePath: '/dev/sda',
+          type: HardwareDiskType.NVMe,
+        }),
+      ).rejects.toThrow('Failed to attach hardware volume: Error');
+    });
+
+    it('should raise an error if node retrieval fails', async () => {
+      //S
+      (mockCoreV1Api.listNode as jest.Mock).mockRejectedValue(
+        new Error('Error'),
+      );
+      //E+V
+      await expect(
+        provider.attachHardwareVolume({
+          IP: '192.168.1.100',
+          devicePath: '/dev/sda',
+          type: HardwareDiskType.NVMe,
+        }),
+      ).rejects.toThrow('Failed to fetch nodes: Error');
     });
   });
 });

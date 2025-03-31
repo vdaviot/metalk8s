@@ -224,15 +224,17 @@ export default class Metalk8sLocalVolumeProvider {
     const storageClassName =
       type === HardwareDiskType.NVMe ? 'ssd-ext4' : 'hdd-ext4';
 
+    // It will be changed to Disk Serial Number in the future.
+    // K8s API accepts only lowercase letters, numbers and hyphens in names.
+    // Replace all slashes with hyphens to make devicePath compatible.
+    const volumeName = `storage-data-${IP}${devicePath.replace(/\//g, '-')}`;
+
     const volume = await volumeClient.createMetalk8sV1alpha1Volume({
       apiVersion: 'storage.metalk8s.scality.com/v1alpha1',
       kind: 'Volume',
       metadata: {
-        // It will be changed to Disk Serial Number in the future.
-        name: `storage-data-${IP}-${devicePath}`,
-        labels: {
-          'xcore.scality.com/volume-type': 'data',
-        },
+        name: volumeName,
+        labels: { 'xcore.scality.com/volume-type': 'data' },
       },
       spec: {
         nodeName,
@@ -251,7 +253,7 @@ export default class Metalk8sLocalVolumeProvider {
       devicePath,
       nodeName,
       volumeType: VolumeType.Hardware,
-      volumeName: volume.metadata['name'],
+      volumeName,
     };
   };
 }

@@ -304,7 +304,7 @@ describe('Metalk8sLocalVolumeProvider', () => {
         mockCustomObjectsApi.createClusterCustomObject as jest.Mock
       ).mockResolvedValue({
         metadata: {
-          name: 'storage-data-192.168.1.100-/dev/sda',
+          name: 'storage-data-192.168.1.100-dev-sda',
         },
       });
       //E
@@ -324,7 +324,7 @@ describe('Metalk8sLocalVolumeProvider', () => {
           apiVersion: 'storage.metalk8s.scality.com/v1alpha1',
           kind: 'Volume',
           metadata: {
-            name: 'storage-data-192.168.1.100-/dev/sda',
+            name: 'storage-data-192.168.1.100-dev-sda',
             labels: {
               'xcore.scality.com/volume-type': 'data',
             },
@@ -341,7 +341,7 @@ describe('Metalk8sLocalVolumeProvider', () => {
         devicePath: '/dev/sda',
         nodeName: 'test-node',
         volumeType: VolumeType.Hardware,
-        volumeName: 'storage-data-192.168.1.100-/dev/sda',
+        volumeName: 'storage-data-192.168.1.100-dev-sda',
       });
     });
 

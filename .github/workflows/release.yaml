@@ -23,7 +23,7 @@ jobs:
   prepare-version:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ vars.ACTIONS_APP_ID }}

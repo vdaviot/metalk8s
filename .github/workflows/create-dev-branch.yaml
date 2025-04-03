@@ -23,7 +23,7 @@ jobs:
           # we want to stop if this is not running on development branch
           [[ "${{github.ref_name}}" =~ ^development/[0-9.]+$ ]] || exit 1
       # create app token
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           app-id: ${{ vars.ACTIONS_APP_ID }}

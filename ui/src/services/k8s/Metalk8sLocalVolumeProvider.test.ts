@@ -233,12 +233,12 @@ describe('Metalk8sLocalVolumeProvider', () => {
       expect(result).toBe(false);
     });
 
-    it('should return true if the volume is provisioned', async () => {
+    it('should return volume if the volume is provisioned', async () => {
       //S
       (
         mockCustomObjectsApi.getClusterCustomObject as jest.Mock
       ).mockResolvedValue({
-        status: { conditions: [{ type: 'Ready', status: 'True' }] },
+        body: { status: { conditions: [{ type: 'Ready', status: 'True' }] } },
       });
       (mockCoreV1Api.readPersistentVolume as jest.Mock).mockResolvedValue({
         status: { phase: 'Bound' },
@@ -265,14 +265,16 @@ describe('Metalk8sLocalVolumeProvider', () => {
       (
         mockCustomObjectsApi.getClusterCustomObject as jest.Mock
       ).mockResolvedValue({
-        status: {
-          conditions: [
-            {
-              type: 'Ready',
-              status: 'False',
-              reason: 'Volume is not provisioned',
-            },
-          ],
+        body: {
+          status: {
+            conditions: [
+              {
+                type: 'Ready',
+                status: 'False',
+                reason: 'Volume is not provisioned',
+              },
+            ],
+          },
         },
       });
       //E+V
@@ -342,6 +344,11 @@ describe('Metalk8sLocalVolumeProvider', () => {
             nodeName: 'test-node',
             rawBlockDevice: { devicePath: '/dev/sda' },
             storageClassName: 'ssd-ext4',
+            template: {
+              metadata: {
+                labels: { 'xcore.scality.com/volume-type': 'data' },
+              },
+            },
           },
         },
       );

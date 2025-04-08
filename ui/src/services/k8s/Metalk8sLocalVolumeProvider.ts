@@ -150,7 +150,7 @@ export default class Metalk8sLocalVolumeProvider {
       throw new Error(`Failed to get volume ${volumeName}: ${volume.error}`);
     }
 
-    const volumeStatus = volume.status?.conditions?.find(
+    const volumeStatus = volume.body?.status?.conditions?.find(
       (condition) => condition.type === 'Ready',
     );
 
@@ -250,6 +250,11 @@ export default class Metalk8sLocalVolumeProvider {
         nodeName,
         rawBlockDevice: { devicePath },
         storageClassName,
+        template: {
+          metadata: {
+            labels: { 'xcore.scality.com/volume-type': 'data' },
+          },
+        },
       },
     });
     if (isError(volume)) {

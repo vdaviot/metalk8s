@@ -17,6 +17,11 @@
   [v2.42.0](https://github.com/dexidp/dex/releases/tag/v2.42.0)
   (PR[#4558](https://github.com/scality/metalk8s/pull/4558))
 
+- Bump prometheus-adapter chart version to
+  [4.14.1](https://github.com/prometheus-community/helm-charts/releases/tag/prometheus-adapter-4.14.1)
+  The prometheus-adapter image has been bumped accordingly to
+  (PR[#4563](https://github.com/scality/metalk8s/pull/4563))
+
 ## Release 129.0.1 (in development)
 
 ### Enhancements

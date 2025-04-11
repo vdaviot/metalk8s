@@ -4,10 +4,6 @@
 
 ### Enhancements
 
-- Bump Fluent Bit version to [3.2.8](https://github.com/fluent/fluent-bit/releases/tag/v3.2.8)
-  and Fluent Bit Helm chart version to [0.48.9](https://github.com/fluent/helm-charts/releases/tag/fluent-bit-0.48.9)
-  (PR[#4559](https://github.com/scality/metalk8s/pull/4559))
-
 - Bump Kubernetes version to
   [1.30.7](https://github.com/kubernetes/kubernetes/releases/tag/v1.30.7)
   (PR[#4497](https://github.com/scality/metalk8s/pull/4497))
@@ -20,6 +16,10 @@
   Dex itself has been bumped accordingly to
   [v2.42.0](https://github.com/dexidp/dex/releases/tag/v2.42.0)
   (PR[#4558](https://github.com/scality/metalk8s/pull/4558))
+
+- Bump Fluent Bit image version to [3.2.8](https://github.com/fluent/fluent-bit/releases/tag/v3.2.8)
+  and Fluent Bit Helm chart version to [0.48.9](https://github.com/fluent/helm-charts/releases/tag/fluent-bit-0.48.9)
+  (PR[#4559](https://github.com/scality/metalk8s/pull/4559))
 
 ## Release 129.0.1 (in development)
 

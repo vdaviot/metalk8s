@@ -79,7 +79,10 @@ describe('Metalk8sLocalVolumeProvider', () => {
               metadata: { name: 'test-volume' },
               spec: {
                 nodeName: 'test-node',
-                rawBlockDevice: { devicePath: '/dev/sda' },
+                rawBlockDevice: { devicePath: '/dev/sdb' },
+              },
+              status: {
+                deviceName: 'sda',
               },
             },
             {
@@ -87,6 +90,9 @@ describe('Metalk8sLocalVolumeProvider', () => {
               spec: {
                 nodeName: 'test-node',
                 lvmLogicalVolume: { vgName: 'test-lvm', size: '10Gi' },
+              },
+              status: {
+                deviceName: 'test-lvm',
               },
             },
             {
@@ -96,6 +102,9 @@ describe('Metalk8sLocalVolumeProvider', () => {
                 sparseLoopDevice: {
                   size: '1Gi',
                 },
+              },
+              status: {
+                deviceName: 'loop1',
               },
             },
           ],
@@ -113,13 +122,13 @@ describe('Metalk8sLocalVolumeProvider', () => {
       });
       expect(volumes[1]).toMatchObject({
         IP: '192.168.1.100',
-        devicePath: 'test-lvm',
+        devicePath: '/dev/test-lvm',
         nodeName: 'test-node',
         volumeType: VolumeType.Virtual,
       });
       expect(volumes[2]).toMatchObject({
         IP: '192.168.1.100',
-        devicePath: 'test-sparseLoop',
+        devicePath: '/dev/loop1',
         nodeName: 'test-node',
         volumeType: VolumeType.Virtual,
       });

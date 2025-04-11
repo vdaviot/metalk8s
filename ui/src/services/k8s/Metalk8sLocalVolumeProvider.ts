@@ -133,7 +133,7 @@ export default class Metalk8sLocalVolumeProvider {
 
   public isVolumeProvisioned = async (
     localVolume: LocalVolume,
-  ): Promise<boolean> => {
+  ): Promise<false | LocalPersistentVolume> => {
     const volumeName = localVolume.volumeName;
 
     const token = await this.getToken();
@@ -150,7 +150,7 @@ export default class Metalk8sLocalVolumeProvider {
       throw new Error(`Failed to get volume ${volumeName}: ${volume.error}`);
     }
 
-    const volumeStatus = volume.status?.conditions?.find(
+    const volumeStatus = volume.body?.status?.conditions?.find(
       (condition) => condition.type === 'Ready',
     );
 
@@ -169,7 +169,17 @@ export default class Metalk8sLocalVolumeProvider {
     }
 
     if (volumeStatus?.status === 'True') {
-      return true;
+      const token = await this.getToken();
+      const { coreV1 } = ApiK8s.updateApiServerConfig(this.apiUrl, token);
+      const k8sClient = coreV1;
+      const pv = await k8sClient.readPersistentVolume(volumeName);
+      return {
+        ...pv.body,
+        IP: localVolume.IP,
+        devicePath: localVolume.devicePath,
+        nodeName: localVolume.nodeName,
+        volumeType: localVolume.volumeType,
+      };
     }
 
     return false;
@@ -240,6 +250,11 @@ export default class Metalk8sLocalVolumeProvider {
         nodeName,
         rawBlockDevice: { devicePath },
         storageClassName,
+        template: {
+          metadata: {
+            labels: { 'xcore.scality.com/volume-type': 'data' },
+          },
+        },
       },
     });
     if (isError(volume)) {

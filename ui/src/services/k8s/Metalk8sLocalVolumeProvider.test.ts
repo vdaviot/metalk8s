@@ -29,6 +29,7 @@ describe('Metalk8sLocalVolumeProvider', () => {
     listNode: jest.fn(),
     listPersistentVolume: jest.fn(),
     deletePersistentVolume: jest.fn(),
+    readPersistentVolume: jest.fn(),
   } as unknown as CoreV1Api;
 
   beforeEach(() => {
@@ -232,12 +233,15 @@ describe('Metalk8sLocalVolumeProvider', () => {
       expect(result).toBe(false);
     });
 
-    it('should return true if the volume is provisioned', async () => {
+    it('should return volume if the volume is provisioned', async () => {
       //S
       (
         mockCustomObjectsApi.getClusterCustomObject as jest.Mock
       ).mockResolvedValue({
-        status: { conditions: [{ type: 'Ready', status: 'True' }] },
+        body: { status: { conditions: [{ type: 'Ready', status: 'True' }] } },
+      });
+      (mockCoreV1Api.readPersistentVolume as jest.Mock).mockResolvedValue({
+        status: { phase: 'Bound' },
       });
       //E
       const result = await provider.isVolumeProvisioned({
@@ -248,7 +252,12 @@ describe('Metalk8sLocalVolumeProvider', () => {
         volumeName: 'test-volume',
       });
       //V
-      expect(result).toBe(true);
+      expect(result).toMatchObject({
+        IP: '192.168.1.100',
+        devicePath: '/dev/sda',
+        volumeType: VolumeType.Hardware,
+        nodeName: 'test-node',
+      });
     });
 
     it('should raise an error if the volume is failed to provisioned', async () => {
@@ -256,14 +265,16 @@ describe('Metalk8sLocalVolumeProvider', () => {
       (
         mockCustomObjectsApi.getClusterCustomObject as jest.Mock
       ).mockResolvedValue({
-        status: {
-          conditions: [
-            {
-              type: 'Ready',
-              status: 'False',
-              reason: 'Volume is not provisioned',
-            },
-          ],
+        body: {
+          status: {
+            conditions: [
+              {
+                type: 'Ready',
+                status: 'False',
+                reason: 'Volume is not provisioned',
+              },
+            ],
+          },
         },
       });
       //E+V
@@ -333,6 +344,11 @@ describe('Metalk8sLocalVolumeProvider', () => {
             nodeName: 'test-node',
             rawBlockDevice: { devicePath: '/dev/sda' },
             storageClassName: 'ssd-ext4',
+            template: {
+              metadata: {
+                labels: { 'xcore.scality.com/volume-type': 'data' },
+              },
+            },
           },
         },
       );

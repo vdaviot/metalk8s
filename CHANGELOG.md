@@ -17,6 +17,12 @@
   [v2.42.0](https://github.com/dexidp/dex/releases/tag/v2.42.0)
   (PR[#4558](https://github.com/scality/metalk8s/pull/4558))
 
+- Bump Loki chart version to
+  [6.29.0](https://github.com/grafana/loki/releases/tag/helm-loki-6.29.0)
+  The Loki image has been bumped accordingly to
+  [3.4.2](https://github.com/grafana/loki/releases/tag/v3.4.2)
+  (PR[##4562](https://github.com/scality/metalk8s/pull/#4562))
+
 ## Release 129.0.1 (in development)
 
 ### Enhancements

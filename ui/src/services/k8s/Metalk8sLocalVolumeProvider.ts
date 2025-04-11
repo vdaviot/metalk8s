@@ -81,8 +81,9 @@ export default class Metalk8sLocalVolumeProvider {
             {
               ...isLocalPv,
               IP: nodeIP.address,
-              devicePath:
-                item.spec?.rawBlockDevice?.devicePath || item.metadata['name'],
+              devicePath: item.status.deviceName
+                ? `/dev/${item.status.deviceName}`
+                : item.metadata['name'],
               nodeName: item.spec.nodeName,
               volumeType: item.spec.rawBlockDevice
                 ? VolumeType.Hardware

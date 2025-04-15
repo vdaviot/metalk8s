@@ -167,7 +167,7 @@
 ### Enhancements
 
 - Only use modern Ciphers in Ingress configuration
-  (PR[#4488](https://github.com/scality/metalk8s/pull/4488)) 
+  (PR[#4488](https://github.com/scality/metalk8s/pull/4488))
 
 ### Bug fixes
 
@@ -383,7 +383,7 @@
   with other systems
   (PR[#4330](https://github.com/scality/metalk8s/pull/4330))
 
-- The max log file size per container is raised to 50Mi. 
+- The max log file size per container is raised to 50Mi.
   The default was 10 Mi.
   (PR[#4336](https://github.com/scality/metalk8s/pull/4336))
 
@@ -407,7 +407,7 @@
   (PR[#4322](https://github.com/scality/metalk8s/pull/4322))
 - Alert filtering in the UI when both a critical and warning alert
   wasn't working properly.
-  (PR[#4334](https://github.com/scality/metalk8s/pull/4334)) 
+  (PR[#4334](https://github.com/scality/metalk8s/pull/4334))
 
 ## Release 127.0.1
 

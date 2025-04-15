@@ -21,6 +21,10 @@
   and Fluent Bit Helm chart version to [0.48.9](https://github.com/fluent/helm-charts/releases/tag/fluent-bit-0.48.9)
   (PR[#4559](https://github.com/scality/metalk8s/pull/4559))
 
+- Bump the alpine base image used by `metalk8s-alert-logger`
+  and `metalk8s-keepalived` image to `alpine:3.21.3`
+  (PR[#4570](https://github.com/scality/metalk8s/pull/4570))
+
 ## Release 129.0.1 (in development)
 
 ### Enhancements

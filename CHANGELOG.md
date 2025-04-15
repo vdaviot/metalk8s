@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## Release 129.0.1 (in development)
+## Release 129.0.2 (in development)
+
+## Release 129.0.1
 
 ### Enhancements
 

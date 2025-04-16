@@ -213,8 +213,14 @@ spec:
                           a valid secret key.
                         type: string
                       name:
-                        description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                          TODO: Add other useful fields. apiVersion, kind, uid?'
+                        default: ""
+                        description: 'Name of the referent. This field is effectively
+                          required, but due to backwards compatibility is allowed
+                          to be empty. Instances of this type with an empty value
+                          here are almost certainly wrong. TODO: Add other useful
+                          fields. apiVersion, kind, uid? More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          TODO: Drop `kubebuilder:default` when controller-gen doesn''t
+                          need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.'
                         type: string
                       optional:
                         description: Specify whether the Secret or its key must be
@@ -563,8 +569,14 @@ spec:
                           a valid secret key.
                         type: string
                       name:
-                        description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                          TODO: Add other useful fields. apiVersion, kind, uid?'
+                        default: ""
+                        description: 'Name of the referent. This field is effectively
+                          required, but due to backwards compatibility is allowed
+                          to be empty. Instances of this type with an empty value
+                          here are almost certainly wrong. TODO: Add other useful
+                          fields. apiVersion, kind, uid? More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          TODO: Drop `kubebuilder:default` when controller-gen doesn''t
+                          need it https://github.com/kubernetes-sigs/kubebuilder/issues/3896.'
                         type: string
                       optional:
                         description: Specify whether the Secret or its key must be
@@ -1960,6 +1972,10 @@ spec:
                 description: 'WireguardRoutingRulePriority controls the priority value
                   to use for the Wireguard routing rule. [Default: 99]'
                 type: integer
+              wireguardThreadingEnabled:
+                description: 'WireguardThreadingEnabled controls whether Wireguard
+                  has NAPI threading enabled. [Default: false]'
+                type: boolean
               workloadSourceSpoofing:
                 description: WorkloadSourceSpoofing controls whether pods can use
                   the allowedSourcePrefixes annotation to send traffic with a source
@@ -5819,6 +5835,7 @@ rules:
     verbs:
       # read its own config
       - get
+      - list
       # create a default if none exists
       - create
       # update status
@@ -5936,6 +5953,12 @@ rules:
       - get
       - list
       - watch
+   # Calico creates some tiers on startup.
+  - apiGroups: ["crd.projectcalico.org"]
+    resources:
+      - tiers
+    verbs:
+      - create
   # Calico must create and update some CRDs on startup.
   - apiGroups: ["crd.projectcalico.org"]
     resources:

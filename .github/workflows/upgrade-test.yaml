@@ -29,9 +29,9 @@ env:
 
 jobs:
   upgrade:
-    # We need to use a large runner so that we have known runner IPs
-    # It allows us to filter authorized IPs on the machines we spawn
-    runs-on: ubuntu-24.04-4core
+    # We need to use those specific gcloud runner so that we have
+    # known runner IPs
+    runs-on: [self-hosted, ubuntu, large, jammy, gcloud]
     env:
       NAME: upgrade-${{ inputs.type }}
     steps:

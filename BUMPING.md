@@ -4,26 +4,6 @@ Here is a short list of chart and component bumps and how to perform them
 
 ## Charts
 
-### General Outline
-
-All charts are in the `charts/` directory, they are usually represented
-in one file and one directory:
-
- - `$CHART_NAME/` contains the untouched chart files fetched using helm.
- - `$CHART_NAME.yaml` our personalized helm values file.
-
-In order to Bump this chart, one has to:
-
- - remove the current chart files:
-   ```rm -rf charts/$CHART_NAME/```
- - add the chart's repo using helm:
-   ```helm repo add $REPO_NAME $REPO_URL && helm repo update```
- - fetch the repo again:
-   ```helm fetch -d charts --untar $REPO_NAME/$CHART_NAME```
- - make any necessary patches to the chart (chart-specific).
- - generate the sls state from the chart:
-   ```./doit.sh codegen:chart_$CHART_NAME```
-
 ### fluent-bit
 
 ```
@@ -81,9 +61,9 @@ set `$VERSION` with the appropriate value.
 run
 
 ```
-curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/helm-chart-$VERSION/deploy/grafana/dashboards/nginx.json \
+curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/refs/tags/controller-$VERSION/deploy/grafana/dashboards/nginx.json \
   -Lo salt/metalk8s/addons/nginx-ingress/deployed/files/ingress-nginx.json
-curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/helm-chart-$VERSION/deploy/grafana/dashboards/request-handling-performance.json \
+curl https://raw.githubusercontent.com/kubernetes/ingress-nginx/refs/tags/controller-$VERSION/deploy/grafana/dashboards/request-handling-performance.json \
   -Lo salt/metalk8s/addons/nginx-ingress/deployed/files/ingress-nginx-performance.json
 ```
 
@@ -115,6 +95,24 @@ CHART_NAME=thanos
 REPO_NAME=banzaicloud-stable
 REPO_URL=https://kubernetes-charts.banzaicloud.com/
 ```
+
+### General Outline
+
+All charts are in the `charts/` directory, they are usually represented
+in one file and one directory:
+
+ - `$CHART_NAME/` contains the untouched chart files fetched using helm.
+ - `$CHART_NAME.yaml` our personalized helm values file.
+
+In order to Bump this chart, one has to:
+
+ - remove the current chart files:
+   ```rm -rf charts/$CHART_NAME/```
+ - add the chart's repo using helm:
+   ```helm repo add $REPO_NAME $REPO_URL && helm repo update```
+ - fetch the repo again:
+   ```helm fetch -d charts --untar $REPO_NAME/$CHART_NAME```
+ - make any necessary patches to the chart (chart-specific).
 
 ## Images
 
@@ -151,3 +149,9 @@ This guide is applied for both `metalk8s-operator` and `storage-operator`.
 ## Containerd
 
 Instructions to bump Containerd version are in its [spec file](./packages/redhat/common/containerd.spec)
+
+## Update the sls state
+
+ - git add changes because codegen need to list them.
+ - generate the sls state from the chart:
+   ```./doit.sh codegen:chart_$CHART_NAME```

@@ -82,7 +82,7 @@ ROCKY_BASE_IMAGE_9_SHA256: str = (
 
 ETCD_VERSION: str = "3.5.21"
 ETCD_IMAGE_VERSION: str = f"{ETCD_VERSION}-0"
-NGINX_IMAGE_VERSION: str = "1.27.2-alpine"
+NGINX_IMAGE_VERSION: str = "1.27.5-alpine"
 NODEJS_IMAGE_VERSION: str = "20.11.1"
 KEEPALIVED_VERSION: str = "2.3.1"
 CERT_MANAGER_VERSION: str = "1.16.1"
@@ -187,8 +187,8 @@ CONTAINER_IMAGES: Tuple[Image, ...] = (
     ),
     Image(
         name="nginx-ingress-controller",
-        version="v1.11.3",
-        digest="sha256:d56f135b6462cfc476447cfe564b83a45e8bb7da2774963b00d12161112270b7",
+        version="v1.12.1",
+        digest="sha256:d2fbc4ec70d8aa2050dd91a91506e998765e86c96f32cffb56c503c9c34eed5b",
     ),
     Image(
         name="node-exporter",

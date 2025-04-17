@@ -84,7 +84,7 @@ ETCD_VERSION: str = "3.5.21"
 ETCD_IMAGE_VERSION: str = f"{ETCD_VERSION}-0"
 NGINX_IMAGE_VERSION: str = "1.27.2-alpine"
 NODEJS_IMAGE_VERSION: str = "20.11.1"
-KEEPALIVED_VERSION: str = "2.3.1"
+KEEPALIVED_VERSION: str = "2.3.3"
 CERT_MANAGER_VERSION: str = "1.17.1"
 
 # Current build IDs, to be augmented whenever we rebuild the corresponding

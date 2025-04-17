@@ -130,8 +130,8 @@ CONTAINER_IMAGES: Tuple[Image, ...] = (
     ),
     Image(
         name="coredns",
-        version="v1.11.1",
-        digest="sha256:1eeb4c7316bacb1d4c8ead65571cd92dd21e27359f0d4917f1a5822a73b75db1",
+        version="v1.12.1",
+        digest="sha256:e8c262566636e6bc340ece6473b0eed193cad045384401529721ddbe6463d31c",
     ),
     Image(
         name="dex",

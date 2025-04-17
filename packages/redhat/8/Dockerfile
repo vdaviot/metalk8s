@@ -8,7 +8,7 @@ RUN useradd -m build
 
 ARG SALT_VERSION
 ARG K8S_SHORT_VERSION
-ARG GO_VERSION=1.19.13
+ARG GO_VERSION=1.20.14
 
 ADD common/yum_repositories/*.repo /etc/yum.repos.d/
 RUN sed -i s/@SALT_VERSION@/$SALT_VERSION/ /etc/yum.repos.d/saltstack.repo

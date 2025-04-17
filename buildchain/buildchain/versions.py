@@ -80,7 +80,7 @@ ROCKY_BASE_IMAGE_9_SHA256: str = (
     "2cb86b2d8326a987546dc7fb393f43d43d478fea12ce3ce4accbda571f47f86b"
 )
 
-ETCD_VERSION: str = "3.5.16"
+ETCD_VERSION: str = "3.5.21"
 ETCD_IMAGE_VERSION: str = f"{ETCD_VERSION}-0"
 NGINX_IMAGE_VERSION: str = "1.27.2-alpine"
 NODEJS_IMAGE_VERSION: str = "20.11.1"
@@ -141,7 +141,7 @@ CONTAINER_IMAGES: Tuple[Image, ...] = (
     Image(
         name="etcd",
         version=ETCD_IMAGE_VERSION,
-        digest="sha256:c6a9d11cc5c04b114ccdef39a9265eeef818e3d02f5359be035ae784097fdec5",
+        digest="sha256:d58c035df557080a27387d687092e3fc2b64c6d0e3162dc51453a115f847d121",
     ),
     Image(
         name="grafana",

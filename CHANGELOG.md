@@ -8,8 +8,8 @@
   [1.30.11](https://github.com/kubernetes/kubernetes/releases/tag/v1.30.11)
   (PR[#4578](https://github.com/scality/metalk8s/pull/4578))
 
-- Bump etcd version to [3.5.16](https://github.com/etcd-io/etcd/releases/tag/v3.5.16)
-  (PR[#4497](https://github.com/scality/metalk8s/pull/4497))
+- Bump etcd version to [3.5.21](https://github.com/etcd-io/etcd/releases/tag/v3.5.21)
+  (PR[#4578](https://github.com/scality/metalk8s/pull/4578))
 
 - Bump dex chart version to
   [0.23.0](https://github.com/dexidp/helm-charts/releases/tag/dex-0.23.0)

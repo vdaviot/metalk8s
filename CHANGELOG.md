@@ -31,6 +31,10 @@
 - Bump Calico version to [3.29.3](https://github.com/projectcalico/calico/releases/tag/v3.29.3)
   (PR[#4571](https://github.com/scality/metalk8s/pull/4571))
 
+- Bump cert-manager version to
+  [1.17.1](https://github.com/cert-manager/cert-manager/releases/tag/v1.17.1)
+  (PR[#4579](https://github.com/scality/metalk8s/pull/4579))
+
 ## Release 129.0.1 (in development)
 
 ### Enhancements

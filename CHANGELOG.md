@@ -14,6 +14,10 @@
 - Bump CoreDNS version to [v1.12.1](https://github.com/coredns/coredns/releases/tag/v1.12.1)
   (PR[#4578](https://github.com/scality/metalk8s/pull/4578))
 
+- Bump keepalived version to [2.3.3](https://www.keepalived.org/release-notes/Release-2.3.3.html)
+  in `metalk8s-keepalived` image
+  (PR[#4580](https://github.com/scality/metalk8s/pull/4580))
+
 - Bump dex chart version to
   [0.23.0](https://github.com/dexidp/helm-charts/releases/tag/dex-0.23.0)
   Dex itself has been bumped accordingly to

@@ -42,6 +42,12 @@
   [1.17.1](https://github.com/cert-manager/cert-manager/releases/tag/v1.17.1)
   (PR[#4579](https://github.com/scality/metalk8s/pull/4579))
 
+- Bump Operator-SDK used by `metalk8s-operator` to
+  [1.38.0](https://github.com/operator-framework/operator-sdk/releases/tag/v1.38.0)
+  The Go version has been bumped accordingly to
+  [1.22](https://golang.org/doc/devel/release.html#go1.22.minor)
+  (PR[#4581](https://github.com/scality/metalk8s/pull/4581))
+
 ## Release 129.0.3 (in development)
 
 ### Enhancements

@@ -20,14 +20,14 @@ Image = namedtuple("Image", ("name", "version", "digest"))
 
 K8S_VERSION_MAJOR: str = "1"
 K8S_VERSION_MINOR: str = "30"
-K8S_VERSION_PATCH: str = "7"
+K8S_VERSION_PATCH: str = "11"
 
 K8S_SHORT_VERSION: str = f"{K8S_VERSION_MAJOR}.{K8S_VERSION_MINOR}"
 K8S_VERSION: str = f"{K8S_SHORT_VERSION}.{K8S_VERSION_PATCH}"
 
-CALICO_VERSION: str = "3.29.0"
+CALICO_VERSION: str = "3.29.3"
 SALT_VERSION: str = "3002.9"
-CONTAINERD_VERSION: str = "1.6.36"
+CONTAINERD_VERSION: str = "1.6.38"
 
 CONTAINERD_RELEASE: str = "1"
 SOSREPORT_RELEASE: str = "2"
@@ -80,12 +80,12 @@ ROCKY_BASE_IMAGE_9_SHA256: str = (
     "2cb86b2d8326a987546dc7fb393f43d43d478fea12ce3ce4accbda571f47f86b"
 )
 
-ETCD_VERSION: str = "3.5.16"
+ETCD_VERSION: str = "3.5.21"
 ETCD_IMAGE_VERSION: str = f"{ETCD_VERSION}-0"
-NGINX_IMAGE_VERSION: str = "1.27.2-alpine"
+NGINX_IMAGE_VERSION: str = "1.27.5-alpine"
 NODEJS_IMAGE_VERSION: str = "20.11.1"
-KEEPALIVED_VERSION: str = "2.3.1"
-CERT_MANAGER_VERSION: str = "1.16.1"
+KEEPALIVED_VERSION: str = "2.3.3"
+CERT_MANAGER_VERSION: str = "1.17.1"
 
 # Current build IDs, to be augmented whenever we rebuild the corresponding
 # image, e.g. because the `Dockerfile` is changed, or one of the dependencies
@@ -105,8 +105,8 @@ CONTAINER_IMAGES: Tuple[Image, ...] = (
     # Remote images
     Image(
         name="alpine",
-        version="3.20.3",
-        digest="sha256:1e42bbe2508154c9126d48c2b8a75420c3544343bf86fd041fb7527e017a4b4a",
+        version="3.21.3",
+        digest="sha256:a8560b36e8b8210634f77d9f7f9efd7ffa463e380b75e2e74aff4511df3ef88c",
     ),
     Image(
         name="alertmanager",
@@ -116,22 +116,22 @@ CONTAINER_IMAGES: Tuple[Image, ...] = (
     Image(
         name="calico-cni",
         version=_version_prefix(CALICO_VERSION),
-        digest="sha256:eefb9e0007509d0c00fcf254ae35d64f22a2f66215910c05f61e6df0725150e5",
+        digest="sha256:53f826d3f565a6635b4d58ea4fcfdc0e7ea418ffd4dbb495b4c801074e6eb99c",
     ),
     Image(
         name="calico-node",
         version=_version_prefix(CALICO_VERSION),
-        digest="sha256:f4d8adf6b1a23f9a51099d3fcc1560c254511b15fd660a41e2e55c358fbd5e71",
+        digest="sha256:eed399f2a727cfc1f374ab5c9cda6123c207e794ed8dc66c7eb6d8db412669e1",
     ),
     Image(
         name="calico-kube-controllers",
         version=_version_prefix(CALICO_VERSION),
-        digest="sha256:ba3ef20f30caa855ddf00e767af973685832546582e7fa457dac14c64d3156d0",
+        digest="sha256:5516ab776c38525fcc985a3030b4f2fd472da68b4170601c23bf6887bfdce703",
     ),
     Image(
         name="coredns",
-        version="v1.11.1",
-        digest="sha256:1eeb4c7316bacb1d4c8ead65571cd92dd21e27359f0d4917f1a5822a73b75db1",
+        version="v1.12.1",
+        digest="sha256:e8c262566636e6bc340ece6473b0eed193cad045384401529721ddbe6463d31c",
     ),
     Image(
         name="dex",
@@ -141,7 +141,7 @@ CONTAINER_IMAGES: Tuple[Image, ...] = (
     Image(
         name="etcd",
         version=ETCD_IMAGE_VERSION,
-        digest="sha256:c6a9d11cc5c04b114ccdef39a9265eeef818e3d02f5359be035ae784097fdec5",
+        digest="sha256:d58c035df557080a27387d687092e3fc2b64c6d0e3162dc51453a115f847d121",
     ),
     Image(
         name="grafana",
@@ -156,22 +156,22 @@ CONTAINER_IMAGES: Tuple[Image, ...] = (
     Image(
         name="kube-apiserver",
         version=_version_prefix(K8S_VERSION),
-        digest="sha256:13f4f0f5850b39742101c656b1bbd5090eacf27084ad89b489fc824ef482ed9c",
+        digest="sha256:77c54346965036acc7ac95c3200597ede36db9246179248dde21c1a3ecc1caf0",
     ),
     Image(
         name="kube-controller-manager",
         version=_version_prefix(K8S_VERSION),
-        digest="sha256:5b8dc26c05b273ce198fbaf4eb179f3b6d6919c6e2116d36dc7f82555374c687",
+        digest="sha256:d8874f3fb45591ecdac67a3035c730808f18b3ab13147495c7d77eb1960d4f6f",
     ),
     Image(
         name="kube-proxy",
         version=_version_prefix(K8S_VERSION),
-        digest="sha256:c4b64b2ac9e3d26c43a81ad11226a127e278a04b6f33f8baa9f5daa162b71c26",
+        digest="sha256:ea4da798040a18ed3f302e8d5f67307c7275a2a53bcf3d51bcec223acda84a55",
     ),
     Image(
         name="kube-scheduler",
         version=_version_prefix(K8S_VERSION),
-        digest="sha256:00b16db991101b7361f2f18035e1c6526c0ce6c9a9568524824b4bccdf1afbd6",
+        digest="sha256:c699f8c97ae7ec819c8bd878d3db104ba72fc440d810d9030e09286b696017b5",
     ),
     Image(
         name="kube-state-metrics",
@@ -187,8 +187,8 @@ CONTAINER_IMAGES: Tuple[Image, ...] = (
     ),
     Image(
         name="nginx-ingress-controller",
-        version="v1.11.3",
-        digest="sha256:d56f135b6462cfc476447cfe564b83a45e8bb7da2774963b00d12161112270b7",
+        version="v1.12.1",
+        digest="sha256:d2fbc4ec70d8aa2050dd91a91506e998765e86c96f32cffb56c503c9c34eed5b",
     ),
     Image(
         name="node-exporter",
@@ -279,22 +279,22 @@ CONTAINER_IMAGES: Tuple[Image, ...] = (
     Image(
         name="cert-manager-controller",
         version=_version_prefix(CERT_MANAGER_VERSION),
-        digest="sha256:ae5e14401cde4dec8bccce7594f829cd491044aa66944272e1d4fccc941ec77c",
+        digest="sha256:9339837eaaa7852509fa4c89c12543721d79d7facf57f29adec7c96fffe408d6",
     ),
     Image(
         name="cert-manager-webhook",
         version=_version_prefix(CERT_MANAGER_VERSION),
-        digest="sha256:6edf44244b2a711be737c4ab8e54e68d9112cc4e87da2ef97a7f76b768f4fde7",
+        digest="sha256:2933ec670a99524a6860f641ef3720289d784b0bef35bd0b74fc3eb093e71596",
     ),
     Image(
         name="cert-manager-cainjector",
         version=_version_prefix(CERT_MANAGER_VERSION),
-        digest="sha256:3c49185718cf454bac559f71c4453b33f1086db48084604247d9acb7a4de2973",
+        digest="sha256:a8319ee78e94abb11c4fe0b35197a57848ae7eec6c526e369187dc57b2961116",
     ),
     Image(
         name="cert-manager-acmesolver",
         version=_version_prefix(CERT_MANAGER_VERSION),
-        digest="sha256:14304826ab1a1184e185f952ef7e0bf8e620568b5c17939179efe6f4c6049d8e",
+        digest="sha256:a076f72f33a22dfd3a23727f1e1a069817819406b39e5b0fd9cb97d3338cb8d8",
     ),
 )
 

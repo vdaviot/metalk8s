@@ -5,11 +5,18 @@
 ### Enhancements
 
 - Bump Kubernetes version to
-  [1.30.7](https://github.com/kubernetes/kubernetes/releases/tag/v1.30.7)
-  (PR[#4497](https://github.com/scality/metalk8s/pull/4497))
+  [1.30.11](https://github.com/kubernetes/kubernetes/releases/tag/v1.30.11)
+  (PR[#4578](https://github.com/scality/metalk8s/pull/4578))
 
-- Bump etcd version to [3.5.16](https://github.com/etcd-io/etcd/releases/tag/v3.5.16)
-  (PR[#4497](https://github.com/scality/metalk8s/pull/4497))
+- Bump etcd version to [3.5.21](https://github.com/etcd-io/etcd/releases/tag/v3.5.21)
+  (PR[#4578](https://github.com/scality/metalk8s/pull/4578))
+
+- Bump CoreDNS version to [v1.12.1](https://github.com/coredns/coredns/releases/tag/v1.12.1)
+  (PR[#4578](https://github.com/scality/metalk8s/pull/4578))
+
+- Bump keepalived version to [2.3.3](https://www.keepalived.org/release-notes/Release-2.3.3.html)
+  in `metalk8s-keepalived` image
+  (PR[#4580](https://github.com/scality/metalk8s/pull/4580))
 
 - Bump dex chart version to
   [0.23.0](https://github.com/dexidp/helm-charts/releases/tag/dex-0.23.0)
@@ -17,9 +24,23 @@
   [v2.42.0](https://github.com/dexidp/dex/releases/tag/v2.42.0)
   (PR[#4558](https://github.com/scality/metalk8s/pull/4558))
 
+- Bump containerd to [1.6.38](https://github.com/containerd/containerd/releases/tag/v1.6.38)
+  (PR[#4575](https://github.com/scality/metalk8s/pull/4575))
+
 - Bump Fluent Bit image version to [3.2.8](https://github.com/fluent/fluent-bit/releases/tag/v3.2.8)
   and Fluent Bit Helm chart version to [0.48.9](https://github.com/fluent/helm-charts/releases/tag/fluent-bit-0.48.9)
   (PR[#4559](https://github.com/scality/metalk8s/pull/4559))
+
+- Bump the alpine base image used by `metalk8s-alert-logger`
+  and `metalk8s-keepalived` image to `alpine:3.21.3`
+  (PR[#4570](https://github.com/scality/metalk8s/pull/4570))
+
+- Bump Calico version to [3.29.3](https://github.com/projectcalico/calico/releases/tag/v3.29.3)
+  (PR[#4571](https://github.com/scality/metalk8s/pull/4571))
+
+- Bump cert-manager version to
+  [1.17.1](https://github.com/cert-manager/cert-manager/releases/tag/v1.17.1)
+  (PR[#4579](https://github.com/scality/metalk8s/pull/4579))
 
 - Bump Loki chart version to
   [6.29.0](https://github.com/grafana/loki/releases/tag/helm-loki-6.29.0)
@@ -27,7 +48,22 @@
   [3.4.2](https://github.com/grafana/loki/releases/tag/v3.4.2)
   (PR[##4562](https://github.com/scality/metalk8s/pull/#4562))
 
-## Release 129.0.1 (in development)
+## Release 129.0.3 (in development)
+
+### Enhancements
+
+- Bump ingress-nginx chart version to
+  [4.12.1](https://github.com/kubernetes/ingress-nginx/releases/tag/helm-chart-4.12.1)
+  The controller image has been bumped accordingly to
+  [v1.12.1](https://github.com/kubernetes/ingress-nginx/releases/tag/controller-v1.12.1)
+  (PR[#4544](https://github.com/scality/metalk8s/pull/4544))
+
+- Bump nginx image to [1.27.5-alpine](https://github.com/nginx/nginx/releases/tag/release-1.27.5)
+  (PR[#4544](https://github.com/scality/metalk8s/pull/4544))
+
+## Release 129.0.2
+
+## Release 129.0.1
 
 ### Enhancements
 
@@ -173,7 +209,7 @@
 ### Enhancements
 
 - Only use modern Ciphers in Ingress configuration
-  (PR[#4488](https://github.com/scality/metalk8s/pull/4488)) 
+  (PR[#4488](https://github.com/scality/metalk8s/pull/4488))
 
 ### Bug fixes
 
@@ -389,7 +425,7 @@
   with other systems
   (PR[#4330](https://github.com/scality/metalk8s/pull/4330))
 
-- The max log file size per container is raised to 50Mi. 
+- The max log file size per container is raised to 50Mi.
   The default was 10 Mi.
   (PR[#4336](https://github.com/scality/metalk8s/pull/4336))
 
@@ -413,7 +449,7 @@
   (PR[#4322](https://github.com/scality/metalk8s/pull/4322))
 - Alert filtering in the UI when both a critical and warning alert
   wasn't working properly.
-  (PR[#4334](https://github.com/scality/metalk8s/pull/4334)) 
+  (PR[#4334](https://github.com/scality/metalk8s/pull/4334))
 
 ## Release 127.0.1
 

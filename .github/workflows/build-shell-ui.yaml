@@ -41,8 +41,33 @@ jobs:
         run: >
           docker save shell-ui:v$SHELL_UI_VERSION |
           gzip > shell-ui.tar.gz
+      - name: Install syft tool to build the sbom
+        run: |
+          SYFT_VERSION="1.19.0"
+          SYFT_INSTALLER="syft_${SYFT_VERSION}_linux_amd64.deb"
+          SYFT_CHECKSUM="f3667d6abfa97a1e5614882f81e0a0b090f0047e0df7025b568fa87b6d95ac58"
+          wget https://github.com/anchore/syft/releases/download/v${SYFT_VERSION}/${SYFT_INSTALLER}
+          ACTUAL_CHECKSUM=$(sha256sum ${SYFT_INSTALLER} | cut -d ' ' -f1)
+          if [ "$ACTUAL_CHECKSUM" != "$SYFT_CHECKSUM" ]; then
+            echo "ERROR: Checksum verification failed for ${SYFT_INSTALLER}"
+            echo "Expected: ${SYFT_CHECKSUM}"
+            echo "Got:      ${ACTUAL_CHECKSUM}"
+            exit 1
+          fi
+          sudo dpkg -i ${SYFT_INSTALLER}
+      - name: "build Software Bill of materials (SBOM)"
+        run: |
+          set -x
+          cd shell-ui
+          syft scan dir:./ --source-name=shell-ui --source-version "$SHELL_UI_VERSION" --output cyclonedx-json=../shell.tar.sbom.spdx.json
+
       - name: Prepare artifacts
-        run: mkdir -p "artifacts/images" && mv shell-ui.tar.gz artifacts/images/ && mv shell.tar artifacts/images/
+        run: |
+          mkdir -p "artifacts/images"
+          mv shell-ui.tar.gz artifacts/images/
+          mv shell.tar artifacts/images/
+          mv shell.tar.sbom.spdx.json artifacts/images/
+
       - name: Upload artifacts
         uses: scality/action-artifacts@v4
         with:

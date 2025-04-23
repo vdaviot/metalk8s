@@ -18,8 +18,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cainjector
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-cainjector
   namespace: metalk8s-certs
@@ -35,8 +35,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager
   namespace: metalk8s-certs
@@ -52,8 +52,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: webhook
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-webhook
   namespace: metalk8s-certs
@@ -69,8 +69,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: certificaterequests.cert-manager.io
   namespace: metalk8s-certs
@@ -384,8 +384,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: certificates.cert-manager.io
   namespace: metalk8s-certs
@@ -567,17 +567,25 @@ spec:
                           Create enables JKS keystore creation for the Certificate.
                           If true, a file named `keystore.jks` will be created in the target
                           Secret resource, encrypted using the password stored in
-                          `passwordSecretRef`.
+                          `passwordSecretRef` or `password`.
                           The keystore file will be updated immediately.
                           If the issuer provided a CA certificate, a file named `truststore.jks`
                           will also be created in the target Secret resource, encrypted using the
                           password stored in `passwordSecretRef`
                           containing the issuing Certificate Authority
                         type: boolean
+                      password:
+                        description: |-
+                          Password provides a literal password used to encrypt the JKS keystore.
+                          Mutually exclusive with passwordSecretRef.
+                          One of password or passwordSecretRef must provide a password with a non-zero length.
+                        type: string
                       passwordSecretRef:
                         description: |-
-                          PasswordSecretRef is a reference to a key in a Secret resource
+                          PasswordSecretRef is a reference to a non-empty key in a Secret resource
                           containing the password used to encrypt the JKS keystore.
+                          Mutually exclusive with password.
+                          One of password or passwordSecretRef must provide a password with a non-zero length.
                         properties:
                           key:
                             description: |-
@@ -595,7 +603,6 @@ spec:
                         type: object
                     required:
                     - create
-                    - passwordSecretRef
                     type: object
                   pkcs12:
                     description: |-
@@ -607,17 +614,25 @@ spec:
                           Create enables PKCS12 keystore creation for the Certificate.
                           If true, a file named `keystore.p12` will be created in the target
                           Secret resource, encrypted using the password stored in
-                          `passwordSecretRef`.
+                          `passwordSecretRef` or in `password`.
                           The keystore file will be updated immediately.
                           If the issuer provided a CA certificate, a file named `truststore.p12` will
                           also be created in the target Secret resource, encrypted using the
                           password stored in `passwordSecretRef` containing the issuing Certificate
                           Authority
                         type: boolean
+                      password:
+                        description: |-
+                          Password provides a literal password used to encrypt the PKCS#12 keystore.
+                          Mutually exclusive with passwordSecretRef.
+                          One of password or passwordSecretRef must provide a password with a non-zero length.
+                        type: string
                       passwordSecretRef:
                         description: |-
-                          PasswordSecretRef is a reference to a key in a Secret resource
-                          containing the password used to encrypt the PKCS12 keystore.
+                          PasswordSecretRef is a reference to a non-empty key in a Secret resource
+                          containing the password used to encrypt the PKCS#12 keystore.
+                          Mutually exclusive with password.
+                          One of password or passwordSecretRef must provide a password with a non-zero length.
                         properties:
                           key:
                             description: |-
@@ -650,7 +665,6 @@ spec:
                         type: string
                     required:
                     - create
-                    - passwordSecretRef
                     type: object
                 type: object
               literalSubject:
@@ -1142,8 +1156,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: challenges.acme.cert-manager.io
   namespace: metalk8s-certs
@@ -1407,6 +1421,10 @@ spec:
                                 description: |-
                                   resource ID of the managed identity, can not be used at the same time as clientID
                                   Cannot be used for Azure Managed Service Identity
+                                type: string
+                              tenantID:
+                                description: tenant ID of the managed identity, can
+                                  not be used at the same time as resourceID
                                 type: string
                             type: object
                           resourceGroupName:
@@ -4513,8 +4531,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: clusterissuers.cert-manager.io
   namespace: metalk8s-certs
@@ -4890,6 +4908,10 @@ spec:
                                       description: |-
                                         resource ID of the managed identity, can not be used at the same time as clientID
                                         Cannot be used for Azure Managed Service Identity
+                                      type: string
+                                    tenantID:
+                                      description: tenant ID of the managed identity,
+                                        can not be used at the same time as resourceID
                                       type: string
                                   type: object
                                 resourceGroupName:
@@ -8463,8 +8485,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: issuers.cert-manager.io
   namespace: metalk8s-certs
@@ -8839,6 +8861,10 @@ spec:
                                       description: |-
                                         resource ID of the managed identity, can not be used at the same time as clientID
                                         Cannot be used for Azure Managed Service Identity
+                                      type: string
+                                    tenantID:
+                                      description: tenant ID of the managed identity,
+                                        can not be used at the same time as resourceID
                                       type: string
                                   type: object
                                 resourceGroupName:
@@ -12412,8 +12438,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: orders.acme.cert-manager.io
   namespace: metalk8s-certs
@@ -12682,8 +12708,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cainjector
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-cainjector
   namespace: metalk8s-certs
@@ -12755,8 +12781,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-issuers
   namespace: metalk8s-certs
@@ -12806,8 +12832,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-clusterissuers
   namespace: metalk8s-certs
@@ -12857,8 +12883,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-certificates
   namespace: metalk8s-certs
@@ -12931,8 +12957,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-orders
   namespace: metalk8s-certs
@@ -13002,8 +13028,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-challenges
   namespace: metalk8s-certs
@@ -13112,8 +13138,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-ingress-shim
   namespace: metalk8s-certs
@@ -13186,8 +13212,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
     rbac.authorization.k8s.io/aggregate-to-cluster-reader: 'true'
   name: cert-manager-cluster-view
@@ -13212,8 +13238,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
     rbac.authorization.k8s.io/aggregate-to-admin: 'true'
     rbac.authorization.k8s.io/aggregate-to-cluster-reader: 'true'
@@ -13252,8 +13278,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
     rbac.authorization.k8s.io/aggregate-to-admin: 'true'
     rbac.authorization.k8s.io/aggregate-to-edit: 'true'
@@ -13300,8 +13326,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-approve:cert-manager-io
   namespace: metalk8s-certs
@@ -13326,8 +13352,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-certificatesigningrequests
   namespace: metalk8s-certs
@@ -13374,8 +13400,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: webhook
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-webhook:subjectaccessreviews
   namespace: metalk8s-certs
@@ -13397,8 +13423,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cainjector
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-cainjector
   namespace: metalk8s-certs
@@ -13421,8 +13447,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-issuers
   namespace: metalk8s-certs
@@ -13445,8 +13471,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-clusterissuers
   namespace: metalk8s-certs
@@ -13469,8 +13495,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-certificates
   namespace: metalk8s-certs
@@ -13493,8 +13519,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-orders
   namespace: metalk8s-certs
@@ -13517,8 +13543,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-challenges
   namespace: metalk8s-certs
@@ -13541,8 +13567,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-ingress-shim
   namespace: metalk8s-certs
@@ -13565,8 +13591,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-approve:cert-manager-io
   namespace: metalk8s-certs
@@ -13589,8 +13615,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-controller-certificatesigningrequests
   namespace: metalk8s-certs
@@ -13613,8 +13639,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: webhook
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-webhook:subjectaccessreviews
   namespace: metalk8s-certs
@@ -13637,8 +13663,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cainjector
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-cainjector:leaderelection
   namespace: kube-system
@@ -13671,8 +13697,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager:leaderelection
   namespace: kube-system
@@ -13704,8 +13730,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-tokenrequest
   namespace: metalk8s-certs
@@ -13729,8 +13755,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: webhook
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-webhook:dynamic-serving
   namespace: metalk8s-certs
@@ -13763,8 +13789,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cainjector
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-cainjector:leaderelection
   namespace: kube-system
@@ -13787,8 +13813,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager:leaderelection
   namespace: kube-system
@@ -13811,8 +13837,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-cert-manager-tokenrequest
   namespace: metalk8s-certs
@@ -13835,8 +13861,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: webhook
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-webhook:dynamic-serving
   namespace: metalk8s-certs
@@ -13859,8 +13885,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cainjector
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-cainjector
   namespace: metalk8s-certs
@@ -13885,8 +13911,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager
   namespace: metalk8s-certs
@@ -13912,8 +13938,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: webhook
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-webhook
   namespace: metalk8s-certs
@@ -13943,8 +13969,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cainjector
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-cainjector
   namespace: metalk8s-certs
@@ -13964,8 +13990,8 @@ spec:
         app.kubernetes.io/managed-by: salt
         app.kubernetes.io/name: cainjector
         app.kubernetes.io/part-of: metalk8s
-        app.kubernetes.io/version: v1.16.1
-        helm.sh/chart: cert-manager-v1.16.1
+        app.kubernetes.io/version: v1.17.1
+        helm.sh/chart: cert-manager-v1.17.1
         heritage: metalk8s
     spec:
       containers:
@@ -13977,7 +14003,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: {% endraw -%}{{ build_image_name("cert-manager-cainjector", False) }}{%- raw %}:v1.16.1
+        image: {% endraw -%}{{ build_image_name("cert-manager-cainjector", False) }}{%- raw %}:v1.17.1
         imagePullPolicy: IfNotPresent
         name: cert-manager-cainjector
         ports:
@@ -14017,8 +14043,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager
   namespace: metalk8s-certs
@@ -14038,8 +14064,8 @@ spec:
         app.kubernetes.io/managed-by: salt
         app.kubernetes.io/name: cert-manager
         app.kubernetes.io/part-of: metalk8s
-        app.kubernetes.io/version: v1.16.1
-        helm.sh/chart: cert-manager-v1.16.1
+        app.kubernetes.io/version: v1.17.1
+        helm.sh/chart: cert-manager-v1.17.1
         heritage: metalk8s
     spec:
       containers:
@@ -14047,14 +14073,14 @@ spec:
         - --v=2
         - --cluster-resource-namespace=$(POD_NAMESPACE)
         - --leader-election-namespace=kube-system
-        - --acme-http01-solver-image={% endraw -%}{{ build_image_name("cert-manager-acmesolver", False) }}{%- raw %}:v1.16.1
+        - --acme-http01-solver-image={% endraw -%}{{ build_image_name("cert-manager-acmesolver", False) }}{%- raw %}:v1.17.1
         - --max-concurrent-challenges=60
         env:
         - name: POD_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: {% endraw -%}{{ build_image_name("cert-manager-controller", False) }}{%- raw %}:v1.16.1
+        image: {% endraw -%}{{ build_image_name("cert-manager-controller", False) }}{%- raw %}:v1.17.1
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 8
@@ -14107,8 +14133,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: webhook
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-webhook
   namespace: metalk8s-certs
@@ -14128,8 +14154,8 @@ spec:
         app.kubernetes.io/managed-by: salt
         app.kubernetes.io/name: webhook
         app.kubernetes.io/part-of: metalk8s
-        app.kubernetes.io/version: v1.16.1
-        helm.sh/chart: cert-manager-v1.16.1
+        app.kubernetes.io/version: v1.17.1
+        helm.sh/chart: cert-manager-v1.17.1
         heritage: metalk8s
     spec:
       containers:
@@ -14146,7 +14172,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: {% endraw -%}{{ build_image_name("cert-manager-webhook", False) }}{%- raw %}:v1.16.1
+        image: {% endraw -%}{{ build_image_name("cert-manager-webhook", False) }}{%- raw %}:v1.17.1
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3
@@ -14214,8 +14240,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: webhook
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-webhook
   namespace: metalk8s-certs
@@ -14252,8 +14278,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
     metalk8s.scality.com/monitor: ''
     prometheus: default
@@ -14298,8 +14324,8 @@ metadata:
     app.kubernetes.io/managed-by: salt
     app.kubernetes.io/name: webhook
     app.kubernetes.io/part-of: metalk8s
-    app.kubernetes.io/version: v1.16.1
-    helm.sh/chart: cert-manager-v1.16.1
+    app.kubernetes.io/version: v1.17.1
+    helm.sh/chart: cert-manager-v1.17.1
     heritage: metalk8s
   name: cert-manager-webhook
   namespace: metalk8s-certs

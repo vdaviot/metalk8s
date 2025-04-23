@@ -48,6 +48,12 @@
   [1.22](https://golang.org/doc/devel/release.html#go1.22.minor)
   (PR[#4581](https://github.com/scality/metalk8s/pull/4581))
 
+- Bump Loki chart version to
+  [6.29.0](https://github.com/grafana/loki/releases/tag/helm-loki-6.29.0)
+  The Loki image has been bumped accordingly to
+  [3.4.2](https://github.com/grafana/loki/releases/tag/v3.4.2)
+  (PR[##4562](https://github.com/scality/metalk8s/pull/#4562))
+
 - Bump prometheus-adapter chart version to
   [4.14.1](https://github.com/prometheus-community/helm-charts/releases/tag/prometheus-adapter-4.14.1)
   (PR[#4563](https://github.com/scality/metalk8s/pull/4563))

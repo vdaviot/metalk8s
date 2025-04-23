@@ -42,6 +42,12 @@
   [1.17.1](https://github.com/cert-manager/cert-manager/releases/tag/v1.17.1)
   (PR[#4579](https://github.com/scality/metalk8s/pull/4579))
 
+- Bump Operator-SDK used by `metalk8s-operator` and `storage-operator` to
+  [1.38.0](https://github.com/operator-framework/operator-sdk/releases/tag/v1.38.0)
+  The Go version has been bumped accordingly to
+  [1.22](https://golang.org/doc/devel/release.html#go1.22.minor)
+  (PR[#4581](https://github.com/scality/metalk8s/pull/4581))
+
 - Bump prometheus-adapter chart version to
   [4.14.1](https://github.com/prometheus-community/helm-charts/releases/tag/prometheus-adapter-4.14.1)
   (PR[#4563](https://github.com/scality/metalk8s/pull/4563))

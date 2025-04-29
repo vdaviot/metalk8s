@@ -18,6 +18,9 @@ spec:
   replicas: 1
   template:
     metadata:
+      annotations:
+        checksum/config: __slot__:salt:metalk8s_kubernetes.get_object_digest(kind="Secret",
+          apiVersion="v1", namespace="kube-system", name="backup-tls", path="data:backup.crt")
       labels:
         app.kubernetes.io/name: backup
         app.kubernetes.io/part-of: metalk8s

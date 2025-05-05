@@ -16,6 +16,7 @@ node-exporter:
   - NodeFileDescriptorLimit
 kubernetes-apps:
   - KubeJobNotCompleted
+  - KubeJobFailed
 # workaround: this fires upon install
 # revert the entire commit after the fix is merged
 etcd:

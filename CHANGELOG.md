@@ -61,6 +61,10 @@
 - Add a hash annotation to force restart backup server on 
   certifacate renewal (PR[#4590](https://github.com/scality/metalk8s/pull/4590))
 
+- Add alerts for a CronJob owned Job failure and another one for
+  non-CronJob owned Job failure 
+  (PR[#4584](https://github.com/scality/metalk8s/pull/4584))
+
 ## Release 129.0.3 (in development)
 
 ### Enhancements

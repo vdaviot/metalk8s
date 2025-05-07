@@ -162,6 +162,18 @@
         "severity": "warning"
     },
     {
+        "message": "Job owned by CronJob failed to complete.",
+        "name": "KubeCronJobOwnedJobFailed",
+        "query": "kube_job_failed{job=\"kube-state-metrics\",namespace=~\".*\"} > 0 and on (job_name, namespace) (topk by (owner_name, namespace) (1, kube_job_created{job=\"kube-state-metrics\"} * on (job_name, namespace) group_left (owner_name, owner_kind) kube_job_owner{job=\"kube-state-metrics\",owner_kind=\"CronJob\"}))",
+        "severity": "warning"
+    },
+    {
+        "message": "Job failed to complete.",
+        "name": "KubeJobFailed",
+        "query": "kube_job_failed{job=\"kube-state-metrics\",namespace=~\".*\"} > 0 unless on (job_name, namespace) kube_job_owner{job=\"kube-state-metrics\",owner_kind=\"CronJob\"}",
+        "severity": "warning"
+    },
+    {
         "message": "Job did not complete in time",
         "name": "KubeJobNotCompleted",
         "query": "time() - max by (namespace, job_name, cluster) (kube_job_status_start_time{job=\"kube-state-metrics\",namespace=~\".*\"} and kube_job_status_active{job=\"kube-state-metrics\",namespace=~\".*\"} > 0) > (24 * 60 * 60)",
@@ -531,12 +543,6 @@
         "message": "HPA has not matched desired number of replicas.",
         "name": "KubeHpaReplicasMismatch",
         "query": "(kube_horizontalpodautoscaler_status_desired_replicas{job=\"kube-state-metrics\",namespace=~\".*\"} != kube_horizontalpodautoscaler_status_current_replicas{job=\"kube-state-metrics\",namespace=~\".*\"}) and (kube_horizontalpodautoscaler_status_current_replicas{job=\"kube-state-metrics\",namespace=~\".*\"} > kube_horizontalpodautoscaler_spec_min_replicas{job=\"kube-state-metrics\",namespace=~\".*\"}) and (kube_horizontalpodautoscaler_status_current_replicas{job=\"kube-state-metrics\",namespace=~\".*\"} < kube_horizontalpodautoscaler_spec_max_replicas{job=\"kube-state-metrics\",namespace=~\".*\"}) and changes(kube_horizontalpodautoscaler_status_current_replicas{job=\"kube-state-metrics\",namespace=~\".*\"}[15m]) == 0",
-        "severity": "warning"
-    },
-    {
-        "message": "Job failed to complete.",
-        "name": "KubeJobFailed",
-        "query": "kube_job_failed{job=\"kube-state-metrics\",namespace=~\".*\"} > 0",
         "severity": "warning"
     },
     {

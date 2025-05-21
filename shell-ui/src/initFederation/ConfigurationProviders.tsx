@@ -84,7 +84,7 @@ export function useConfigRetriever(): {
     retrieveConfiguration: ({ configType, name }) => {
       if (configType !== 'build' && configType !== 'run') {
         throw new Error(
-          `Invalid configType : it should be build or run but recieved ${configType}`,
+          `Invalid configType : it should be build or run but received ${configType}`,
         );
       }
 
@@ -108,13 +108,39 @@ export function useConfigRetriever(): {
         })
         .map((webFinger) => webFinger.data);
       ///TODO validate web fingers against JsonSchemas
-      return configs.find(
+      const config = configs.find(
         (webFinger) =>
           (webFinger.kind === 'MicroAppRuntimeConfiguration' &&
             webFinger.metadata.name === name) ||
           (webFinger.kind === 'MicroAppConfiguration' &&
             webFinger.metadata.kind === apps[0].kind),
       );
+
+      if (!config) {
+        if (configType === 'build') {
+          throw new Error(
+            `MicroApp's MicroAppConfiguration not found for app with kind ${
+              apps[0].kind
+            }: Please check your MicroAppConfiguration. Here is a list of known configurations:\n ${JSON.stringify(
+              configs,
+              null,
+              2,
+            )}`,
+          );
+        }
+        if (configType === 'run') {
+          throw new Error(
+            `MicroApp's RuntimeAppConfiguration not found for app with name ${name} and kind ${
+              apps[0].kind
+            }: Please check your RuntimeAppConfiguration. Here is a list of known configurations:\n ${JSON.stringify(
+              configs,
+              null,
+              2,
+            )}`,
+          );
+        }
+      }
+      return config;
     },
   };
 }

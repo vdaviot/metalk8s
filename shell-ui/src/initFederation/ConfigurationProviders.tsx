@@ -117,26 +117,21 @@ export function useConfigRetriever(): {
       );
 
       if (!config) {
+        const listOfKnownConfigurations = JSON.stringify(configs, null, 2);
         if (configType === 'build') {
           throw new Error(
-            `MicroApp's MicroAppConfiguration not found for app with kind ${
-              apps[0].kind
-            }: Please check your MicroAppConfiguration. Here is a list of known configurations:\n ${JSON.stringify(
-              configs,
-              null,
-              2,
-            )}`,
+            `MicroApp's MicroAppConfiguration not found for app with kind ${apps[0].kind}.
+            This error usually happens when your app's "kind" in deployed-ui-apps does not match the MicroAppConfiguration.
+            Please check your MicroAppConfiguration. Here is a list of known configurations:
+            ${listOfKnownConfigurations}`,
           );
         }
         if (configType === 'run') {
           throw new Error(
-            `MicroApp's RuntimeAppConfiguration not found for app with name ${name} and kind ${
-              apps[0].kind
-            }: Please check your RuntimeAppConfiguration. Here is a list of known configurations:\n ${JSON.stringify(
-              configs,
-              null,
-              2,
-            )}`,
+            `MicroApp's RuntimeAppConfiguration not found for app with name ${name} and kind ${apps[0].kind}.
+            This error usually happens when your app's "name" and "kind" in deployed-ui-apps does not match the RuntimeAppConfiguration.
+            Please check your RuntimeAppConfiguration. Here is a list of known configurations:
+            ${listOfKnownConfigurations}`,
           );
         }
       }

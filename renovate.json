@@ -1,6 +1,114 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ]
-}
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "autodiscover": true,
+    "extends": [
+      "config:recommended"
+    ],
+    "labels": ["dependencies"],
+    "prConcurrentLimit": 0,
+    "prHourlyLimit": 0,
+    "dependencyDashboard": true,
+    "dependencyDashboardAutoclose": true,
+    "lockFileMaintenance": {
+      "enabled": true,
+      "automerge": true,
+      "major": {
+        "automerge": false
+      },
+      "minor": {
+        "automerge": true
+      },
+      "patch": {
+        "automerge": true
+      }
+    },
+    "packageRules": [
+      {
+        "matchDatasources": ["docker"],
+        "matchManagers": ["dockerfile"],
+        "matchPackageNames": ["golang"],
+        "groupName": "golang-dockerfile-versions",
+        "automerge": true,
+        "major": {
+          "automerge": false,
+          "addLabels": ["major-version-golang", "manual-review"],
+          "prBody": "Major Golang version update detected. **Requires manual review and merge.**",
+          "prFooter": ""
+        },
+        "minor": {
+          "automerge": true,
+          "prBody": "Minor Golang version update. Merging automatically if tests pass.",
+          "prFooter": ""
+        },
+        "patch": {
+          "automerge": true,
+          "prBody": "Patch Golang version update. Merging automatically if tests pass.",
+          "prFooter": ""
+        }
+      },
+      {
+        "matchDatasources": ["go"],
+        "matchManagers": ["gomod"],
+        "groupName": "golang-dependencies",
+        "postUpgradeTasks": [
+          "go mod tidy",
+          "go mod vendor"
+        ],
+        "postUpgradeTaskOptions": {
+          "shell": "bash",
+          "env": {
+            "GOPATH": "/go"
+          },
+          "addPaths": [
+            "/usr/local/go/bin"
+          ]
+        },
+        "major": {
+          "automerge": false,
+          "addLabels": ["major-version-golang-dep", "manual-review"],
+          "prBody": "Major Golang dependency update detected. **Requires manual review and merge.**",
+          "prFooter": ""
+        },
+        "minor": {
+          "automerge": true,
+          "prBody": "Minor Golang dependency update. Merging automatically if tests pass.",
+          "prFooter": ""
+        },
+        "patch": {
+          "automerge": true,
+          "prBody": "Patch Golang dependency update. Merging automatically if tests pass.",
+          "prFooter": ""
+        }
+      },
+      {
+        "matchDatasources": ["helm"],
+        "matchManagers": ["helm-values", "helm-requirements"],
+        "groupName": "helm-chart-dependencies",
+        "automerge": true,
+        "major": {
+          "automerge": false,
+          "addLabels": ["major-version-helm", "manual-review"],
+          "prBody": "Major Helm chart version update detected. **Requires manual review and merge.**",
+          "prFooter": ""
+        },
+        "minor": {
+          "automerge": true,
+          "prBody": "Minor Helm chart update. Merging automatically if tests pass.",
+          "prFooter": ""
+        },
+        "patch": {
+          "automerge": true,
+          "prBody": "Patch Helm chart update. Merging automatically if tests pass.",
+          "prFooter": ""
+        },
+
+        "postUpgradeTaskOptions": {
+          "shell": "bash",
+          "args": ["-c"],
+          "addPaths": [
+            "/usr/local/bin"
+          ]
+        }
+      }
+    ]
+  }

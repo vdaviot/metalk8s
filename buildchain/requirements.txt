@@ -28,5 +28,5 @@ six==1.16.0
     # via docker
 urllib3==1.26.8
     # via requests
-websocket-client==1.2.3
+websocket-client==1.8.0
     # via docker

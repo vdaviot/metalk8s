@@ -10,7 +10,7 @@ charset-normalizer==2.0.10
     # via requests
 cloudpickle==2.0.0
     # via doit
-docker==4.1.0
+docker==7.1.0
     # via -r requirements.in
 doit==0.34.0
     # via -r requirements.in

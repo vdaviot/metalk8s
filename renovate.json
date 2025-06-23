@@ -5,6 +5,12 @@
       "config:recommended"
     ],
     "labels": ["dependencies"],
+    "enabledManagers": [
+      "gomod",
+      "dockerfile",
+      "helm-values",
+      "helm-requirements"
+    ],
     "prConcurrentLimit": 0,
     "prHourlyLimit": 0,
     "dependencyDashboard": true,

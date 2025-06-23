@@ -51,18 +51,12 @@
         "matchManagers": ["gomod"],
         "groupName": "golang-dependencies",
         "postUpgradeTasks": [
-          "go mod tidy",
-          "go mod vendor"
+            {
+                "commands": ["go mod tidy", "go mod vendor"],
+                "fileFilters": ["go.mod", "go.sum"],
+                "executionMode": "update"
+            }
         ],
-        "postUpgradeTaskOptions": {
-          "shell": "bash",
-          "env": {
-            "GOPATH": "/go"
-          },
-          "addPaths": [
-            "/usr/local/go/bin"
-          ]
-        },
         "major": {
           "automerge": false,
           "addLabels": ["major-version-golang-dep", "manual-review"],
@@ -100,14 +94,6 @@
           "automerge": true,
           "prBody": "Patch Helm chart update. Merging automatically if tests pass.",
           "prFooter": ""
-        },
-
-        "postUpgradeTaskOptions": {
-          "shell": "bash",
-          "args": ["-c"],
-          "addPaths": [
-            "/usr/local/bin"
-          ]
         }
       }
     ]

@@ -14,7 +14,7 @@ docker==4.1.0
     # via -r requirements.in
 doit==0.34.0
     # via -r requirements.in
-idna==3.7
+idna==3.10
     # via requests
 pyinotify==0.9.6 ; sys_platform == "linux"
     # via

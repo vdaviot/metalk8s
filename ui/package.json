@@ -23,7 +23,7 @@
     "react-intl": "^5.15.3",
     "react-json-view": "^1.21.3",
     "react-query": "^3.34.0",
-    "react-redux": "^7.1.0",
+    "react-redux": "^9.0.0",
     "react-router": "^7.0.1",
     "react-router-dom": "^7.0.1",
     "redux": "^4.0.1",

@@ -87,7 +87,7 @@ sphinx==4.5.0
     #   sphinxcontrib-github-alt
     #   sphinxcontrib-plantuml
     #   sphinxcontrib-spelling
-sphinx-autobuild==2021.3.14
+sphinx-autobuild==2024.10.3
     # via -r requirements.in
 sphinx-jinja==1.4.0
     # via -r requirements.in

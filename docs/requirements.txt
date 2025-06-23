@@ -75,7 +75,7 @@ six==1.16.0 ; python_version >= "2.7" and python_full_version < "3.0.0" or pytho
     #   -r ../tools/lib-alert-tree/requirements.txt
     #   livereload
     #   treelib
-snowballstemmer==2.2.0
+snowballstemmer==3.0.1
     # via sphinx
 sphinx==4.5.0
     # via

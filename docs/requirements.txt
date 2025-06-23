@@ -60,7 +60,7 @@ pyparsing==3.1.0
     # via
     #   httplib2
     #   packaging
-pytz==2023.3
+pytz==2023.4
     # via babel
 pyyaml==6.0.1 ; python_version >= "3.6"
     # via

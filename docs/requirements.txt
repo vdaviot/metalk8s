@@ -22,7 +22,7 @@ colorama==0.4.5
     #   sphinx-autobuild
 doc8==0.11.2
     # via -r requirements.in
-docutils==0.16
+docutils==0.21.2
     # via
     #   doc8
     #   restructuredtext-lint

@@ -6,7 +6,7 @@
 #
 -e git+https://github.com/scality/sphinx-tools.git@v3.0#egg=sphinx_scality  # via -r docs/requirements.in
     # via -r requirements.in
-alabaster==0.7.13
+alabaster==1.0.0
     # via sphinx
 babel==2.11.0
     # via sphinx

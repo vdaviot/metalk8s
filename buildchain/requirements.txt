@@ -6,7 +6,7 @@
 #
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.10
+charset-normalizer==3.4.2
     # via requests
 cloudpickle==2.0.0
     # via doit

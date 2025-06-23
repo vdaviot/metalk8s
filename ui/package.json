@@ -18,7 +18,7 @@
     "luxon": "^2.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-error-boundary": "^4.1.2",
+    "react-error-boundary": "^6.0.0",
     "react-hook-form": "^7.44.3",
     "react-intl": "^5.15.3",
     "react-json-view": "^1.21.3",

@@ -46,7 +46,7 @@ markupsafe==2.0.1
     # via jinja2
 packaging==21.3
     # via sphinx
-pbr==5.11.1
+pbr==6.1.1
     # via stevedore
 plantuml==0.3.0
     # via -r requirements.in

@@ -64,7 +64,7 @@ runs:
         node-version: "14"
     - name: Install Terraform
       if: inputs.ARTIFACTS_URL
-      uses: hashicorp/setup-terraform@v2
+      uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ inputs.TERRAFORM_VERSION }}
         terraform_wrapper: false

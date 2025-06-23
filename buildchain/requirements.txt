@@ -12,7 +12,7 @@ cloudpickle==2.0.0
     # via doit
 docker==4.1.0
     # via -r requirements.in
-doit==0.34.0
+doit==0.36.0
     # via -r requirements.in
 idna==3.7
     # via requests

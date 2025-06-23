@@ -16,7 +16,7 @@ charset-normalizer==2.0.12
     # via requests
 click==8.0.4 ; python_version >= "3.6"
     # via -r ../tools/lib-alert-tree/requirements.txt
-colorama==0.4.5
+colorama==0.4.6
     # via
     #   -r requirements.in
     #   sphinx-autobuild

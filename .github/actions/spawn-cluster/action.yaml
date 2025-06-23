@@ -93,7 +93,7 @@ runs:
         source: artifacts/
     - name: Checkout scality/terraform-snapshot
       if: inputs.skip-prepare == 'false'
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: scality/terraform-snapshot
         path: terraform-snapshot

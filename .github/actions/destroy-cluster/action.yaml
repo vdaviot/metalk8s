@@ -47,7 +47,7 @@ runs:
   steps:
     - name: Checkout terraform-snapshot
       if: inputs.ARTIFACTS_URL
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: scality/terraform-snapshot
         path: terraform-snapshot

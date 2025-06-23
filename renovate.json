@@ -50,13 +50,11 @@
         "matchDatasources": ["go"],
         "matchManagers": ["gomod"],
         "groupName": "golang-dependencies",
-        "postUpgradeTasks": [
-            {
-                "commands": ["go mod tidy", "go mod vendor"],
-                "fileFilters": ["go.mod", "go.sum"],
-                "executionMode": "update"
-            }
-        ],
+        "postUpgradeTasks": {
+            "commands": ["go mod tidy", "go mod vendor"],
+            "fileFilters": ["go.mod", "go.sum"],
+            "executionMode": "update"
+        },
         "major": {
           "automerge": false,
           "addLabels": ["major-version-golang-dep", "manual-review"],

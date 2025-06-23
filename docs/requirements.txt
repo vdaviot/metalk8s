@@ -115,7 +115,7 @@ stevedore==3.5.2
     # via doc8
 tornado==6.4.2
     # via livereload
-treelib==1.6.4
+treelib==1.7.1
     # via -r ../tools/lib-alert-tree/requirements.txt
 urllib3==1.26.16
     # via requests

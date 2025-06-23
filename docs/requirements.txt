@@ -91,7 +91,7 @@ sphinx-autobuild==2021.3.14
     # via -r requirements.in
 sphinx-jinja==1.4.0
     # via -r requirements.in
-sphinx-rtd-theme==0.5.2
+sphinx-rtd-theme==3.0.2
     # via -r requirements.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx

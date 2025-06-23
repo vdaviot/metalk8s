@@ -69,11 +69,13 @@
         },
         "minor": {
           "automerge": true,
+          "addLabels": ["minor-version-golang-dep"],
           "prBody": "Minor Golang dependency update. Merging automatically if tests pass.",
           "prFooter": ""
         },
         "patch": {
           "automerge": true,
+          "addLabels": ["patch-version-golang-dep"],
           "prBody": "Patch Golang dependency update. Merging automatically if tests pass.",
           "prFooter": ""
         }
@@ -91,11 +93,13 @@
         },
         "minor": {
           "automerge": true,
+          "addLabels": ["minor-version-helm"],
           "prBody": "Minor Helm chart update. Merging automatically if tests pass.",
           "prFooter": ""
         },
         "patch": {
           "automerge": true,
+          "addLabels": ["patch-version-helm"],
           "prBody": "Patch Helm chart update. Merging automatically if tests pass.",
           "prFooter": ""
         }

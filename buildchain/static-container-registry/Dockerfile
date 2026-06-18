@@ -1,4 +1,4 @@
-FROM docker.io/nginx:1.15.12-alpine
+FROM docker.io/nginx:1.31.2-alpine
 
 RUN apk add --no-cache \
         python3 \

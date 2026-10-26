@@ -1,4 +1,4 @@
-FROM docker.io/ubuntu:xenial
+FROM docker.io/ubuntu:resolute
 
 RUN apt-get update \
       && \

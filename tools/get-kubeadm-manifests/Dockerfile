@@ -1,4 +1,4 @@
-FROM rockylinux:8
+FROM rockylinux:10
 
 ARG K8S_SHORT_VERSION
 
